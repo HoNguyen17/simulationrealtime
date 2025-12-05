@@ -1,0 +1,10 @@
+launch.json:
+"type": "java",
+            "name": "Run App (JavaFX)",
+            "request": "launch",
+            "mainClass": "App",
+            "projectName": "simulationrealtime_443a8a52",
+            "cwd": "path/simulationrealtime/src",
+            "vmArgs": "--module-path \"C:/Program Files/javafx-sdk-17.0.17/lib\" --add-modules javafx.controls,javafx.fxml"
+
+download javafx and put it in program files           
