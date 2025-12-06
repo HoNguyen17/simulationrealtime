@@ -15,7 +15,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws Exception{
         // Tải model mạng lưới
-        Networkpaser.NetworkModel model = Networkpaser.load("../resource/Netedit_requirement.net.xml");
+        Networkpaser.NetworkModel model = Networkpaser.load("../resource/test_2_traffic.net.xml");
 
         // Canvas bản đồ chuyển thành MapCanvas để quản lý pan/zoom/vẽ
         MapCanvas mapCanvas = new MapCanvas(1000, 800);
