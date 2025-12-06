@@ -11,7 +11,7 @@ import java.util.ArrayList;
 /**
  * Class để quản lý việc render xe trên canvas
  */
-public class =VehicleRenderer {
+public class VehicleRenderer {
     
     /**
      * Cấu trúc dữ liệu để lưu thông tin xe

@@ -6,11 +6,18 @@
     "configurations": [
         {
             "type": "java",
+            "name": "App",
+            "request": "launch",
+            "mainClass": "App",
+            "projectName": "simulationrealtime_ae1ea12a"
+        },
+        {
+            "type": "java",
             "name": "Run App (JavaFX)",
             "request": "launch",
             "mainClass": "App",
-            "projectName": "simulationrealtime_443a8a52",
-            "cwd": "C:/Honguyen/VGU/Nam 3/sems1/Java/simulationrealtime/src",
+            "projectName": "simulationrealtime_ae1ea12a",
+            "cwd": "C:\\simulationrealtime\\src",
             "vmArgs": "--module-path \"C:/Program Files/javafx-sdk-17.0.17/lib\" --add-modules javafx.controls,javafx.fxml"
         }
     ]
