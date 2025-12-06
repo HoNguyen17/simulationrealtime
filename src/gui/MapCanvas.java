@@ -5,12 +5,14 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
+import wrapper.SimulationWrapper;
 
 public class MapCanvas {
     private final Canvas canvas;
     private final GraphicsContext g;
 
     private Networkpaser.NetworkModel model;
+    private VehicleRenderer vehicleRenderer;
 
     private double scale = 1.0;
     private double offsetX = 600;
@@ -20,6 +22,7 @@ public class MapCanvas {
     public MapCanvas(double w, double h) {
         canvas = new Canvas(w, h);
         g = canvas.getGraphicsContext2D();
+        vehicleRenderer = new VehicleRenderer();
 
         // Pan
         canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
@@ -55,6 +58,27 @@ public class MapCanvas {
 
     public Canvas getCanvas() { return canvas; }
     public void setModel(Networkpaser.NetworkModel model) { this.model = model; }
+    
+    /**
+     * Lấy VehicleRenderer để quản lý xe
+     */
+    public VehicleRenderer getVehicleRenderer() {
+        return vehicleRenderer;
+    }
+    
+    /**
+     * Cập nhật xe từ SimulationWrapper
+     */
+    public void updateVehiclesFromSimulation(SimulationWrapper sim) {
+        vehicleRenderer.updateFromSimulation(sim);
+    }
+    
+    /**
+     * Xóa tất cả xe
+     */
+    public void clearVehicles() {
+        vehicleRenderer.clear();
+    }
 
     public void render() {
         if (model == null) return;
@@ -84,6 +108,9 @@ public class MapCanvas {
             double y = j.y * scale + offsetY;
             g.fillOval(x - 2, y - 2, 4, 4);
         }
+
+        // Render vehicles sử dụng VehicleRenderer
+        vehicleRenderer.render(g, scale, offsetX, offsetY);
     }
 
     public void fitAndCenter() {

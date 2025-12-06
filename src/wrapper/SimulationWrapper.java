@@ -128,6 +128,12 @@ public class SimulationWrapper {
         VehicleWrapper v = new wrapper.VehicleWrapper(ID);
         return v.getColor(this, 1);
     }
+
+    // get Vehicle angle
+    public double getAngle(String ID) {
+        VehicleWrapper v = new wrapper.VehicleWrapper(ID);
+        return v.getAngle(this, 0);
+    }
 //===== SETTER ============================================
     // set Vehicle's speed
     public void setSpeed(String ID, double speed) {

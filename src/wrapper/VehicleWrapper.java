@@ -114,6 +114,26 @@ public class VehicleWrapper {
         }
     }
 
+    // get Vehicle angle (heading in degrees, 0 = north, 90 = east)
+    public double getAngle(wrapper.SimulationWrapper temp, int po) {
+        try {
+            double angle = (double) temp.conn.do_job_get(Vehicle.getAngle(ID));
+            // Convert from SUMO angle (0 = east, counter-clockwise) to screen angle (0 = north, clockwise)
+            // SUMO: 0 = east, 90 = north, 180 = west, 270 = south
+            // Screen: 0 = north, 90 = east, 180 = south, 270 = west
+            // Conversion: screenAngle = 90 - sumoAngle
+            double screenAngle = 90 - angle;
+            if (po == 1) {
+                System.out.println(String.format("Angle of vehicle %s: %.2f degrees (SUMO: %.2f)", ID, screenAngle, angle));
+            }
+            return screenAngle;
+        }
+        catch (Exception e) {
+            System.out.println("Cannot get angle of vehicle " + ID + ": " + e.getMessage());
+            return 0.0;
+        }
+    }
+
     // set Vehicle's speed
     public void setSpeed(wrapper.SimulationWrapper temp, double speed, int po) {
         try {
