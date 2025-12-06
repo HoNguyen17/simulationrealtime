@@ -108,7 +108,10 @@ public class TrafficLightWrapper {
             List<String> IDsList = (List<String>)temp.conn.do_job_get(Trafficlight.getIDList());
             for (String x : IDsList) {
                 TrafficLightWrapper y = new TrafficLightWrapper(x);
-                temp.TrafficLightList.add(y);
+                temp.TrafficLightList.put(x, y);
+                //debug, delete later
+                TrafficLightWrapper hmm = temp.TrafficLightList.get(x);
+                System.out.println("added " + hmm.ID + "to the list");
             }
         }
         catch (Exception A) {

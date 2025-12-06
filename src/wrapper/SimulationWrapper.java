@@ -1,21 +1,41 @@
 package wrapper;
 
 import it.polito.appeal.traci.SumoTraciConnection;
+import it.polito.appeal.traci.TraCIException;
+
 import de.tudresden.sumo.cmd.Simulation;
 import de.tudresden.sumo.cmd.Trafficlight;
 import de.tudresden.sumo.cmd.Vehicle;
+import de.tudresden.sumo.cmd.Inductionloop;
 
-import de.tudresden.sumo.objects.SumoColor;
+import de.tudresden.sumo.objects.SumoVehicleData;
+import de.tudresden.sumo.objects.SumoStringList;
+import de.tudresden.sumo.objects.SumoPrimitive;
 import de.tudresden.sumo.objects.SumoPosition2D;
+import de.tudresden.sumo.objects.SumoColor;
+
+import de.tudresden.sumo.config.Constants;
+
+import de.tudresden.sumo.subscription.VariableSubscription;
+import de.tudresden.sumo.subscription.SubscribtionVariable;
+import de.tudresden.sumo.subscription.SubscriptionObject;
+import de.tudresden.sumo.subscription.ResponseType;
+
+import de.tudresden.sumo.util.Observer;
+import de.tudresden.sumo.util.Observable;
+
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class SimulationWrapper {
     protected SumoTraciConnection conn;
     protected int delay = 200;
-    protected final List<TrafficLightWrapper> TrafficLightList = new ArrayList<TrafficLightWrapper>();
+
+    protected final HashMap<String, TrafficLightWrapper> TrafficLightList = new HashMap<>();
+    //protected final List<TrafficLightWrapper> TrafficLightList = new ArrayList<TrafficLightWrapper>();
     //protected final List<EdgeWrapper> EdgeList = new ArrayList<EdgeWrapper>();
-    //List<String> VehicleList = new ArrayList<VehicleWrapper>();
+    //protected List<VehicleWrapper> VehicleList = new ArrayList<VehicleWrapper>();
     // Constructor 1
     public SimulationWrapper(String sumocfg, double step_length, String sumo_bin){
         conn = new SumoTraciConnection(sumo_bin, sumocfg);
@@ -70,33 +90,34 @@ public class SimulationWrapper {
 //===== TRAFFIC LIGHT STUFF ===============================
 //===== GETTER ============================================
     // print all traffic light IDs
-    public void printTrafficLightList() {
-        System.out.println("List of Traffic Light IDs:");
-        for (TrafficLightWrapper x : TrafficLightList) {
-            x.getID(1);
-        }
-        System.out.println("");
-    }
+    // public void printTrafficLightList() {
+    //     System.out.println("List of Traffic Light IDs:");
+    //     for (TrafficLightWrapper x : TrafficLightList) {
+    //         x.getID(1);
+    //     }
+    //     System.out.println("");
+    // }
     // get phase number of a traffic light
-    public int getTLPhaseNum(int temp) {
-        TrafficLightWrapper x = TrafficLightList.get(temp);
-        int phaseNum= x.getPhaseNum(this, 1);
+    public int getTLPhaseNum(String ID) {
+        TrafficLightWrapper x = TrafficLightList.get(ID);
+        System.out.println(x.ID);
+        int phaseNum = x.getPhaseNum(this, 1);
         return phaseNum;
     }
     // get phase definition of a traffic light (current light state)
-    public String getTLPhaseDef(int temp) {
-        TrafficLightWrapper x = TrafficLightList.get(temp);
+    public String getTLPhaseDef(String ID) {
+        TrafficLightWrapper x = TrafficLightList.get(ID);
         String phaseDef = x.getPhaseDef(this, 1);
         return phaseDef;
     }
-    public List<String[][]> getTLControlledLinks(int temp) {
-        TrafficLightWrapper x = TrafficLightList.get(temp);
+    public List<String[][]> getTLControlledLinks(String ID) {
+        TrafficLightWrapper x = TrafficLightList.get(ID);
         List<String[][]> controlledLinks = x.getControlledLinks(this, 1);
         return null;
     }
 //===== SETTER ============================================
-    public void setTLPhaseDef(int temp, String input) {
-        TrafficLightWrapper x = TrafficLightList.get(temp);
+    public void setTLPhaseDef(String ID, String input) {
+        TrafficLightWrapper x = TrafficLightList.get(ID);
         x.setPhaseDefWPT(this, input, 10);
     }
 //===== VEHICLE STUFF =====================================

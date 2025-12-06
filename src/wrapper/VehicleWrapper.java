@@ -13,6 +13,9 @@ import java.util.ArrayList;
 
 public class VehicleWrapper {
     String ID;
+    SumoColor Color;
+    double speed;
+    
     VehicleWrapper(String temp){
         ID = temp;
         System.out.println("Added " + temp + ".");

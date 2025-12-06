@@ -11,18 +11,17 @@ public static void main ( String [] args){
         SimulationWrapper A = new SimulationWrapper(config_file, step_length, sumo_bin);
         try {
             A.Start();
-            A.printTrafficLightList();
             for (int i = 0; i < 100; i++) {
                 A.Step();
                 A.getTime(1);
-                A.getTLPhaseNum(0);
-                //A.getTLPhaseDef(0);
+                A.getTLPhaseNum("J1");
+                A.getTLPhaseDef("J1");
                 //A.getTLControlledLinks(0);
                 if(i == 10){
                     //A.setTLPhaseDef2(0,"rrrrrrrrrrrr");
                     class Test2 extends Thread {
                         public void run() {
-                            A.setTLPhaseDef(0,"GGGGGGGGGGGG");
+                            A.setTLPhaseDef("J1","GGGGGGGGGGGG");
                         }
                     }
                     Test2 hmm = new Test2();
