@@ -14,8 +14,9 @@ import java.util.ArrayList;
 public class VehicleWrapper {
     String ID;
     SumoColor Color;
-    double speed;
-    
+    double speed;               
+    SumoPosition2D Position;
+    // constructor
     VehicleWrapper(String temp){
         ID = temp;
         System.out.println("Added " + temp + ".");
@@ -43,18 +44,9 @@ public class VehicleWrapper {
     }
 
     // get Vehicle speed
-    public double getSpeed(wrapper.SimulationWrapper temp, int po) {
-        try {
-            double speed = (double) temp.conn.do_job_get(Vehicle.getSpeed(ID));
-            if (po==1) {
-                System.out.println(String.format("Speed of the current vehicle: %s m/s", speed));
-            }
-            return speed;
-        }
-        catch(Exception e) {
-            System.out.println("Cannot get speed. " + e.getMessage());
-            return 0;
-        }
+    public double getSpeed(SimulationWrapper temp, int po) {
+        if (po == 1) {System.out.println("Speed of "+ ID +" is " + speed);}
+        return speed;
     }
 
     // get Vehicle's ID list

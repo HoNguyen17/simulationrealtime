@@ -16,7 +16,7 @@ public static void main ( String [] args){
                 A.getTime(1);
                 A.getTLPhaseNum("J1");
                 A.getTLPhaseDef("J1");
-                //A.getTLControlledLinks(0);
+                A.getTLControlledLinks("J1");
                 if(i == 10){
                     //A.setTLPhaseDef2(0,"rrrrrrrrrrrr");
                     class Test2 extends Thread {
@@ -26,25 +26,30 @@ public static void main ( String [] args){
                     }
                     Test2 hmm = new Test2();
                     hmm.start();
+                    A.getVehicleSpeed("f_0.0");
+                    A.setDelay(50);
                 }
                 // Test Vehicle Stuff
-                List<String> vehID = A.getIDList(); // Get IDs list of all current vehicles in the current simulation
-                if (!vehID.isEmpty()) { // Check if there is at least one vehicle in the simulation
-                    String firstVehID = vehID.get(0); // Choose the first vehicle in the list to test
-                    System.out.println("Testing for the vehicle: " + firstVehID);
-                    A.getTypeID(firstVehID);
-                    A.getColor(firstVehID);
-                    A.getPosition(firstVehID);
-                    A.getSpeed(firstVehID);
-                    A.setSpeed(firstVehID, 36.369);
-                    A.setColor(firstVehID, 255, 0, 0, 255); // red
-                    A.setColor(firstVehID, 0, 255, 0, 255); // green
-                    A.setColor(firstVehID, 0, 0, 255, 255); // blue
+                // List<String> vehID = A.getIDList(); // Get IDs list of all current vehicles in the current simulation
+                // if (!vehID.isEmpty()) { // Check if there is at least one vehicle in the simulation
+                //     String firstVehID = vehID.get(0); // Choose the first vehicle in the list to test
+                //     System.out.println("Testing for the vehicle: " + firstVehID);
+                //     A.getTypeID(firstVehID);
+                //     A.getColor(firstVehID);
+                //     A.getPosition(firstVehID);
+                //     A.getSpeed(firstVehID);
+                //     A.setSpeed(firstVehID, 36.369);
+                //     A.setColor(firstVehID, 255, 0, 0, 255); // red
+                //     A.setColor(firstVehID, 0, 255, 0, 255); // green
+                //     A.setColor(firstVehID, 0, 0, 255, 255); // blue
+                // }
+                // else  {
+                //     System.out.println("No vehicles found");
+                // }
+                // System.out.println("-----------------------------------------------");
+                if(i == 99) {
+                    A.test();
                 }
-                else  {
-                    System.out.println("No vehicles found");
-                }
-                System.out.println("-----------------------------------------------");
             }
             A.End();
         }

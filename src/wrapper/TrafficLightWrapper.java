@@ -9,9 +9,11 @@ import java.util.ArrayList;
 public class TrafficLightWrapper {
     String ID;
     String originProgramID;
-    TrafficLightWrapper(String temp){
-        ID = temp;
-        System.out.println("Added " + temp + ".");
+    // constructor
+    TrafficLightWrapper(String inputID, String startProgram){
+        ID = inputID;
+        originProgramID = startProgram;
+        System.out.println("Added " + ID + " with program " + originProgramID);
     }
 //=================GETTER================================
     // get ID
@@ -61,7 +63,7 @@ public class TrafficLightWrapper {
         try {               //maybe need check??
             temp.conn.do_job_set(Trafficlight.setRedYellowGreenState(ID, input));
             Thread.sleep(2000); 
-            temp.conn.do_job_set(Trafficlight.setProgram(ID, "0"));
+            temp.conn.do_job_set(Trafficlight.setProgram(ID, originProgramID));
         }
         catch (Exception D) {
             System.out.println("Unable to set controlled links of traffic light");
@@ -107,11 +109,10 @@ public class TrafficLightWrapper {
             @SuppressWarnings("unchecked")
             List<String> IDsList = (List<String>)temp.conn.do_job_get(Trafficlight.getIDList());
             for (String x : IDsList) {
-                TrafficLightWrapper y = new TrafficLightWrapper(x);
+                String program = (String)temp.conn.do_job_get(Trafficlight.getProgram(x));
+                TrafficLightWrapper y = new TrafficLightWrapper(x, program);
                 temp.TrafficLightList.put(x, y);
-                //debug, delete later
-                TrafficLightWrapper hmm = temp.TrafficLightList.get(x);
-                System.out.println("added " + hmm.ID + "to the list");
+                TrafficLightWrapper z = temp.TrafficLightList.get(x);
             }
         }
         catch (Exception A) {

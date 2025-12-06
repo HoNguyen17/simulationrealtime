@@ -28,11 +28,12 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class SimulationWrapper {
-    protected SumoTraciConnection conn;
+public class SimulationWrapper implements Observer {
+    protected static SumoTraciConnection conn;
     protected int delay = 200;
 
     protected final HashMap<String, TrafficLightWrapper> TrafficLightList = new HashMap<>();
+    protected HashMap<String, VehicleWrapper> VehicleList = new HashMap<>();
     //protected final List<TrafficLightWrapper> TrafficLightList = new ArrayList<TrafficLightWrapper>();
     //protected final List<EdgeWrapper> EdgeList = new ArrayList<EdgeWrapper>();
     //protected List<VehicleWrapper> VehicleList = new ArrayList<VehicleWrapper>();
@@ -54,10 +55,20 @@ public class SimulationWrapper {
     }
 //===== SIMULATION STUFF ==================================
     // Start simulation, update TrafficLightList, more will be implemented
+    public void test() {
+        int a = VehicleList.size();
+        System.out.println("Size of hash map of vehicle is " + a);
+    }
     public void Start(){
         try {
             conn.runServer();
             conn.setOrder(1);
+            conn.addObserver(this);// add observer
+            
+            VariableSubscription vs = new VariableSubscription(SubscribtionVariable.simulation, 0, 100000 * 60, "");//set up the variable subscriptoion
+            vs.addCommand(Constants.VAR_DEPARTED_VEHICLES_IDS);//choose when
+            conn.do_subscription(vs);//start the subscription
+            System.out.println("this still work");
             TrafficLightWrapper.updateTrafficLightIDs(this);
             System.out.println("Started successfully.");
         }
@@ -85,6 +96,44 @@ public class SimulationWrapper {
         catch(Exception e) {System.out.println("Can't get the time.");}
         return -1;
     }
+    //(new) update from subscription
+    public void update(Observable arg0, SubscriptionObject so) {
+        if (so.response == ResponseType.SIM_VARIABLE) { //when new vehicle detect?
+            assert(so.variable == Constants.VAR_DEPARTED_VEHICLES_IDS);
+            SumoStringList ssl = (SumoStringList) so.object;
+            if (ssl.size() > 0) {
+                for (String vehID : ssl) {
+                    System.out.println("Subscription Departed vehicles: " + vehID);
+                    VariableSubscription vs = new VariableSubscription(SubscribtionVariable.vehicle, 0, 100000 * 60, vehID);
+                    vs.addCommand(Constants.VAR_POSITION);
+                    vs.addCommand(Constants.VAR_SPEED);
+
+                    VehicleWrapper y = new VehicleWrapper(vehID);
+                    VehicleList.put(vehID, y);
+                    try {
+                        conn.do_subscription(vs);
+                    } catch (Exception ex) {
+                        System.err.println("subscription to " + vehID + " failed");
+                    }
+                }
+            }
+        } else if (so.response == ResponseType.VEHICLE_VARIABLE) {
+            if (so.variable == Constants.VAR_SPEED) {
+                SumoPrimitive sp = (SumoPrimitive) so.object;
+                //System.out.println("Speed of vehicle " + so.id + ": "  + sp.val);
+                VehicleWrapper x = VehicleList.get(so.id);
+                x.speed = (double) sp.val;
+            } else if (so.variable == Constants.VAR_POSITION) {
+                SumoPosition2D sc = (SumoPosition2D) so.object;
+                //System.out.println("Position of vehicle " + so.id + ": x = " + sc.x + " y = " + sc.y);
+            }
+        }
+    }
+    // set delay
+    public void setDelay(int input) {
+        delay = input;
+    }
+
 
 
 //===== TRAFFIC LIGHT STUFF ===============================
@@ -100,7 +149,6 @@ public class SimulationWrapper {
     // get phase number of a traffic light
     public int getTLPhaseNum(String ID) {
         TrafficLightWrapper x = TrafficLightList.get(ID);
-        System.out.println(x.ID);
         int phaseNum = x.getPhaseNum(this, 1);
         return phaseNum;
     }
@@ -128,9 +176,10 @@ public class SimulationWrapper {
     }
 
     // get Vehicle speed
-    public double getSpeed(String ID) {
-        VehicleWrapper v = new wrapper.VehicleWrapper(ID);
-        return v.getSpeed(this, 1);
+    public double getVehicleSpeed(String ID) {
+        VehicleWrapper x = VehicleList.get(ID);
+        double vehicleSpeed = x.getSpeed(this, 1);
+        return vehicleSpeed;
     }
 
     // get Vehicle's ID list
