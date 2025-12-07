@@ -67,6 +67,7 @@ public class SimulationWrapper implements Observer {
             
             VariableSubscription vs = new VariableSubscription(SubscribtionVariable.simulation, 0, 100000 * 60, "");//set up the variable subscriptoion
             vs.addCommand(Constants.VAR_DEPARTED_VEHICLES_IDS);//choose when
+            vs.addCommand(Constants.VAR_ARRIVED_VEHICLES_IDS);
             conn.do_subscription(vs);//start the subscription
             System.out.println("this still work");
             TrafficLightWrapper.updateTrafficLightIDs(this);
@@ -96,36 +97,52 @@ public class SimulationWrapper implements Observer {
         catch(Exception e) {System.out.println("Can't get the time.");}
         return -1;
     }
-    //(new) update from subscription
+    //(new) update from subscription Constants.VAR_STOPPED_VEHICLES_IDS
     public void update(Observable arg0, SubscriptionObject so) {
-        if (so.response == ResponseType.SIM_VARIABLE) { //when new vehicle detect?
-            assert(so.variable == Constants.VAR_DEPARTED_VEHICLES_IDS);
-            SumoStringList ssl = (SumoStringList) so.object;
-            if (ssl.size() > 0) {
-                for (String vehID : ssl) {
-                    System.out.println("Subscription Departed vehicles: " + vehID);
-                    VariableSubscription vs = new VariableSubscription(SubscribtionVariable.vehicle, 0, 100000 * 60, vehID);
-                    vs.addCommand(Constants.VAR_POSITION);
-                    vs.addCommand(Constants.VAR_SPEED);
+        if (so.response == ResponseType.SIM_VARIABLE) { 
+            if (so.variable == Constants.VAR_DEPARTED_VEHICLES_IDS) {//when new vehicle detect?
+                SumoStringList ssl = (SumoStringList) so.object;
+                if (ssl.size() > 0) {
+                    for (String vehID : ssl) {
+                        System.out.println("Subscription Departed vehicles: " + vehID);
+                        VariableSubscription vs = new VariableSubscription(SubscribtionVariable.vehicle, 0, 100000 * 60, vehID);
+                        vs.addCommand(Constants.VAR_POSITION);
+                        vs.addCommand(Constants.VAR_SPEED);
 
-                    VehicleWrapper y = new VehicleWrapper(vehID);
-                    VehicleList.put(vehID, y);
-                    try {
-                        conn.do_subscription(vs);
-                    } catch (Exception ex) {
-                        System.err.println("subscription to " + vehID + " failed");
+                        VehicleWrapper y = new VehicleWrapper(vehID);
+                        VehicleList.put(vehID, y);
+                        try {conn.do_subscription(vs);} 
+                        catch (Exception ex) {System.err.println("subscription to " + vehID + " failed");}
                     }
                 }
             }
-        } else if (so.response == ResponseType.VEHICLE_VARIABLE) {
+            else if (so.variable == Constants.VAR_ARRIVED_VEHICLES_IDS) {
+                SumoStringList ssl = (SumoStringList) so.object;
+                if (ssl.size() > 0) {
+                    for (String vehID : ssl) {
+                        try {
+                            // CRITICAL STEP: Unsubscribe from the individual vehicle's data stream
+                            //conn.do_unsubscription(SubscribtionVariable.vehicle, vehID); 
+                            VehicleList.remove(vehID);
+                            System.out.println("Delete " + vehID + " from the hashmap");
+                        }
+                        catch (Exception ex) {
+                            System.err.println("Un-subscription for " + vehID + " failed");
+                        }
+                    }
+                }
+            }
+        } 
+        else if (so.response == ResponseType.VEHICLE_VARIABLE) {
             if (so.variable == Constants.VAR_SPEED) {
                 SumoPrimitive sp = (SumoPrimitive) so.object;
-                //System.out.println("Speed of vehicle " + so.id + ": "  + sp.val);
                 VehicleWrapper x = VehicleList.get(so.id);
                 x.speed = (double) sp.val;
-            } else if (so.variable == Constants.VAR_POSITION) {
+            } 
+            else if (so.variable == Constants.VAR_POSITION) {
                 SumoPosition2D sc = (SumoPosition2D) so.object;
-                //System.out.println("Position of vehicle " + so.id + ": x = " + sc.x + " y = " + sc.y);
+                VehicleWrapper x = VehicleList.get(so.id);
+                x.position = sc;
             }
         }
     }
@@ -170,11 +187,12 @@ public class SimulationWrapper implements Observer {
     }
 //===== VEHICLE STUFF =====================================
 //===== GETTER ============================================
-    public SumoPosition2D getPosition(String ID) {
-        VehicleWrapper v = new wrapper.VehicleWrapper(ID);
-        return v.getPosition(this, 1);
+    // get position of the vehicle
+    public SumoPosition2D getVehiclePosition(String ID) {
+        VehicleWrapper x = VehicleList.get(ID);
+        SumoPosition2D VehiclePosition = x.getPosition(this, 1);
+        return VehiclePosition;
     }
-
     // get Vehicle speed
     public double getVehicleSpeed(String ID) {
         VehicleWrapper x = VehicleList.get(ID);
@@ -210,5 +228,4 @@ public class SimulationWrapper implements Observer {
         VehicleWrapper v = new wrapper.VehicleWrapper(ID);
         v.setColor(this, r, g, b, a, 1);
     }
-
 }

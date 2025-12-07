@@ -13,9 +13,9 @@ import java.util.ArrayList;
 
 public class VehicleWrapper {
     String ID;
-    SumoColor Color;
+    SumoColor color;
     double speed;               
-    SumoPosition2D Position;
+    SumoPosition2D position;
     // constructor
     VehicleWrapper(String temp){
         ID = temp;
@@ -30,17 +30,8 @@ public class VehicleWrapper {
 
     // get Vehicle position
     public SumoPosition2D getPosition(wrapper.SimulationWrapper temp, int po) {
-        try {
-            SumoPosition2D position = (SumoPosition2D) temp.conn.do_job_get(Vehicle.getPosition(ID));
-            if (po==1) {
-                System.out.println(String.format("Position of the current vehicle: %s", position));
-            }
-            return position;
-        }
-        catch(Exception e) {
-            System.out.println("Cannot get position." + e.getMessage());
-            return null;
-        }
+        if (po == 1) {System.out.println("Position of "+ ID +" is " + position.x + " " + position.y);}
+        return position;
     }
 
     // get Vehicle speed
