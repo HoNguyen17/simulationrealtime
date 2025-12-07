@@ -7,7 +7,7 @@ public static void main ( String [] args){
         // config_file path is based on this class path
         String config_file = "../resource/test_2_traffic.sumocfg"; 
         double step_length = 1;
-        String sumo_bin = "sumo";
+        String sumo_bin = "sumo-gui";
         SimulationWrapper A = new SimulationWrapper(config_file, step_length, sumo_bin);
         try {
             A.Start();
@@ -22,7 +22,7 @@ public static void main ( String [] args){
                     class Test2 extends Thread {
                         public void run() {
                             A.setTLPhaseDef("J1","GGGGGGGGGGGG");
-                            A.setTLPhaseDef("J3","GGGGGG");
+                            A.setTLPhaseDefWithPhaseTime("J3","gggggg", 30);
                         }
                     }
                     Test2 hmm = new Test2();

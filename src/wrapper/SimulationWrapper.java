@@ -34,9 +34,7 @@ public class SimulationWrapper implements Observer {
 
     protected final HashMap<String, TrafficLightWrapper> TrafficLightList = new HashMap<>();
     protected HashMap<String, VehicleWrapper> VehicleList = new HashMap<>();
-    //protected final List<TrafficLightWrapper> TrafficLightList = new ArrayList<TrafficLightWrapper>();
     //protected final List<EdgeWrapper> EdgeList = new ArrayList<EdgeWrapper>();
-    //protected List<VehicleWrapper> VehicleList = new ArrayList<VehicleWrapper>();
     // Constructor 1
     public SimulationWrapper(String sumocfg, double step_length, String sumo_bin){
         conn = new SumoTraciConnection(sumo_bin, sumocfg);
@@ -98,7 +96,7 @@ public class SimulationWrapper implements Observer {
         catch(Exception e) {System.out.println("Can't get the time.");}
         return -1;
     }
-    //(new) update from subscription Constants.VAR_STOPPED_VEHICLES_IDS
+    //(new) update from subscription, abstract method of observer
     public void update(Observable arg0, SubscriptionObject so) {
         if (so.response == ResponseType.SIM_VARIABLE) { 
             if (so.variable == Constants.VAR_DEPARTED_VEHICLES_IDS) {//when new vehicle detect?
@@ -155,7 +153,7 @@ public class SimulationWrapper implements Observer {
                 SumoPrimitive sp = (SumoPrimitive) so.object;
                 TrafficLightWrapper x = TrafficLightList.get(so.id);
                 x.lightDef = (String) sp.val;
-                System.out.println("traffic light "+ so.id + " "+ sp.val);
+                //System.out.println("traffic light "+ so.id + " "+ sp.val);
             }
         }
     }
@@ -163,40 +161,33 @@ public class SimulationWrapper implements Observer {
     public void setDelay(int input) {
         delay = input;
     }
-
-
-
 //===== TRAFFIC LIGHT STUFF ===============================
 //===== GETTER ============================================
-    // print all traffic light IDs
-    // public void printTrafficLightList() {
-    //     System.out.println("List of Traffic Light IDs:");
-    //     for (TrafficLightWrapper x : TrafficLightList) {
-    //         x.getID(1);
-    //     }
-    //     System.out.println("");
-    // }
     // get phase number of a traffic light
-    public int getTLPhaseNum(String ID) {
-        TrafficLightWrapper x = TrafficLightList.get(ID);
+    public int getTLPhaseNum(String inputID) {
+        TrafficLightWrapper x = TrafficLightList.get(inputID);
         int phaseNum = x.getPhaseNum(this, 1);
         return phaseNum;
     }
     // get phase definition of a traffic light (current light state)
-    public String getTLPhaseDef(String ID) {
-        TrafficLightWrapper x = TrafficLightList.get(ID);
+    public String getTLPhaseDef(String inputID) {
+        TrafficLightWrapper x = TrafficLightList.get(inputID);
         String phaseDef = x.getPhaseDef(this, 1);
         return phaseDef;
     }
-    public List<String[][]> getTLControlledLinks(String ID) {
-        TrafficLightWrapper x = TrafficLightList.get(ID);
+    public List<String[][]> getTLControlledLinks(String inputID) {
+        TrafficLightWrapper x = TrafficLightList.get(inputID);
         List<String[][]> controlledLinks = x.getControlledLinks(this, 1);
         return null;
     }
 //===== SETTER ============================================
-    public void setTLPhaseDef(String ID, String input) {
-        TrafficLightWrapper x = TrafficLightList.get(ID);
-        x.setPhaseDefWPT(this, input, 10);
+    public void setTLPhaseDef(String inputID, String inputDef) {
+        TrafficLightWrapper x = TrafficLightList.get(inputID);
+        x.setPhaseDef(this, inputDef);
+    }
+    public void setTLPhaseDefWithPhaseTime(String inputID, String inputDef, int inputTime) {
+        TrafficLightWrapper x = TrafficLightList.get(inputID);
+        x.setPhaseDefWithPhaseTime(this, inputDef, inputTime);
     }
 //===== VEHICLE STUFF =====================================
 //===== GETTER ============================================
@@ -207,8 +198,8 @@ public class SimulationWrapper implements Observer {
         return VehiclePosition;
     }
     // get Vehicle speed
-    public double getVehicleSpeed(String ID) {
-        VehicleWrapper x = VehicleList.get(ID);
+    public double getVehicleSpeed(String inputID) {
+        VehicleWrapper x = VehicleList.get(inputID);
         double vehicleSpeed = x.getSpeed(this, 1);
         return vehicleSpeed;
     }

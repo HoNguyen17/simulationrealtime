@@ -43,15 +43,17 @@ public class TrafficLightWrapper {
     }
     // get phase definition (Red-Green-Yellow)
     public String getPhaseDef(SimulationWrapper temp, int po) {
-        try {
-            String lightState = (String)temp.conn.do_job_get(Trafficlight.getRedYellowGreenState(ID));
-            if (po == 1) {System.out.println(String.format("Current phase definition of %s: %s", ID, lightState));}
-            return lightState;
-        }
-        catch (Exception B) {
-            System.out.println("Failed to get TL phase definition.");
-        }
-        return null;
+        // try {
+        //     String lightState = (String)temp.conn.do_job_get(Trafficlight.getRedYellowGreenState(ID));
+        //     if (po == 1) {System.out.println(String.format("Current phase definition of %s: %s", ID, lightState));}
+        //     return lightState;
+        // }
+        // catch (Exception B) {
+        //     System.out.println("Failed to get TL phase definition.");
+        // }
+        // return null;
+        if (po == 1) {System.out.println(String.format("Current phase definition of %s: %s", ID, lightDef));}
+        return lightDef;
     }
     // get controlled links
     public List<String[][]> getControlledLinks(SimulationWrapper temp, int po) {
@@ -79,12 +81,12 @@ public class TrafficLightWrapper {
         return false;
     // set phase definition with phase time (Red-Green-Yellow with time)  
     }
-        public boolean setPhaseDefWPT(SimulationWrapper temp, String input, double time) {
+        public boolean setPhaseDefWithPhaseTime(SimulationWrapper temp, String inputDef, double inputTime) {
         try {               //maybe need check??
-            long roundedTime = Math.round(time * 200);
-            temp.conn.do_job_set(Trafficlight.setRedYellowGreenState(ID, input));
+            long roundedTime = Math.round(inputTime * 200);
+            temp.conn.do_job_set(Trafficlight.setRedYellowGreenState(ID, inputDef));
             Thread.sleep(roundedTime); 
-            temp.conn.do_job_set(Trafficlight.setProgram(ID, "0"));
+            temp.conn.do_job_set(Trafficlight.setProgram(ID, originProgramID));
         }
         catch (Exception D) {
             System.out.println("Unable to set controlled links of traffic light");
@@ -122,9 +124,9 @@ public class TrafficLightWrapper {
                 temp.TrafficLightList.put(x, y);
                 TrafficLightWrapper z = temp.TrafficLightList.get(x);
                 //set up subscription for traffic light
-                VariableSubscription vs2 = new VariableSubscription(SubscribtionVariable.trafficlight, 0, 100000 * 60, x);
-                vs2.addCommand(Constants.TL_RED_YELLOW_GREEN_STATE);
-                temp.conn.do_subscription(vs2);
+                VariableSubscription vs = new VariableSubscription(SubscribtionVariable.trafficlight, 0, 100000 * 60, x);
+                vs.addCommand(Constants.TL_RED_YELLOW_GREEN_STATE);
+                temp.conn.do_subscription(vs);
                 System.out.println("subscribe " + x);
             }
         }
