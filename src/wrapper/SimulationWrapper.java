@@ -64,11 +64,12 @@ public class SimulationWrapper implements Observer {
             conn.runServer();
             conn.setOrder(1);
             conn.addObserver(this);// add observer
-            
+            //start subscription to look out for departed (spawn in) and arrived (despawn) vehicle
             VariableSubscription vs = new VariableSubscription(SubscribtionVariable.simulation, 0, 100000 * 60, "");//set up the variable subscriptoion
             vs.addCommand(Constants.VAR_DEPARTED_VEHICLES_IDS);//choose when
             vs.addCommand(Constants.VAR_ARRIVED_VEHICLES_IDS);
             conn.do_subscription(vs);//start the subscription
+
             System.out.println("this still work");
             TrafficLightWrapper.updateTrafficLightIDs(this);
             System.out.println("Started successfully.");
@@ -104,14 +105,20 @@ public class SimulationWrapper implements Observer {
                 SumoStringList ssl = (SumoStringList) so.object;
                 if (ssl.size() > 0) {
                     for (String vehID : ssl) {
-                        System.out.println("Subscription Departed vehicles: " + vehID);
+                        //System.out.println("Subscription Departed vehicles: " + vehID);
+                        //set up the subscription for the vehicle (1 vehicle)
                         VariableSubscription vs = new VariableSubscription(SubscribtionVariable.vehicle, 0, 100000 * 60, vehID);
                         vs.addCommand(Constants.VAR_POSITION);
                         vs.addCommand(Constants.VAR_SPEED);
-
-                        VehicleWrapper y = new VehicleWrapper(vehID);
-                        VehicleList.put(vehID, y);
-                        try {conn.do_subscription(vs);} 
+                        
+                        try {
+                            // create a vehicle wrapper object and add to hash map
+                            SumoColor color = (SumoColor)conn.do_job_get(Vehicle.getColor(vehID));
+                            VehicleWrapper y = new VehicleWrapper(vehID, color);
+                            VehicleList.put(vehID, y);
+                            // start subscription of the vehicle
+                            conn.do_subscription(vs);
+                        } 
                         catch (Exception ex) {System.err.println("subscription to " + vehID + " failed");}
                     }
                 }
@@ -121,13 +128,11 @@ public class SimulationWrapper implements Observer {
                 if (ssl.size() > 0) {
                     for (String vehID : ssl) {
                         try {
-                            // CRITICAL STEP: Unsubscribe from the individual vehicle's data stream
-                            //conn.do_unsubscription(SubscribtionVariable.vehicle, vehID); 
                             VehicleList.remove(vehID);
-                            System.out.println("Delete " + vehID + " from the hashmap");
+                            //System.out.println("Delete " + vehID + " from the hashmap");
                         }
                         catch (Exception ex) {
-                            System.err.println("Un-subscription for " + vehID + " failed");
+                            System.err.println("Unable to delete " + vehID + " from hashmap");
                         }
                     }
                 }
@@ -143,6 +148,14 @@ public class SimulationWrapper implements Observer {
                 SumoPosition2D sc = (SumoPosition2D) so.object;
                 VehicleWrapper x = VehicleList.get(so.id);
                 x.position = sc;
+            }
+        }
+        else if (so.response == ResponseType.TL_VARIABLE) {
+            if (so.variable == Constants.TL_RED_YELLOW_GREEN_STATE) {
+                SumoPrimitive sp = (SumoPrimitive) so.object;
+                TrafficLightWrapper x = TrafficLightList.get(so.id);
+                x.lightDef = (String) sp.val;
+                System.out.println("traffic light "+ so.id + " "+ sp.val);
             }
         }
     }
@@ -200,32 +213,32 @@ public class SimulationWrapper implements Observer {
         return vehicleSpeed;
     }
 
-    // get Vehicle's ID list
-    public List<String> getIDList() {
-        return wrapper.VehicleWrapper.getIDList(this, 1);
-    }
+//     // get Vehicle's ID list
+//     public List<String> getIDList() {
+//         return wrapper.VehicleWrapper.getIDList(this, 1);
+//     }
 
-    // get Vehicle's type ID
-    public String getTypeID(String ID) {
-        VehicleWrapper v = new wrapper.VehicleWrapper(ID);
-        return v.getTypeID(this, 1);
-    }
+//     // get Vehicle's type ID
+//     public String getTypeID(String ID) {
+//         VehicleWrapper v = new wrapper.VehicleWrapper(ID);
+//         return v.getTypeID(this, 1);
+//     }
 
-    // get Vehicle's color
-    public SumoColor getColor(String ID) {
-        VehicleWrapper v = new wrapper.VehicleWrapper(ID);
-        return v.getColor(this, 1);
-    }
-//===== SETTER ============================================
-    // set Vehicle's speed
-    public void setSpeed(String ID, double speed) {
-        VehicleWrapper v = new wrapper.VehicleWrapper(ID);
-        v.setSpeed(this, speed, 1);
-    }
+//     // get Vehicle's color
+//     public SumoColor getColor(String ID) {
+//         VehicleWrapper v = new wrapper.VehicleWrapper(ID);
+//         return v.getColor(this, 1);
+//     }
+// //===== SETTER ============================================
+//     // set Vehicle's speed
+//     public void setSpeed(String ID, double speed) {
+//         VehicleWrapper v = new wrapper.VehicleWrapper(ID);
+//         v.setSpeed(this, speed, 1);
+//     }
 
-    // set Vehicle's color
-    public void setColor(String ID, int r, int b, int g, int a) {
-        VehicleWrapper v = new wrapper.VehicleWrapper(ID);
-        v.setColor(this, r, g, b, a, 1);
-    }
+//     // set Vehicle's color
+//     public void setColor(String ID, int r, int b, int g, int a) {
+//         VehicleWrapper v = new wrapper.VehicleWrapper(ID);
+//         v.setColor(this, r, g, b, a, 1);
+//     }
 }

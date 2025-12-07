@@ -3,12 +3,20 @@ package wrapper;
 import it.polito.appeal.traci.SumoTraciConnection;
 import de.tudresden.sumo.cmd.Trafficlight;
 
+import de.tudresden.sumo.config.Constants;
+
+import de.tudresden.sumo.subscription.VariableSubscription;
+import de.tudresden.sumo.subscription.SubscribtionVariable;
+import de.tudresden.sumo.subscription.SubscriptionObject;
+import de.tudresden.sumo.subscription.ResponseType;
+
 import java.util.List;
 import java.util.ArrayList;
 
 public class TrafficLightWrapper {
     String ID;
     String originProgramID;
+    String lightDef;
     // constructor
     TrafficLightWrapper(String inputID, String startProgram){
         ID = inputID;
@@ -113,6 +121,11 @@ public class TrafficLightWrapper {
                 TrafficLightWrapper y = new TrafficLightWrapper(x, program);
                 temp.TrafficLightList.put(x, y);
                 TrafficLightWrapper z = temp.TrafficLightList.get(x);
+                //set up subscription for traffic light
+                VariableSubscription vs2 = new VariableSubscription(SubscribtionVariable.trafficlight, 0, 100000 * 60, x);
+                vs2.addCommand(Constants.TL_RED_YELLOW_GREEN_STATE);
+                temp.conn.do_subscription(vs2);
+                System.out.println("subscribe " + x);
             }
         }
         catch (Exception A) {

@@ -17,9 +17,10 @@ public class VehicleWrapper {
     double speed;               
     SumoPosition2D position;
     // constructor
-    VehicleWrapper(String temp){
-        ID = temp;
-        System.out.println("Added " + temp + ".");
+    VehicleWrapper(String inputID, SumoColor inputColor){
+        ID = inputID;
+        color = inputColor;
+        System.out.println("Added vehicle " + inputID + ".");
     }
 
     // get Vehicle ID

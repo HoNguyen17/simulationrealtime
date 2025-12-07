@@ -29,10 +29,10 @@ public static void main ( String [] args){
                     hmm.start();
                 //     A.setDelay(50);
                 }
-                if (i > 10 && i < 45){
-                    A.getVehicleSpeed("f_0.0");
-                    A.getVehiclePosition("f_0.0");
-                }
+                // if (i > 10 && i < 45){
+                //     A.getVehicleSpeed("f_0.0");
+                //     A.getVehiclePosition("f_0.0");
+                // }
                 // Test Vehicle Stuff
                 // List<String> vehID = A.getIDList(); // Get IDs list of all current vehicles in the current simulation
                 // if (!vehID.isEmpty()) { // Check if there is at least one vehicle in the simulation
