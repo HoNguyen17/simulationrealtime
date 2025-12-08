@@ -9,13 +9,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.VBox;
-
+import javax.swing.SwingUtilities; //to work with swing(openPage)
+import javafx.application.Platform; // <--- BỔ SUNG: Cần cái này để dùng Platform.runLater
 
 public class App extends Application {
     @Override
-    public void start(Stage stage) throws Exception{
+    public void start(Stage stage) throws Exception {
         // Tải model mạng lưới
-        Networkpaser.NetworkModel model = Networkpaser.load("../resource/test_2_traffic.net.xml");
+        Networkpaser.NetworkModel model = Networkpaser.load("../resource/Netedit_requirement.net.xml");
 
         // Canvas bản đồ chuyển thành MapCanvas để quản lý pan/zoom/vẽ
         MapCanvas mapCanvas = new MapCanvas(1000, 800);
@@ -30,7 +31,7 @@ public class App extends Application {
 
         Label title = new Label("Dashboard");
         title.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-        
+
         // Điều khiển tốc độ mô phỏng Simulation speed
         Label speedLbl = new Label("########");
         Slider speedSlider = new Slider(0.1, 5.0, 1.0);
@@ -40,9 +41,9 @@ public class App extends Application {
             // TODO: nối với SimulationController.setSpeed(newV.doubleValue());
             System.out.println("Speed: " + newV.doubleValue());
         });
-         
 
-        // Điều khiển đèn giao thông 
+
+        // Điều khiển đèn giao thông
         Label tlLbl = new Label("Traffic light");
         Button tlAutoBtn = new Button("######");//"Auto mode"
         Button tlManualBtn = new Button("######");//"Manual mode"
@@ -60,7 +61,7 @@ public class App extends Application {
             System.out.println("TL: next phase");
         });
 
-        /* 
+        /*
         // Điều khiển xe
         Label vehLbl = new Label("Vehicles");
         Button spawnVehBtn = new Button("Spawn vehicle");
@@ -80,17 +81,24 @@ public class App extends Application {
         Button zoomInBtn = new Button("######");//"Zoom in"
         Button zoomOutBtn = new Button("######");//"Zoom out"
         Button resetViewBtn = new Button("######");//"Reset view"
-        zoomInBtn.setOnAction(e -> { mapCanvas.zoomAtCenter(1.1); });
-        zoomOutBtn.setOnAction(e -> { mapCanvas.zoomAtCenter(0.9); });
-        resetViewBtn.setOnAction(e -> { mapCanvas.fitAndCenter(); mapCanvas.render(); });
+        zoomInBtn.setOnAction(e -> {
+            mapCanvas.zoomAtCenter(1.1);
+        });
+        zoomOutBtn.setOnAction(e -> {
+            mapCanvas.zoomAtCenter(0.9);
+        });
+        resetViewBtn.setOnAction(e -> {
+            mapCanvas.fitAndCenter();
+            mapCanvas.render();
+        });
 
         //Dashboard layout
         sidebar.getChildren().addAll(
-            title,
-            speedLbl, speedSlider,
-            tlLbl, tlAutoBtn, tlManualBtn, tlNextPhaseBtn,
-            //vehLbl,spawnVehBtn, clearVehBtn,
-            viewLbl, zoomInBtn, zoomOutBtn, resetViewBtn
+                title,
+                speedLbl, speedSlider,
+                tlLbl, tlAutoBtn, tlManualBtn, tlNextPhaseBtn,
+                //vehLbl,spawnVehBtn, clearVehBtn,
+                viewLbl, zoomInBtn, zoomOutBtn, resetViewBtn
         );
 
         BorderPane root = new BorderPane();
@@ -99,7 +107,31 @@ public class App extends Application {
 
         stage.setTitle("SUMO Network Dashboard");
         stage.setScene(new Scene(root));
-        stage.show();
+//        stage.show();
+        openStartWindow(stage);
+    }
+
+        // Hàm kết nối
+        private void openStartWindow(Stage mainStage) {
+            SwingUtilities.invokeLater(() -> {
+
+                OpenPage startScreen = new OpenPage();
+
+                // --- ĐOẠN NÀY PHẢI KHỚP TÊN VỚI FILE Start_window CỦA BẠN ---
+                startScreen.setOnOpenPage(() -> {
+
+                    // Quay lại luồng JavaFX để hiện cửa sổ chính
+                    Platform.runLater(() -> {
+                        mainStage.show();
+                    });
+
+                });
+                // -------------------------------------------------------------
+
+                startScreen.setVisible(true);
+            });
+
+
     }
     public static void main(String[] args) {
         launch(args);

@@ -27,7 +27,6 @@ public class Networkpaser {
         public double y;
         public String type;
         public String shape;
-        public List<Point2D> shapePoints = new ArrayList<>();
     }
 
     public static class Lane {
@@ -48,23 +47,7 @@ public class Networkpaser {
         public List<Edge> edges = new ArrayList<>();
         public List<Junction> junctions = new ArrayList<>();
     }
-    //method parse shape from string to list point2D
-     private static List<Point2D> parseShape(String shape) {
-        List<Point2D> pts = new ArrayList<>();
-        if (shape == null || shape.isEmpty()) return pts;
-        String[] tokens = shape.trim().split("\\s+");
-        for (String t : tokens) {
-            String[] xy = t.split(",");
-            if (xy.length == 2) {
-                try {
-                    double x = Double.parseDouble(xy[0]);
-                    double y = Double.parseDouble(xy[1]);
-                    pts.add(new Point2D(x, y));
-                } catch (NumberFormatException ignore) {}
-            }
-        }
-        return pts;
-     }
+
     @SuppressWarnings("UseSpecificCatch")
     public static NetworkModel load(String path) throws Exception {
         //create factory to read and parse file xml follow DOM lib
@@ -90,7 +73,6 @@ public class Networkpaser {
                     jj.x = Double.parseDouble(j.getAttribute("x"));
                     jj.y = Double.parseDouble(j.getAttribute("y"));
                 } catch (Exception ignore) {}
-                jj.shapePoints = parseShape(jj.shape); // call parseShape method to parse shape string to list point2D
                 model.junctions.add(jj); // a method you call in application to parse junctions
             }
         }
@@ -114,7 +96,7 @@ public class Networkpaser {
                         Element lane = (Element) l;
                         Lane ll = new Lane();
                         ll.id = lane.getAttribute("id");
-                        try { // parse length from string to double
+                        try { // ??
                             ll.length = Double.parseDouble(lane.getAttribute("length"));
                         } catch (Exception ignore) {
                         }
@@ -131,14 +113,14 @@ public class Networkpaser {
                             }    
 
                         }
-                        ee.lanes.add(ll); // add lane to edge
+                        ee.lanes.add(ll);
                     }
                 }
-                model.edges.add(ee); // add edge to model
+                model.edges.add(ee);
             }
         }
 
-        return model; // return the model after parse all the element in xml file
+        return model;
     }
 
 
