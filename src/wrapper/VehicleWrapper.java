@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class VehicleWrapper {
     String ID;
-    VehicleWrapper(String temp){
+    public VehicleWrapper(String temp){
         ID = temp;
         System.out.println("Added " + temp + ".");
     }
@@ -68,7 +68,7 @@ public class VehicleWrapper {
 
         catch(Exception e) {
             System.out.println("Cannot get vehicle ID list." + e.getMessage());
-            return null;
+            return new ArrayList<>();
         }
     }
 
@@ -111,6 +111,21 @@ public class VehicleWrapper {
         catch (Exception e) {
             System.out.println("Cannot get color of vehicle " + ID + e.getMessage());
             return null;
+        }
+    }
+
+    // get Vehicle's angle
+    public double getAngle(wrapper.SimulationWrapper temp, int po) {
+        try {
+            double angle = (double) temp.conn.do_job_get(Vehicle.getAngle(ID));
+            if (po==1) {
+                System.out.println(String.format("Angle of the current vehicle: %s degrees", angle));
+            }
+            return angle;
+        }
+        catch(Exception e) {
+            System.out.println("Cannot get angle." + e.getMessage());
+            return 0;
         }
     }
 

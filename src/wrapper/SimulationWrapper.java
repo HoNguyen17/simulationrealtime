@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class SimulationWrapper {
-    protected SumoTraciConnection conn;
+    public SumoTraciConnection conn;
     protected int delay = 200;
     protected final List<TrafficLightWrapper> TrafficLightList = new ArrayList<TrafficLightWrapper>();
     //protected final List<EdgeWrapper> EdgeList = new ArrayList<EdgeWrapper>();
@@ -24,7 +24,7 @@ public class SimulationWrapper {
         System.out.println("Simulation created");
     }
     // Constructor 2
-    SimulationWrapper(String sumocfg){
+    public SimulationWrapper(String sumocfg){
         String sumo_bin = "sumo";
         double step_length = 1;
         conn = new SumoTraciConnection(sumo_bin, sumocfg);

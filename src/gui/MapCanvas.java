@@ -22,6 +22,17 @@ public class MapCanvas {
     private double offsetY = 400;
     private double lastDragX = 0, lastDragY = 0;
 
+    private List<VehicleData> vehicleDataList = new ArrayList<>(); // Initialize the list
+
+    // This record holds the minimal information needed for rendering a vehicle
+    public static record VehicleData(String id, double x, double y, double angle, javafx.scene.paint.Color color) {
+        // x and y are world coordinates (SUMO coordinates)
+        // angle is the orientation in degrees
+    }
+
+    public void setVehicleData(List<VehicleData> vehicleDataList) {
+        this.vehicleDataList = vehicleDataList;
+    }
 
     public MapCanvas(double w, double h) {
         canvas = new Canvas(w, h);
@@ -162,6 +173,28 @@ public class MapCanvas {
             double x = j.x * scale + offsetX;
             double y = j.y * scale + offsetY;
             g.fillOval(x - 2, y - 2, 4, 4);
+        }
+
+        // --- Vehicle Rendering Logic ---
+        g.setFill(Color.RED); // Use the default red or vehicle.color
+
+        // Define the size of the vehicle icon (e.g., 6x6 pixel circle)
+        final double VEHICLE_SIZE = 6.0;
+        final double HALF_SIZE = VEHICLE_SIZE / 2.0;
+
+        for (VehicleData vehicle : vehicleDataList) {
+            // 1. Transform the SUMO coordinates (world coordinates) to screen coordinates
+            double screenX = vehicle.x * scale + offsetX;
+            double screenY = vehicle.y * scale + offsetY;
+
+            // 2. Draw a simple shape (e.g., an oval) centered at the position
+            g.setFill(vehicle.color);
+            g.fillOval(
+                    screenX - HALF_SIZE, // Offset by half the size to center the oval
+                    screenY - HALF_SIZE,
+                    VEHICLE_SIZE,
+                    VEHICLE_SIZE
+            );
         }
     }
 
