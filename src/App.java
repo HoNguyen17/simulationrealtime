@@ -1,11 +1,11 @@
-import gui.MapCanvas; //
-//import gui.VehicleRenderer;
-//import wrapper.SimulationWrapper;
+import gui.MapCanvas;
+import gui.VehicleRenderer;
+import wrapper.SimulationWrapper;
 import gui.Dashboard;
 import paser.Networkpaser;
 
 
-//import javafx.animation.AnimationTimer;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -18,7 +18,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws Exception{
         // Tải model mạng lưới
-        Networkpaser.NetworkModel model = Networkpaser.load("../resource/Netedit_requirement.net.xml");
+        Networkpaser.NetworkModel model = Networkpaser.load("../resource/test_2_traffic.net.xml");
 
         // Canvas bản đồ chuyển thành MapCanvas để quản lý pan/zoom/vẽ
         mapCanvas = new MapCanvas(1000, 800);
@@ -39,7 +39,7 @@ public class App extends Application {
         stage.setTitle("SUMO Network Dashboard");
         stage.setScene(new Scene(root));
         stage.show();
-        /*
+        
         // Khởi động simulation và animation loop để cập nhật xe từ XML
         try {
             String configFile = "../resource/test_2_traffic.sumocfg";
@@ -106,7 +106,7 @@ public class App extends Application {
             e.printStackTrace();
         }
 
-        */
+        
     }
     public static void main(String[] args) {
         launch(args);
