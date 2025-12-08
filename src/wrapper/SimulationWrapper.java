@@ -189,6 +189,15 @@ public class SimulationWrapper implements Observer {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
         x.setPhaseDefWithPhaseTime(this, inputDef, inputTime);
     }
+    public void setTLPhaseDefOrigin(String inputID) {
+        TrafficLightWrapper x = TrafficLightList.get(inputID);
+        x.setPhaseDefOrigin(this);
+    }
+    public void setTLPhaseNext(String inputID) {
+        System.out.println("wth");
+        TrafficLightWrapper x = TrafficLightList.get(inputID);
+        x.setPhaseNext(this);
+    }
 //===== VEHICLE STUFF =====================================
 //===== GETTER ============================================
     // get position of the vehicle

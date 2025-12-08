@@ -6,6 +6,8 @@ import de.tudresden.sumo.cmd.Inductionloop;
 import de.tudresden.sumo.cmd.Trafficlight;
 import de.tudresden.sumo.objects.SumoVehicleData;
 import de.tudresden.sumo.cmd.Vehicletype;
+import de.tudresden.sumo.objects.SumoTLSController;
+import de.tudresden.sumo.objects.SumoTLSProgram;
 
 import java.util.List;
 
@@ -38,6 +40,9 @@ String sumo_bin = "sumo";
                 conn.do_timestep();
 
                 // --- Traffic light & simulation info ---
+                System.out.println("test===========");
+                SumoTLSController programT = (SumoTLSController) conn.do_job_get(Trafficlight.getCompleteRedYellowGreenDefinition("J1"));
+                System.out.println("test2===========" + programT.programs.get("0").phases.size());
                 String indexProgram = (String) conn.do_job_get(Trafficlight.getProgram("J1"));
                 double timeSeconds = (double) conn.do_job_get(Simulation.getTime());
                 int tlsPhase = (int) conn.do_job_get(Trafficlight.getPhase("J1"));
