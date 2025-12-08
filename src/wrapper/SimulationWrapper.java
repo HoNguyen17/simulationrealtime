@@ -43,7 +43,7 @@ public class SimulationWrapper implements Observer {
         System.out.println("Simulation created");
     }
     // Constructor 2
-    SimulationWrapper(String sumocfg){
+    public SimulationWrapper(String sumocfg){
         String sumo_bin = "sumo";
         double step_length = 1;
         conn = new SumoTraciConnection(sumo_bin, sumocfg);
@@ -172,7 +172,7 @@ public class SimulationWrapper implements Observer {
     // get phase definition of a traffic light (current light state)
     public String getTLPhaseDef(String inputID) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
-        String phaseDef = x.getPhaseDef(this, 1);
+        String phaseDef = x.getPhaseDef(1);
         return phaseDef;
     }
     public List<String[][]> getTLControlledLinks(String inputID) {
@@ -194,16 +194,21 @@ public class SimulationWrapper implements Observer {
     // get position of the vehicle
     public SumoPosition2D getVehiclePosition(String ID) {
         VehicleWrapper x = VehicleList.get(ID);
-        SumoPosition2D VehiclePosition = x.getPosition(this, 1);
+        SumoPosition2D VehiclePosition = x.getPosition(1);
         return VehiclePosition;
     }
     // get Vehicle speed
     public double getVehicleSpeed(String inputID) {
         VehicleWrapper x = VehicleList.get(inputID);
-        double vehicleSpeed = x.getSpeed(this, 1);
+        double vehicleSpeed = x.getSpeed(1);
         return vehicleSpeed;
     }
-
+    // get Vehicle's color
+    public SumoColor getVehicleColor(String ID) {
+        VehicleWrapper x = VehicleList.get(ID);
+        SumoColor vehicleColor = x.getColor(1);
+        return vehicleColor;
+    }
 //     // get Vehicle's ID list
 //     public List<String> getIDList() {
 //         return wrapper.VehicleWrapper.getIDList(this, 1);
@@ -214,22 +219,15 @@ public class SimulationWrapper implements Observer {
 //         VehicleWrapper v = new wrapper.VehicleWrapper(ID);
 //         return v.getTypeID(this, 1);
 //     }
-
-//     // get Vehicle's color
-//     public SumoColor getColor(String ID) {
-//         VehicleWrapper v = new wrapper.VehicleWrapper(ID);
-//         return v.getColor(this, 1);
-//     }
 // //===== SETTER ============================================
-//     // set Vehicle's speed
-//     public void setSpeed(String ID, double speed) {
-//         VehicleWrapper v = new wrapper.VehicleWrapper(ID);
-//         v.setSpeed(this, speed, 1);
-//     }
-
-//     // set Vehicle's color
-//     public void setColor(String ID, int r, int b, int g, int a) {
-//         VehicleWrapper v = new wrapper.VehicleWrapper(ID);
-//         v.setColor(this, r, g, b, a, 1);
-//     }
+    // set Vehicle's speed
+    public void setSpeed(String ID, double inputSpeed) {
+        VehicleWrapper x = VehicleList.get(ID);
+        x.setSpeed(this, inputSpeed, 1);
+    }
+    // set Vehicle's color
+    public void setVehicleColor(String ID, int r, int b, int g, int a) {
+        VehicleWrapper x = VehicleList.get(ID);
+        x.setColor(this, r, g, b, a);
+    }
 }

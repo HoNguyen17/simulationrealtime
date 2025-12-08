@@ -42,7 +42,7 @@ public class TrafficLightWrapper {
         return -1;
     }
     // get phase definition (Red-Green-Yellow)
-    public String getPhaseDef(SimulationWrapper temp, int po) {
+    public String getPhaseDef(int po) {
         // try {
         //     String lightState = (String)temp.conn.do_job_get(Trafficlight.getRedYellowGreenState(ID));
         //     if (po == 1) {System.out.println(String.format("Current phase definition of %s: %s", ID, lightState));}

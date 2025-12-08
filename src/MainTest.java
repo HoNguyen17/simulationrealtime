@@ -51,6 +51,19 @@ public static void main ( String [] args){
                 //     System.out.println("No vehicles found");
                 // }
                 // System.out.println("-----------------------------------------------");
+                if(i >= 10 && i <= 40 && 1 == 1) {
+                    A.getVehicleColor("f_0.1");
+                    A.getVehicleColor("f_0.0");
+                    A.getVehiclePosition("f_0.1");
+                    A.getVehicleSpeed("f_0.1");
+                    A.getVehicleSpeed("f_0.0");
+                }
+
+                if(i == 10) {
+                    A.setVehicleColor("f_0.1",255,255,255,255);
+                    A.setVehicleColor("f_0.0",0,255,255,255);
+                    A.setSpeed("f_0.0", 40);
+                }
                 if(i == 99) {
                     A.test();
                 }
