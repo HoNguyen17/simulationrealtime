@@ -1,5 +1,6 @@
 package gui; 
 import paser.Networkpaser;
+import wrapper.SimulationWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,9 @@ public class MapCanvas {
     private final Canvas canvas;
     private final GraphicsContext g;
 
+
     private Networkpaser.NetworkModel model;
+    //private VehicleRenderer vehicleRenderer;
 
     private double scale = 1.0;
     private double offsetX = 600;
@@ -26,6 +29,7 @@ public class MapCanvas {
     public MapCanvas(double w, double h) {
         canvas = new Canvas(w, h);
         g = canvas.getGraphicsContext2D();
+        //vehicleRenderer = new VehicleRenderer();
 
         // Pan
         canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
@@ -59,8 +63,55 @@ public class MapCanvas {
         });
     }
 
+
+    /* 
+    // getters and setters
+
+    private List<VehicleState> vehicles = new ArrayList<>();
+    public static class VehicleState {
+        public final String id;
+        public final double x;  // world coords (SUMO)
+        public final double y;
+        public final double headingRad; // optional, for rectangle orientation
+        public VehicleState(String id, double x, double y, double headingRad) {
+            this.id = id; this.x = x; this.y = y; this.headingRad = headingRad;
+        }
+    }
+    public void setVehicles(List<VehicleState> list) {
+        this.vehicles = (list != null) ? list : new ArrayList<>();
+    }
+
+    */
+
+
+
+
     public Canvas getCanvas() { return canvas; }
     public void setModel(Networkpaser.NetworkModel model) { this.model = model; }
+
+    
+    //Lấy VehicleRenderer để quản lý xe
+     
+    public VehicleRenderer getVehicleRenderer() {
+        return vehicleRenderer;
+    }
+    
+    
+    //Cập nhật xe từ SimulationWrapper
+    
+    public void updateVehiclesFromSimulation(SimulationWrapper sim) {
+        vehicleRenderer.updateFromSimulation(sim);
+    }
+    
+    
+    //Xóa tất cả xe
+    
+    public void clearVehicles() {
+        vehicleRenderer.clear();
+    }
+
+
+
 
     // Simple offset of a polyline by distance d (screen space, after scaling).
     private List<Point2D> offsetPolyline(List<Point2D> pts, double d) {
@@ -87,7 +138,7 @@ public class MapCanvas {
         }
         return out;
     }
-
+    // Draw polyline given a list of points 
     private void drawPolyline(GraphicsContext g, List<Point2D> pts) {
         for (int i = 1; i < pts.size(); i++) {
             Point2D a = pts.get(i - 1);
@@ -156,13 +207,33 @@ public class MapCanvas {
                 //drawPolyline(g, rightMark);
             }
         }
-
+        // junctions points
         g.setFill(Color.ORANGE);
         for (Networkpaser.Junction j : model.junctions) {
             double x = j.x * scale + offsetX;
             double y = j.y * scale + offsetY;
             g.fillOval(x - 2, y - 2, 4, 4);
         }
+        /*
+        // vehicles
+        double carLen = 5.0; // đơn vị world (m)
+        double carWid = 2.2;
+        for (VehicleState v : vehicles) {
+            double sx = v.x * scale + offsetX;
+            double sy = v.y * scale + offsetY;
+
+            g.save();
+            g.translate(sx, sy);
+            g.rotate(Math.toDegrees(v.headingRad)); // nếu không muốn quay: bỏ dòng này
+            g.setFill(Color.web("#2ecc71"));
+            g.fillRect(-(carLen * scale) / 2.0, -(carWid * scale) / 2.0,
+                       carLen * scale, carWid * scale);
+            g.restore();
+        }
+        */
+
+        // Render vehicles sử dụng VehicleRenderer
+        //vehicleRenderer.render(g, scale, offsetX, offsetY);
     }
 
     public void fitAndCenter() {
@@ -214,7 +285,7 @@ public class MapCanvas {
         offsetY = mouseY - worldY * scale;
         render();
     }
-
+    // clamp value between min and max of double type 
     private double clamp(double v, double min, double max) {
         return Math.max(min, Math.min(max, v));
     }
