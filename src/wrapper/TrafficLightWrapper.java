@@ -106,7 +106,6 @@ public class TrafficLightWrapper {
             int currentPhaseNum = (int)temp.conn.do_job_get(Trafficlight.getPhase(ID));
             if(currentPhaseNum < phaseNumLimit) {temp.conn.do_job_set(Trafficlight.setPhase(ID, currentPhaseNum + 1));}
             else {temp.conn.do_job_set(Trafficlight.setPhase(ID, 0));}
-            //need update
             return true;
         }
         catch (Exception G) {

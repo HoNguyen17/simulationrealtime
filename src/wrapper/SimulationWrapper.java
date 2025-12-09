@@ -108,6 +108,7 @@ public class SimulationWrapper implements Observer {
                         VariableSubscription vs = new VariableSubscription(SubscribtionVariable.vehicle, 0, 100000 * 60, vehID);
                         vs.addCommand(Constants.VAR_POSITION);
                         vs.addCommand(Constants.VAR_SPEED);
+                        vs.addCommand(Constants.VAR_ANGLE);
                         
                         try {
                             // create a vehicle wrapper object and add to hash map
@@ -137,15 +138,18 @@ public class SimulationWrapper implements Observer {
             }
         } 
         else if (so.response == ResponseType.VEHICLE_VARIABLE) {
+            VehicleWrapper x = VehicleList.get(so.id);
             if (so.variable == Constants.VAR_SPEED) {
                 SumoPrimitive sp = (SumoPrimitive) so.object;
-                VehicleWrapper x = VehicleList.get(so.id);
                 x.speed = (double) sp.val;
             } 
             else if (so.variable == Constants.VAR_POSITION) {
                 SumoPosition2D sc = (SumoPosition2D) so.object;
-                VehicleWrapper x = VehicleList.get(so.id);
                 x.position = sc;
+            }
+            else if (so.variable == Constants.VAR_ANGLE) {
+                SumoPrimitive sp = (SumoPrimitive) so.object;
+                x.angle = (double) sp.val;
             }
         }
         else if (so.response == ResponseType.TL_VARIABLE) {
@@ -194,7 +198,6 @@ public class SimulationWrapper implements Observer {
         x.setPhaseDefOrigin(this);
     }
     public void setTLPhaseNext(String inputID) {
-        System.out.println("wth");
         TrafficLightWrapper x = TrafficLightList.get(inputID);
         x.setPhaseNext(this);
     }
@@ -217,6 +220,11 @@ public class SimulationWrapper implements Observer {
         VehicleWrapper x = VehicleList.get(ID);
         SumoColor vehicleColor = x.getColor(1);
         return vehicleColor;
+    }
+    public double getVehicleAngle(String ID) {
+        VehicleWrapper x = VehicleList.get(ID);
+        double vehicleAngle = x.getAngle(1);
+        return vehicleAngle;
     }
 //     // get Vehicle's ID list
 //     public List<String> getIDList() {

@@ -7,17 +7,17 @@ public static void main ( String [] args){
         // config_file path is based on this class path
         String config_file = "../resource/test_2_traffic.sumocfg"; 
         double step_length = 1;
-        String sumo_bin = "sumo-gui";
+        String sumo_bin = "sumo";
         SimulationWrapper A = new SimulationWrapper(config_file, step_length, sumo_bin);
         try {
             A.Start();
-            for (int i = 0; i < 100; i++) {
+            for (int i = 1; i < 100; i++) {
                 A.Step();
                 A.getTime(1);
-                A.getTLPhaseNum("J5");
-                A.getTLPhaseDef("J5");
+                // A.getTLPhaseNum("J5");
+                // A.getTLPhaseDef("J5");
                 // A.getTLControlledLinks("J1");
-                if(i == 10){
+                if(i == 11){
                     //A.setTLPhaseDef2(0,"rrrrrrrrrrrr");
                     class Test2 extends Thread {
                         public void run() {
@@ -26,7 +26,6 @@ public static void main ( String [] args){
                                 A.setTLPhaseDefWithPhaseTime("J3","gggggg", 5);
                                 Thread.sleep(200); 
                                 A.setTLPhaseDefOrigin("J1");
-                                System.out.println("hmm");
                                 A.setTLPhaseNext("J5");
                             }
                             catch(Exception a) {System.out.println("work");}
@@ -36,10 +35,12 @@ public static void main ( String [] args){
                     hmm.start();
                 //     A.setDelay(50);
                 }
-                // if (i > 10 && i < 45){
-                //     A.getVehicleSpeed("f_0.0");
-                //     A.getVehiclePosition("f_0.0");
-                // }
+                if (i > 10 && i < 30){
+                    System.out.println("test" + i);
+                    A.getVehicleSpeed("f_0.1");
+                    A.getVehiclePosition("f_0.1");
+                    A.getVehicleAngle("f_0.1");
+                }
                 // Test Vehicle Stuff
                 // List<String> vehID = A.getIDList(); // Get IDs list of all current vehicles in the current simulation
                 // if (!vehID.isEmpty()) { // Check if there is at least one vehicle in the simulation

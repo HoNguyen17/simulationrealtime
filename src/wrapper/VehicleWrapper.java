@@ -16,6 +16,7 @@ public class VehicleWrapper {
     SumoColor color;
     double speed;               
     SumoPosition2D position;
+    double angle;
     // constructor
     VehicleWrapper(String inputID, SumoColor inputColor){
         ID = inputID;
@@ -81,21 +82,21 @@ public class VehicleWrapper {
         else if (po == 1) {System.out.println(String.format("Color of vehicle " + ID + ": " + color));}
         return color;
     }
+    public double getAngle(int po) {
+        if (po == 1) {System.out.println("Vehicle " + ID + " is facing " + angle);}
+        return angle;
+    }
 
     // set Vehicle's speed
     public void setSpeed(SimulationWrapper temp, double inputSpeed, int po) {
         try {
             temp.conn.do_job_set(Vehicle.setSpeed(ID, inputSpeed));
-            if  (po==1) {
-                System.out.println(String.format("Set the speed of the vehicle that has the ID %s into %.3f m/s", ID, speed));
-            }
+            if  (po==1) {System.out.println(String.format("Set the speed of the vehicle that has the ID %s into %.3f m/s", ID, speed));}
         }
-
         catch(Exception e) {
             System.out.println("Cannot set the speed of the vehicle that has the ID " + ID + e.getMessage());
         }
     }
-
     // set Vehicle's color
     public void setColor(SimulationWrapper temp, int r, int g, int b, int a) {
         try {
