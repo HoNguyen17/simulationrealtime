@@ -28,8 +28,13 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+<<<<<<< HEAD
 public class SimulationWrapper implements Observer {
     protected static SumoTraciConnection conn;
+=======
+public class SimulationWrapper {
+    public SumoTraciConnection conn;
+>>>>>>> 9ba40303fc4b06464724fae951835a76a9c446ef
     protected int delay = 200;
 
     protected final HashMap<String, TrafficLightWrapper> TrafficLightList = new HashMap<>();
@@ -43,7 +48,7 @@ public class SimulationWrapper implements Observer {
         System.out.println("Simulation created");
     }
     // Constructor 2
-    SimulationWrapper(String sumocfg){
+    public SimulationWrapper(String sumocfg){
         String sumo_bin = "sumo";
         double step_length = 1;
         conn = new SumoTraciConnection(sumo_bin, sumocfg);
