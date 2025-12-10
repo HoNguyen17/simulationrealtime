@@ -18,7 +18,6 @@ public class MapCanvas {
 
 
     private Networkpaser.NetworkModel model;
-    //private VehicleRenderer vehicleRenderer;
 
     private double scale = 1.0;
     private double offsetX = 600;
@@ -32,11 +31,11 @@ public class MapCanvas {
         // x and y are world coordinates (SUMO coordinates)
         // angle is the orientation in degrees
     }
-
+    // Setter for vehicle data
     public void setVehicleData(List<VehicleData> vehicleDataList) {
         this.vehicleDataList = vehicleDataList;
     }
-
+    // Constructor of MapCanvas
     public MapCanvas(double w, double h) {
         canvas = new Canvas(w, h);
         g = canvas.getGraphicsContext2D();
@@ -100,26 +99,6 @@ public class MapCanvas {
     public Canvas getCanvas() { return canvas; }
     public void setModel(Networkpaser.NetworkModel model) { this.model = model; }
 
-    
-    //Lấy VehicleRenderer để quản lý xe
-     
-    public VehicleRenderer getVehicleRenderer() {
-        return vehicleRenderer;
-    }
-    
-    
-    //Cập nhật xe từ SimulationWrapper
-    
-    public void updateVehiclesFromSimulation(SimulationWrapper sim) {
-        vehicleRenderer.updateFromSimulation(sim);
-    }
-    
-    
-    //Xóa tất cả xe
-    
-    public void clearVehicles() {
-        vehicleRenderer.clear();
-    }
 
 
 
@@ -225,53 +204,45 @@ public class MapCanvas {
             double y = j.y * scale + offsetY;
             g.fillOval(x - 2, y - 2, 4, 4);
         }
-<<<<<<< HEAD
-        /*
-        // vehicles
-        double carLen = 5.0; // đơn vị world (m)
-        double carWid = 2.2;
-        for (VehicleState v : vehicles) {
-            double sx = v.x * scale + offsetX;
-            double sy = v.y * scale + offsetY;
 
-            g.save();
-            g.translate(sx, sy);
-            g.rotate(Math.toDegrees(v.headingRad)); // nếu không muốn quay: bỏ dòng này
-            g.setFill(Color.web("#2ecc71"));
-            g.fillRect(-(carLen * scale) / 2.0, -(carWid * scale) / 2.0,
-                       carLen * scale, carWid * scale);
-            g.restore();
-        }
-        */
-
-        // Render vehicles sử dụng VehicleRenderer
-        //vehicleRenderer.render(g, scale, offsetX, offsetY);
-=======
 
         // --- Vehicle Rendering Logic ---
-        g.setFill(Color.RED); // Use the default red or vehicle.color
+        g.setFill(Color.BLUE); // Use the default red or vehicle.color
 
         // Define the size of the vehicle icon (e.g., 6x6 pixel circle)
-        final double VEHICLE_SIZE = 6.0;
-        final double HALF_SIZE = VEHICLE_SIZE / 2.0;
-
+        final double VEHICLE_LENGTH_PX = 12.0;
+        final double VEHICLE_WIDTH_PX =  6.0;
         for (VehicleData vehicle : vehicleDataList) {
             // 1. Transform the SUMO coordinates (world coordinates) to screen coordinates
             double screenX = vehicle.x * scale + offsetX;
             double screenY = vehicle.y * scale + offsetY;
+            
+            //optional rotation
+           // g.save();
+           // g.translate(screenX, screenY);   // rotate around vehicle center
+           // g.rotate(vehicle.angle);         // degrees; use -vehicle.angle if mirrored
 
             // 2. Draw a simple shape (e.g., an oval) centered at the position
             g.setFill(vehicle.color);
-            g.fillOval(
-                    screenX - HALF_SIZE, // Offset by half the size to center the oval
-                    screenY - HALF_SIZE,
-                    VEHICLE_SIZE,
-                    VEHICLE_SIZE
+            g.fillRect( //draw rectangle centered at (screenX, screenY)
+                    screenX - VEHICLE_LENGTH_PX / 2.0,
+                    screenY - VEHICLE_WIDTH_PX  / 2.0,
+                    VEHICLE_LENGTH_PX,
+                    VEHICLE_WIDTH_PX
             );
+            //g.restore();
         }
->>>>>>> 9ba40303fc4b06464724fae951835a76a9c446ef
     }
 
+
+
+
+
+
+
+
+
+    // Fit and center the map content within the canvas
     public void fitAndCenter() {
         if (model == null) return;
         double minX = Double.POSITIVE_INFINITY, minY = Double.POSITIVE_INFINITY;

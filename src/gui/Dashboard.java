@@ -20,7 +20,8 @@ public class Dashboard extends VBox {
         var speed = controlPanel.createSpeedControls();
         var tls = controlPanel.createTrafficLightControls();
         var view = controlPanel.createViewControls();
-
+        
+        
         this.getChildren().addAll(title, speed, tls, view);
     }
 }
