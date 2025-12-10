@@ -23,7 +23,7 @@ public class VehicleWrapper {
         color = inputColor;
         System.out.println("Added vehicle " + inputID + ".");
     }
-
+//=================GETTER================================
     // get Vehicle ID
     public String getID(int po) {
         if (po == 1) {System.out.println(ID);}
@@ -86,7 +86,7 @@ public class VehicleWrapper {
         if (po == 1) {System.out.println("Vehicle " + ID + " is facing " + angle);}
         return angle;
     }
-
+//=================SETTER================================
     // set Vehicle's speed
     public void setSpeed(SimulationWrapper temp, double inputSpeed, int po) {
         try {
@@ -97,6 +97,7 @@ public class VehicleWrapper {
             System.out.println("Cannot set the speed of the vehicle that has the ID " + ID + e.getMessage());
         }
     }
+
     // set Vehicle's color
     public void setColor(SimulationWrapper temp, int r, int g, int b, int a) {
         try {
@@ -108,4 +109,6 @@ public class VehicleWrapper {
             System.out.println("Cannot set the color of the vehicle that has the ID " + ID + e.getMessage());
         }
     }
+//=================STATIC================================
+    
 }

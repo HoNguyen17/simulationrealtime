@@ -7,13 +7,14 @@ public static void main ( String [] args){
         // config_file path is based on this class path
         String config_file = "../resource/test_2_traffic.sumocfg"; 
         double step_length = 1;
-        String sumo_bin = "sumo";
+        String sumo_bin = "sumo-gui";
         SimulationWrapper A = new SimulationWrapper(config_file, step_length, sumo_bin);
         try {
             A.Start();
             for (int i = 1; i < 100; i++) {
                 A.Step();
                 A.getTime(1);
+                System.out.println("list: " +A.getVehicleIDsList());
                 // A.getTLPhaseNum("J5");
                 // A.getTLPhaseDef("J5");
                 // A.getTLControlledLinks("J1");

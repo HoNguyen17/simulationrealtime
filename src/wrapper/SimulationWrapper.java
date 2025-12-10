@@ -27,6 +27,7 @@ import de.tudresden.sumo.util.Observable;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Collection;
 
 public class SimulationWrapper implements Observer {
     protected static SumoTraciConnection conn;
@@ -52,11 +53,12 @@ public class SimulationWrapper implements Observer {
         System.out.println("Simulation created");
     }
 //===== SIMULATION STUFF ==================================
-    // Start simulation, update TrafficLightList, more will be implemented
+    //for testing
     public void test() {
         int a = VehicleList.size();
         System.out.println("Size of hash map of vehicle is " + a);
     }
+    // Start simulation, update TrafficLightList, more will be implemented
     public void Start(){
         try {
             conn.runServer();
@@ -216,20 +218,22 @@ public class SimulationWrapper implements Observer {
         return vehicleSpeed;
     }
     // get Vehicle's color
-    public SumoColor getVehicleColor(String ID) {
-        VehicleWrapper x = VehicleList.get(ID);
+    public SumoColor getVehicleColor(String inputID) {
+        VehicleWrapper x = VehicleList.get(inputID);
         SumoColor vehicleColor = x.getColor(1);
         return vehicleColor;
     }
-    public double getVehicleAngle(String ID) {
-        VehicleWrapper x = VehicleList.get(ID);
+    public double getVehicleAngle(String inputID) {
+        VehicleWrapper x = VehicleList.get(inputID);
         double vehicleAngle = x.getAngle(1);
         return vehicleAngle;
     }
 //     // get Vehicle's ID list
-//     public List<String> getIDList() {
-//         return wrapper.VehicleWrapper.getIDList(this, 1);
-//     }
+    public List<String> getVehicleIDsList() {
+        Collection<String> valueCollection = VehicleList.keySet();
+        List<String> returnVehicleList = new ArrayList<>(VehicleList.keySet());
+        return returnVehicleList;
+    }
 
 //     // get Vehicle's type ID
 //     public String getTypeID(String ID) {
@@ -238,13 +242,13 @@ public class SimulationWrapper implements Observer {
 //     }
 // //===== SETTER ============================================
     // set Vehicle's speed
-    public void setSpeed(String ID, double inputSpeed) {
-        VehicleWrapper x = VehicleList.get(ID);
+    public void setVehicleSpeed(String inputID, double inputSpeed) {
+        VehicleWrapper x = VehicleList.get(inputID);
         x.setSpeed(this, inputSpeed, 1);
     }
     // set Vehicle's color
-    public void setVehicleColor(String ID, int r, int b, int g, int a) {
-        VehicleWrapper x = VehicleList.get(ID);
+    public void setVehicleColor(String inputID, int r, int b, int g, int a) {
+        VehicleWrapper x = VehicleList.get(inputID);
         x.setColor(this, r, g, b, a);
     }
 }
