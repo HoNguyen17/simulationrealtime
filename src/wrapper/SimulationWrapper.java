@@ -57,6 +57,9 @@ public class SimulationWrapper implements Observer {
         int a = VehicleList.size();
         System.out.println("Size of hash map of vehicle is " + a);
     }
+    public boolean isClosed() {
+        return conn.isClosed();
+    }
     // Start simulation, update TrafficLightList, more will be implemented
     public void Start(){
         try {
