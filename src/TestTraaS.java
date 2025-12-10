@@ -4,6 +4,8 @@ import de.tudresden.sumo.cmd.Simulation;
 import de.tudresden.sumo.cmd.Vehicle;
 import de.tudresden.sumo.cmd.Inductionloop;
 import de.tudresden.sumo.cmd.Trafficlight;
+import de.tudresden.sumo.cmd.Route;
+import de.tudresden.sumo.cmd.Edge;
 import de.tudresden.sumo.objects.SumoVehicleData;
 import de.tudresden.sumo.cmd.Vehicletype;
 import de.tudresden.sumo.objects.SumoTLSController;
@@ -13,8 +15,8 @@ import java.util.List;
 
 public class TestTraaS {
 public static void main ( String [] args){ 
-String sumo_bin = "sumo";
-        String config_file = "../resource/test_2_traffic.sumocfg";
+String sumo_bin = "sumo-gui";
+        String config_file = "../resource/test_4_wrapper.sumocfg";
         double step_length = 1;
 
         if (args.length > 0) {
@@ -35,8 +37,8 @@ String sumo_bin = "sumo";
             List<String> vehicletype = (List<String>)conn.do_job_get(Vehicletype.getIDList());
             System.out.println("Vehicle type: " + vehicletype);
 
-            for (int i = 0; i < 100; i++) {
-                Thread.sleep(1000);
+            for (int i = 0; i < 1000; i++) {
+                Thread.sleep(100);
                 conn.do_timestep();
 
                 // --- Traffic light & simulation info ---
@@ -64,9 +66,11 @@ String sumo_bin = "sumo";
 
                 @SuppressWarnings("unchecked")
                 List<String> IDsList = (List<String>) conn.do_job_get(Trafficlight.getIDList());
-
+                List<String> IDsListRoute = (List<String>) conn.do_job_get(Route.getIDList());
+                List<String> edgeofroute = (List<String>) conn.do_job_get(Route.getEdges("!f_0"));
                 // --- Print core information ---
-                //System.out.println(String.format("Index of the current program: %s", indexProgram));
+                System.out.println(IDsListRoute);
+                //System.out.println(edgeofroute);
                 //System.out.println(String.format("Step %.2f, TLS Phase %d (%s): ", timeSeconds, tlsPhase, tlsPhaseName));
                 //System.out.println(String.format("Phase %d duration: %.2f seconds", tlsPhase, phaseDuration));
                 //System.out.println(String.format("Index of the current phase: %d", indexPhase));
@@ -76,7 +80,7 @@ String sumo_bin = "sumo";
                 //System.out.println(String.format("Next switch at: %.2f seconds", nextSwitch));
                 //System.out.println(String.format("Current simulation time: %.2f", timeSeconds));
                 // --- Print controlled lanes and their signal states ---
-                System.out.println("Controlled Lanes and their Red-Yellow-Green (RYG) states:");
+                //System.out.println("Controlled Lanes and their Red-Yellow-Green (RYG) states:");
                 for (int j = 0; j < controlledLanes.size() && j < lightState.length(); j++) {
                     char stateChar = lightState.charAt(j);
                     String meaning;
@@ -87,14 +91,17 @@ String sumo_bin = "sumo";
                         case 'G': meaning = "GREEN (priority)"; break;
                         default:  meaning = "UNKNOWN"; break;
                     }
-                    System.out.println(String.format("  Lane %s -> %s", controlledLanes.get(j), meaning));
+                    //System.out.println(String.format("  Lane %s -> %s", controlledLanes.get(j), meaning));
                 }
 
                 // --- Print controlled links for completeness ---
-                System.out.println(String.format("Controlled Links: %s", controlledLinks));
+                //System.out.println(String.format("Controlled Links: %s", controlledLinks));
 
                 System.out.println("-----------------------------------------------------------------------");
-
+                if(i == 500) {
+                    conn.do_job_set(Vehicle.add("x0", "DEFAULT_VEHTYPE", "!t_0", 0, 0, 0, (byte) 0));
+                    Thread.sleep(10000);
+                }
                 // Optional: Uncomment to show induction loop data
                 // SumoVehicleData vehData = (SumoVehicleData) conn.do_job_get(Inductionloop.getVehicleData("loop1"));
                 // for (SumoVehicleData.VehicleData d : vehData.ll) {

@@ -110,5 +110,10 @@ public class VehicleWrapper {
         }
     }
 //=================STATIC================================
-    
+    protected static void addVehicle(SimulationWrapper temp, String inputID, String inputRoute) {
+        try {
+            temp.conn.do_job_set(Vehicle.add(inputID, "DEFAULT_VEHTYPE", inputRoute, 0, 0, 0, (byte)0));
+        }
+        catch(Exception e){System.out.println("add vehicle fail");}
+    }
 }

@@ -6,7 +6,7 @@ import it.polito.appeal.traci.TraCIException;
 import de.tudresden.sumo.cmd.Simulation;
 import de.tudresden.sumo.cmd.Trafficlight;
 import de.tudresden.sumo.cmd.Vehicle;
-import de.tudresden.sumo.cmd.Inductionloop;
+import de.tudresden.sumo.cmd.Route;
 
 import de.tudresden.sumo.objects.SumoVehicleData;
 import de.tudresden.sumo.objects.SumoStringList;
@@ -27,15 +27,14 @@ import de.tudresden.sumo.util.Observable;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Collection;
 
 public class SimulationWrapper implements Observer {
     protected static SumoTraciConnection conn;
     protected int delay = 200;
 
     protected final HashMap<String, TrafficLightWrapper> TrafficLightList = new HashMap<>();
-    protected HashMap<String, VehicleWrapper> VehicleList = new HashMap<>();
-    //protected final List<EdgeWrapper> EdgeList = new ArrayList<EdgeWrapper>();
+    protected final HashMap<String, VehicleWrapper> VehicleList = new HashMap<>();
+    //protected List<String> RouteList = new ArrayList<String>();
     // Constructor 1
     public SimulationWrapper(String sumocfg, double step_length, String sumo_bin){
         conn = new SumoTraciConnection(sumo_bin, sumocfg);
@@ -169,6 +168,11 @@ public class SimulationWrapper implements Observer {
     }
 //===== TRAFFIC LIGHT STUFF ===============================
 //===== GETTER ============================================
+    // get traffic light IDs
+    public List<String> getTLIDsList() {
+        List<String> returnTrafficLightList = new ArrayList<>(TrafficLightList.keySet());
+        return returnTrafficLightList;
+    }
     // get phase number of a traffic light
     public int getTLPhaseNum(String inputID) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
@@ -230,7 +234,6 @@ public class SimulationWrapper implements Observer {
     }
 //     // get Vehicle's ID list
     public List<String> getVehicleIDsList() {
-        Collection<String> valueCollection = VehicleList.keySet();
         List<String> returnVehicleList = new ArrayList<>(VehicleList.keySet());
         return returnVehicleList;
     }
@@ -240,7 +243,7 @@ public class SimulationWrapper implements Observer {
 //         VehicleWrapper v = new wrapper.VehicleWrapper(ID);
 //         return v.getTypeID(this, 1);
 //     }
-// //===== SETTER ============================================
+//===== SETTER ============================================
     // set Vehicle's speed
     public void setVehicleSpeed(String inputID, double inputSpeed) {
         VehicleWrapper x = VehicleList.get(inputID);
@@ -251,4 +254,18 @@ public class SimulationWrapper implements Observer {
         VehicleWrapper x = VehicleList.get(inputID);
         x.setColor(this, r, g, b, a);
     }
+//===== ADDER =============================================
+//     public void addVehicleBasic(String inputID) {
+//         try {
+//             List<String> RouteList = (List<String>) conn.do_job_get(Route.getIDList());
+//             if (RouteList.size() == 0) {
+//                 System.out.println("No available route");
+//             }
+//             else {
+//                 VehicleWrapper.addVehicle(this, inputID, RouteList.get(0));
+//             }
+//         System.out.println("test");
+//         }
+//         catch (Exception e) {System.out.println("hmm");}
+//     }
 }

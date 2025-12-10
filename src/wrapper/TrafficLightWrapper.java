@@ -134,7 +134,7 @@ public class TrafficLightWrapper {
     // }
 //=================STATIC================================
     // update all traffic light IDs of simulation
-    public static void updateTrafficLightIDs(SimulationWrapper temp) {
+    protected static void updateTrafficLightIDs(SimulationWrapper temp) {
         try {
             @SuppressWarnings("unchecked")
             List<String> IDsList = (List<String>)temp.conn.do_job_get(Trafficlight.getIDList());
