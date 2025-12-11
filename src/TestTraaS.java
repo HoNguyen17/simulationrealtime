@@ -111,7 +111,6 @@ String sumo_bin = "sumo-gui";
                 //         d.vehID, d.length, d.entry_time, d.leave_time, d.typeID));
                 // }
             }
-
             conn.close();
         } catch (Exception ex) {
             ex.printStackTrace();

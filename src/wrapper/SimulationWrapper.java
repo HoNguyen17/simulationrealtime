@@ -262,7 +262,6 @@ public class SimulationWrapper implements Observer {
             RouteWrapper.updateRouteIDs(this);
             if (RouteList.size() == 0) {System.out.println("No available route");}
             else {VehicleWrapper.addVehicle(this, inputID, RouteList.get(0));}
-        System.out.println("test");
         }
         catch (Exception e) {System.out.println("hmm");}
     }
