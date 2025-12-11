@@ -34,7 +34,7 @@ public class SimulationWrapper implements Observer {
 
     protected final HashMap<String, TrafficLightWrapper> TrafficLightList = new HashMap<>();
     protected final HashMap<String, VehicleWrapper> VehicleList = new HashMap<>();
-    //protected List<String> RouteList = new ArrayList<String>();
+    protected List<String> RouteList = new ArrayList<String>();
     // Constructor 1
     public SimulationWrapper(String sumocfg, double step_length, String sumo_bin){
         conn = new SumoTraciConnection(sumo_bin, sumocfg);
@@ -103,11 +103,10 @@ public class SimulationWrapper implements Observer {
     //(new) update from subscription, abstract method of observer
     public void update(Observable arg0, SubscriptionObject so) {
         if (so.response == ResponseType.SIM_VARIABLE) { 
-            if (so.variable == Constants.VAR_DEPARTED_VEHICLES_IDS) {//when new vehicle detect?
+            if (so.variable == Constants.VAR_DEPARTED_VEHICLES_IDS) {//when new vehicle detect
                 SumoStringList ssl = (SumoStringList) so.object;
                 if (ssl.size() > 0) {
                     for (String vehID : ssl) {
-                        //System.out.println("Subscription Departed vehicles: " + vehID);
                         //set up the subscription for the vehicle (1 vehicle)
                         VariableSubscription vs = new VariableSubscription(SubscribtionVariable.vehicle, 0, 100000 * 60, vehID);
                         vs.addCommand(Constants.VAR_POSITION);
@@ -258,17 +257,14 @@ public class SimulationWrapper implements Observer {
         x.setColor(this, r, g, b, a);
     }
 //===== ADDER =============================================
-//     public void addVehicleBasic(String inputID) {
-//         try {
-//             List<String> RouteList = (List<String>) conn.do_job_get(Route.getIDList());
-//             if (RouteList.size() == 0) {
-//                 System.out.println("No available route");
-//             }
-//             else {
-//                 VehicleWrapper.addVehicle(this, inputID, RouteList.get(0));
-//             }
-//         System.out.println("test");
-//         }
-//         catch (Exception e) {System.out.println("hmm");}
-//     }
+    public void addVehicleBasic(String inputID) {
+        try {
+            RouteWrapper.updateRouteIDs(this);
+            if (RouteList.size() == 0) {System.out.println("No available route");}
+            else {VehicleWrapper.addVehicle(this, inputID, RouteList.get(0));}
+        System.out.println("test");
+        }
+        catch (Exception e) {System.out.println("hmm");}
+    }
 }
+//===== ROUTE STUFF ========================================

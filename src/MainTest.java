@@ -16,27 +16,26 @@ public static void main ( String [] args){
                 A.getTime(1);
                 System.out.println("list: " +A.getVehicleIDsList());
                 System.out.println("listTL: " +A.getTLIDsList());
-                // A.getTLPhaseNum("J5");
-                // A.getTLPhaseDef("J5");
-                // A.getTLControlledLinks("J1");
-                // if(i == 11){
-                //     //A.setTLPhaseDef2(0,"rrrrrrrrrrrr");
-                //     class Test2 extends Thread {
-                //         public void run() {
-                //             try {
-                //                 A.setTLPhaseDef("J1","GGGGGGGGGGGG");
-                //                 A.setTLPhaseDefWithPhaseTime("J3","gggggg", 5);
-                //                 Thread.sleep(200); 
-                //                 A.setTLPhaseDefOrigin("J1");
-                //                 A.setTLPhaseNext("J5");
-                //             }
-                //             catch(Exception a) {System.out.println("work");}
-                //         }
-                //     }
-                //     Test2 hmm = new Test2();
-                //     hmm.start();
-                // //     A.setDelay(50);
-                // }
+                A.getTLPhaseNum("J5");
+                A.getTLPhaseDef("J5");
+                //A.getTLControlledLinks("J1");
+                if(i == 11){
+                    class Test2 extends Thread {
+                        public void run() {
+                            try {
+                                //A.setTLPhaseDef("J1","GGGGGGGGGGGG");
+                                //A.setTLPhaseDefWithPhaseTime("J3","gggggg", 5);
+                                //Thread.sleep(200); 
+                                A.setTLPhaseDefOrigin("J1");
+                                //A.setTLPhaseNext("J5");
+                            }
+                            catch(Exception a) {System.out.println(" not work");}
+                        }
+                    }
+                    Test2 hmm = new Test2();
+                    hmm.start();
+                    A.addVehicleBasic("x0");
+                }
                 // if (i > 10 && i < 30){
                 //     System.out.println("test" + i);
                 //     A.getVehicleSpeed("f_0.1");

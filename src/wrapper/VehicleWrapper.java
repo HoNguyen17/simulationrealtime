@@ -6,12 +6,10 @@ import de.tudresden.sumo.cmd.Vehicletype;
 import de.tudresden.sumo.objects.SumoPosition2D;
 import de.tudresden.sumo.objects.SumoColor;
 
-
-// import javax.swing.text.Position;
 import java.util.List;
 import java.util.ArrayList;
 
-public class VehicleWrapper {
+class VehicleWrapper {
     String ID;
     SumoColor color;
     double speed;               

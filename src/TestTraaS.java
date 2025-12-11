@@ -16,7 +16,7 @@ import java.util.List;
 public class TestTraaS {
 public static void main ( String [] args){ 
 String sumo_bin = "sumo-gui";
-        String config_file = "../resource/test_4_wrapper.sumocfg";
+        String config_file = "../resource/test_5_wrapper.sumocfg";
         double step_length = 1;
 
         if (args.length > 0) {
@@ -38,7 +38,7 @@ String sumo_bin = "sumo-gui";
             System.out.println("Vehicle type: " + vehicletype);
 
             for (int i = 0; i < 1000; i++) {
-                Thread.sleep(100);
+                Thread.sleep(1000);
                 conn.do_timestep();
 
                 // --- Traffic light & simulation info ---
@@ -70,7 +70,7 @@ String sumo_bin = "sumo-gui";
                 List<String> edgeofroute = (List<String>) conn.do_job_get(Route.getEdges("!f_0"));
                 // --- Print core information ---
                 System.out.println(IDsListRoute);
-                //System.out.println(edgeofroute);
+                System.out.println("Current time:" + timeSeconds);
                 //System.out.println(String.format("Step %.2f, TLS Phase %d (%s): ", timeSeconds, tlsPhase, tlsPhaseName));
                 //System.out.println(String.format("Phase %d duration: %.2f seconds", tlsPhase, phaseDuration));
                 //System.out.println(String.format("Index of the current phase: %d", indexPhase));
@@ -98,9 +98,11 @@ String sumo_bin = "sumo-gui";
                 //System.out.println(String.format("Controlled Links: %s", controlledLinks));
 
                 System.out.println("-----------------------------------------------------------------------");
-                if(i == 500) {
-                    conn.do_job_set(Vehicle.add("x0", "DEFAULT_VEHTYPE", "!t_0", 0, 0, 0, (byte) 0));
-                    Thread.sleep(10000);
+                if(i == 10) {
+                    int plswork = (int)timeSeconds + 10;
+                    System.out.println(plswork);
+                    conn.do_job_set(Vehicle.add("x0", "DEFAULT_VEHTYPE", "!f_0", 0, 0, 0, (byte) 0));
+                    //Thread.sleep(10000);
                 }
                 // Optional: Uncomment to show induction loop data
                 // SumoVehicleData vehData = (SumoVehicleData) conn.do_job_get(Inductionloop.getVehicleData("loop1"));

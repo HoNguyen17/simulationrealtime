@@ -16,7 +16,7 @@ import de.tudresden.sumo.subscription.ResponseType;
 import java.util.List;
 import java.util.ArrayList;
 
-public class TrafficLightWrapper {
+class TrafficLightWrapper {
     String ID;
     String originProgramID;
     String lightDef;
