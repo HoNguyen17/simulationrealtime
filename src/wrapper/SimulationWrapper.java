@@ -234,12 +234,19 @@ public class SimulationWrapper implements Observer {
         double vehicleAngle = x.getAngle(1);
         return vehicleAngle;
     }
-//     // get Vehicle's ID list
+    // get Vehicle's ID list
     public List<String> getVehicleIDsList() {
         List<String> returnVehicleList = new ArrayList<>(VehicleList.keySet());
         return returnVehicleList;
     }
-
+    // get average speed of all vehicle
+    public double getVehicleAverageSpeed(int po) {
+        double result = 0;
+        for (VehicleWrapper x : VehicleList.values()) {result += x.speed;}
+        result /= VehicleList.size();
+        if (po == 1) {System.out.println("Average speed is " + result);}
+        return result;
+    }
 //     // get Vehicle's type ID
 //     public String getTypeID(String ID) {
 //         VehicleWrapper v = new wrapper.VehicleWrapper(ID);

@@ -14,10 +14,11 @@ public static void main ( String [] args){
             for (int i = 1; i < 1000; i++) {
                 A.Step();
                 A.getTime(1);
-                System.out.println("list: " +A.getVehicleIDsList());
-                System.out.println("listTL: " +A.getTLIDsList());
-                A.getTLPhaseNum("J5");
-                A.getTLPhaseDef("J5");
+                A.getVehicleAverageSpeed(1);
+                // System.out.println("list: " +A.getVehicleIDsList());
+                // System.out.println("listTL: " +A.getTLIDsList());
+                // A.getTLPhaseNum("J5");
+                // A.getTLPhaseDef("J5");
                 //A.getTLControlledLinks("J1");
                 if(i == 11){
                     class Test2 extends Thread {
