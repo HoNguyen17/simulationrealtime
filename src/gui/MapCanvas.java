@@ -1,5 +1,7 @@
-package gui; 
+package gui;
+
 import paser.Networkpaser;
+import wrapper.SimulationWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,83 +12,63 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
-import wrapper.SimulationWrapper;
 
 public class MapCanvas {
     private final Canvas canvas;
     private final GraphicsContext g;
 
     private Networkpaser.NetworkModel model;
-    private VehicleRenderer vehicleRenderer;
+    private final Transform transform;
+    private View viewManager;
+    private List<VehicleData> vehicleDataList = new ArrayList<>();
+    private SimulationWrapper simulationWrapper;
 
-    private double scale = 1.0;
-    private double offsetX = 600;
-    private double offsetY = 400;
-    private double lastDragX = 0, lastDragY = 0;
+    protected  double lastDragX = 0, lastDragY = 0;
 
+    public static record VehicleData(String id, double x, double y, double angle, Color color) {}
 
+    // Constructor of MapCanvas
     public MapCanvas(double w, double h) {
         canvas = new Canvas(w, h);
         g = canvas.getGraphicsContext2D();
-        vehicleRenderer = new VehicleRenderer();
+        transform = new Transform(h);
+        viewManager = new View(canvas, transform, null);
 
-        // Pan
         canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
             lastDragX = e.getX();
             lastDragY = e.getY();
+            viewManager.startPan(e.getX(), e.getY());
         });
         canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, e -> {
-            double dx = e.getX() - lastDragX;
-            double dy = e.getY() - lastDragY;
-            offsetX += dx;
-            offsetY += dy;
+            viewManager.updatePan(e.getX(), e.getY());
             lastDragX = e.getX();
             lastDragY = e.getY();
             render();
         });
-
-        // Scroll zoom
         canvas.addEventHandler(ScrollEvent.SCROLL, e -> {
-            double mouseX = e.getX();
-            double mouseY = e.getY();
-            double oldScale = scale;
             double factor = (e.getDeltaY() > 0) ? 1.1 : 0.9;
-            scale = clamp(scale * factor, 0.1, 50.0);
-
-            double worldX = (mouseX - offsetX) / oldScale;
-            double worldY = (mouseY - offsetY) / oldScale;
-            offsetX = mouseX - worldX * scale;
-            offsetY = mouseY - worldY * scale;
-
+            viewManager.zoompoint(factor, e.getX(), e.getY());
             render();
         });
     }
 
     public Canvas getCanvas() { return canvas; }
-    public void setModel(Networkpaser.NetworkModel model) { this.model = model; }
-    
-    /**
-     * Lấy VehicleRenderer để quản lý xe
-     */
-    public VehicleRenderer getVehicleRenderer() {
-        return vehicleRenderer;
-    }
-    
-    /**
-     * Cập nhật xe từ SimulationWrapper
-     */
-    public void updateVehiclesFromSimulation(SimulationWrapper sim) {
-        vehicleRenderer.updateFromSimulation(sim);
-    }
-    
-    /**
-     * Xóa tất cả xe
-     */
-    public void clearVehicles() {
-        vehicleRenderer.clear();
+
+    // Set the network model to be rendered
+    public void setModel(Networkpaser.NetworkModel model) {
+        this.model = model;
+        this.viewManager = new View(canvas, transform, model);
+        this.viewManager.resetView();
     }
 
-    // Simple offset of a polyline by distance d (screen space, after scaling).
+    public void setVehicleData(List<VehicleData> vehicleDataList) {
+        this.vehicleDataList = vehicleDataList;
+    }
+
+    public void setSimulationWrapper(SimulationWrapper simulationWrapper) {
+        this.simulationWrapper = simulationWrapper;
+    }
+
     private List<Point2D> offsetPolyline(List<Point2D> pts, double d) {
         if (pts.size() < 2) return pts;
         List<Point2D> out = new ArrayList<>();
@@ -104,7 +86,6 @@ public class MapCanvas {
             }
             double len = Math.hypot(dir.getX(), dir.getY());
             if (len == 0) len = 1;
-            // normal vector
             double nx = -dir.getY() / len;
             double ny =  dir.getX() / len;
             out.add(new Point2D(p.getX() + nx * d, p.getY() + ny * d));
@@ -122,128 +103,140 @@ public class MapCanvas {
 
     public void render() {
         if (model == null) return;
+        // Clear canvas
         g.setFill(Color.WHITE);
         g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-        // 0) Fill junction polygons trước để tạo nền giao cắt liền mạch
-        Color roadFill = Color.web("#2b2b2b");
+        // Draw roads
+        Color roadFill = Color.web("#210303ff");
         g.setFill(roadFill);
         for (Networkpaser.Junction j : model.junctions) {
             if (j.shapePoints == null || j.shapePoints.size() < 3) continue;
-            // chuyển sang tọa độ màn hình
             double[] xs = new double[j.shapePoints.size()];
             double[] ys = new double[j.shapePoints.size()];
             for (int i = 0; i < j.shapePoints.size(); i++) {
                 Point2D p = j.shapePoints.get(i);
-                xs[i] = p.getX() * scale + offsetX;
-                ys[i] = p.getY() * scale + offsetY;
+                xs[i] = transform.worldscreenX(p.getX());
+                ys[i] = transform.worldscreenY(p.getY());
             }
             g.fillPolygon(xs, ys, xs.length);
         }
-        // edit draw roads
-        double roadHalfWidth = 20.0;      // nửa bề rộng nền đường
-        double centerMarkWidth = 3.0;    // độ dày vạch vàng giữa
-        //double sideMarkWidth   = 2.0;    // độ dày vạch trắng
-        //double laneOffset      = 5.0;    // khoảng lệch cho vạch trắng hai bên
-        for (Networkpaser.Edge e : model.edges){
+
+        // add sizes for roads
+        double roadsize = 5.0;      // e.g. 4 meters half-width
+        double centermarksize = 0.5;   // e.g. 15 cm
+
+        // Convert to pixels based on current transform (scale * zoom)
+        double roadsizePx = transform.worldscreenSize(roadsize);
+        double centermarksizePx = transform.worldscreenSize(centermarksize);
+        for (Networkpaser.Edge e : model.edges) { // skip internal edges
             if (e.id.startsWith(":")) continue;
-
-            for (Networkpaser.Lane lane : e.lanes){
+            for (Networkpaser.Lane lane : e.lanes) {
                 if (lane.shapePoints.size() < 2) continue;
-
-                // Build screen-space polyline
-                List<Point2D> screenPts = new ArrayList<>();
+                List<Point2D> screenPts = new ArrayList<>(); // transformed points
                 for (Point2D p : lane.shapePoints) {
-                    screenPts.add(new Point2D(p.getX() * scale + offsetX, p.getY() * scale + offsetY));
+                    screenPts.add(new Point2D(
+                        transform.worldscreenX(p.getX()),
+                        transform.worldscreenY(p.getY())
+                    ));
                 }
-
-                // 1) Nền đường (xám đậm, nét liền, dày)
-                g.setStroke(roadFill);
-                g.setLineWidth(roadHalfWidth * 2);
-                g.setLineDashes(); // solid
+                g.setStroke(roadFill); 
+                g.setLineWidth(roadsizePx * 2); // full road width in px
+                g.setLineDashes();
                 drawPolyline(g, screenPts);
 
-                // 2) Vạch vàng giữa (nét đứt dài)
-                 List<Point2D> centerMark = offsetPolyline(screenPts, 0.0);
-                g.setStroke(Color.web("#ffd200"));
-                g.setLineWidth(centerMarkWidth);
-                g.setLineDashes(18, 12);
-                drawPolyline(g, centerMark);
-
-                // 3) Vạch trắng chia làn (hai bên, nét đứt ngắn hơn)
-                //List<Point2D> leftMark  = offsetPolyline(screenPts, -laneOffset);
-                //List<Point2D> rightMark = offsetPolyline(screenPts,  laneOffset);
-                g.setStroke(Color.WHITE);
-                //g.setLineWidth(sideMarkWidth);
-                g.setLineDashes(12, 10);
-                //drawPolyline(g, leftMark);
-                //drawPolyline(g, rightMark);
+                // Draw center line inside the road
+                List<Point2D> centerline = offsetPolyline(screenPts, 0.0);
+                g.setStroke(Color.web("#bb87a7ff"));
+                g.setLineWidth(centermarksizePx);
+                g.setLineDashes(18, 12); // optionally scale dash lengths too
+                drawPolyline(g, centerline);
             }
         }
 
+        // Draw junctions
         g.setFill(Color.ORANGE);
         for (Networkpaser.Junction j : model.junctions) {
-            double x = j.x * scale + offsetX;
-            double y = j.y * scale + offsetY;
-            g.fillOval(x - 2, y - 2, 4, 4);
+            double x = transform.worldscreenX(j.x);
+            double y = transform.worldscreenY(j.y);
+            // junction mark size in world units (e.g. 0.3m)
+            double junctionDotWorld = 0.3;
+            double r = transform.worldscreenSize(junctionDotWorld);
+            g.fillOval(x - r, y - r, r * 2, r * 2);
         }
 
-        // Render vehicles sử dụng VehicleRenderer
-        vehicleRenderer.render(g, scale, offsetX, offsetY);
+        // draw vehicles
+        final double VEHICLE_LENGTH = 4.5; 
+        final double VEHICLE_WIDTH = 1.5;
+        final double VEHICLE_LENGTH_PX = transform.worldscreenSize(VEHICLE_LENGTH);
+        final double VEHICLE_WIDTH_PX = transform.worldscreenSize(VEHICLE_WIDTH);
+
+        for (VehicleData vehicle : vehicleDataList) { // draw each vehicle 
+            double screenX = transform.worldscreenX(vehicle.x);
+            double screenY = transform.worldscreenY(vehicle.y);
+            
+
+
+            // Draw rectangle for vehicle
+            g.setFill(vehicle.color);
+            g.fillRect(
+                screenX - VEHICLE_LENGTH_PX / 2.0,
+                screenY - VEHICLE_WIDTH_PX / 2.0,
+                VEHICLE_LENGTH_PX,
+                VEHICLE_WIDTH_PX
+            );
+        }
+
+    // draw traffic lights
+        if (simulationWrapper != null) {
+            final double TL_SIZE = 1.0;
+            final double TL_SIZE_PX = transform.worldscreenSize(TL_SIZE);
+            
+            List<String> tlIDs = simulationWrapper.getTLIDsList();
+            for (String tlID : tlIDs) {
+                String lightDef = simulationWrapper.getTLPhaseDef(tlID);
+                
+                // Tìm junction tương ứng để lấy vị trí
+                for (Networkpaser.Junction j : model.junctions) {
+                    if (j.id.equals(tlID)) {
+                        double screenX = transform.worldscreenX(j.x);
+                        double screenY = transform.worldscreenY(j.y);
+                        
+                        // Parse lightDef để xác định màu
+                        if (lightDef != null && !lightDef.isEmpty()) {
+                            char firstState = lightDef.charAt(0);
+                            Color tlColor;
+                            if (firstState == 'r' || firstState == 'R') {
+                                tlColor = Color.RED;
+                            } else if (firstState == 'y' || firstState == 'Y') {
+                                tlColor = Color.YELLOW;
+                            } else if (firstState == 'g' || firstState == 'G') {
+                                tlColor = Color.GREEN;
+                            } else {
+                                tlColor = Color.GRAY;
+                            }
+                            
+                            // Vẽ traffic light
+                            g.setFill(tlColor);
+                            g.fillOval(screenX - TL_SIZE_PX / 2.0, screenY - TL_SIZE_PX / 2.0, TL_SIZE_PX, TL_SIZE_PX);
+                            g.setStroke(Color.BLACK);
+                            g.setLineWidth(1);
+                            g.strokeOval(screenX - TL_SIZE_PX / 2.0, screenY - TL_SIZE_PX / 2.0, TL_SIZE_PX, TL_SIZE_PX);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     public void fitAndCenter() {
         if (model == null) return;
-        double minX = Double.POSITIVE_INFINITY, minY = Double.POSITIVE_INFINITY;
-        double maxX = Double.NEGATIVE_INFINITY, maxY = Double.NEGATIVE_INFINITY;
-
-        for (Networkpaser.Edge e : model.edges){
-            for (Networkpaser.Lane l : e.lanes){
-                for (javafx.geometry.Point2D p : l.shapePoints){
-                    if (p.getX() < minX) minX = p.getX();
-                    if (p.getY() < minY) minY = p.getY();
-                    if (p.getX() > maxX) maxX = p.getX();
-                    if (p.getY() > maxY) maxY = p.getY();
-                }
-            }
-        }
-        if (!Double.isFinite(minX)) {
-            for (Networkpaser.Junction j : model.junctions) {
-                if (j.x < minX) minX = j.x;
-                if (j.y < minY) minY = j.y;
-                if (j.x > maxX) maxX = j.x;
-                if (j.y > maxY) maxY = j.y;
-            }
-        }
-        if (!Double.isFinite(minX)) return;
-
-        double width = maxX - minX;
-        double height = maxY - minY;
-        double pad = 40.0;
-        double scaleX = (canvas.getWidth() - 2 * pad) / (width <= 0 ? 1 : width);
-        double scaleY = (canvas.getHeight() - 2 * pad) / (height <= 0 ? 1 : height);
-        scale = Math.min(scaleX, scaleY);
-
-        double centerMapX = (minX + maxX) / 2.0;
-        double centerMapY = (minY + maxY) / 2.0;
-        offsetX = canvas.getWidth() / 2.0 - centerMapX * scale;
-        offsetY = canvas.getHeight() / 2.0 - centerMapY * scale;
+        viewManager.resetView();
     }
 
     public void zoomAtCenter(double factor) {
-        double mouseX = canvas.getWidth() / 2.0;
-        double mouseY = canvas.getHeight() / 2.0;
-        double oldScale = scale;
-        scale = clamp(scale * factor, 0.1, 50.0);
-        double worldX = (mouseX - offsetX) / oldScale;
-        double worldY = (mouseY - offsetY) / oldScale;
-        offsetX = mouseX - worldX * scale;
-        offsetY = mouseY - worldY * scale;
+        viewManager.zoomcenter(factor);
         render();
     }
-
-    private double clamp(double v, double min, double max) {
-        return Math.max(min, Math.min(max, v));
-    }
-    
 }
