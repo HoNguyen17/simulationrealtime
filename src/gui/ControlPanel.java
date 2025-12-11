@@ -1,4 +1,5 @@
 package gui;
+import wrapper.VehicleWrapper;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -6,26 +7,14 @@ import javafx.scene.control.Slider;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.ScrollPane;
 
+
+
+
 public class ControlPanel {
     private final MapCanvas mapCanvas;
 
     public ControlPanel(MapCanvas mapCanvas) {
         this.mapCanvas = mapCanvas;
-    }
-
-    public ScrollPane createSpeedControls() {
-        VBox box = new VBox(6);
-        Label speedLbl = new Label("Simulation speed");
-        Slider speedSlider = new Slider(0.1, 5.0, 1.0);
-        speedSlider.setShowTickMarks(true);
-        speedSlider.setShowTickLabels(true);
-        speedSlider.valueProperty().addListener((obs, oldV, newV) -> {
-            System.out.println("Speed: " + newV.doubleValue());
-        });
-        box.getChildren().addAll(speedLbl, speedSlider);
-        ScrollPane sp = new ScrollPane(box);
-        sp.setFitToWidth(true);
-        return sp;
     }
 
     public ScrollPane createTrafficLightControls() {
@@ -49,12 +38,18 @@ public class ControlPanel {
         Button zoomInBtn = new Button("Zoom in");
         Button zoomOutBtn = new Button("Zoom out");
         Button resetViewBtn = new Button("Reset view");
-        zoomInBtn.setOnAction(e -> mapCanvas.zoomAtCenter(1.1));
-        zoomOutBtn.setOnAction(e -> mapCanvas.zoomAtCenter(0.9));
-        resetViewBtn.setOnAction(e -> { mapCanvas.fitAndCenter(); mapCanvas.render(); });
+        zoomInBtn.setOnAction(e 
+            -> mapCanvas.zoomAtCenter(1.1));
+        zoomOutBtn.setOnAction(e 
+            -> mapCanvas.zoomAtCenter(0.9));
+        resetViewBtn.setOnAction(e 
+            -> { mapCanvas.fitAndCenter(); mapCanvas.render(); });
+
         box.getChildren().addAll(viewLbl, zoomInBtn, zoomOutBtn, resetViewBtn);
         ScrollPane sp = new ScrollPane(box);
         sp.setFitToWidth(true);
         return sp;
     }
+
+
 }

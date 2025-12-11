@@ -26,7 +26,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws Exception{
         // Tải model mạng lưới
-        Networkpaser.NetworkModel model = Networkpaser.load("../resource/test_2_traffic.net.xml");
+        Networkpaser.NetworkModel model = Networkpaser.load("../resource/Netedit_requirement.net.xml");
 
         // Canvas bản đồ chuyển thành MapCanvas để quản lý pan/zoom/vẽ
         mapCanvas = new MapCanvas(1000, 800);
@@ -37,7 +37,7 @@ public class App extends Application {
         // NEW SIMULATION STARTUP
         try {
             simulationWrapper = new SimulationWrapper(
-                    "..\\resource\\test_2_traffic.sumocfg" // Path to your config
+                    "..\\resource\\Netedit_testrun.sumocfg" // Path to your config
             );
             simulationWrapper.conn.runServer(); // Assuming this connects TraCI
         } catch (Exception e) {

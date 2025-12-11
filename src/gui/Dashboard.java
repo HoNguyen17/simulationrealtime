@@ -17,11 +17,11 @@ public class Dashboard extends VBox {
         Label title = new Label("Dashboard");
         title.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
-        var speed = controlPanel.createSpeedControls();
+
         var tls = controlPanel.createTrafficLightControls();
         var view = controlPanel.createViewControls();
         
         
-        this.getChildren().addAll(title, speed, tls, view);
+        this.getChildren().addAll(title, tls, view);
     }
 }
