@@ -1,5 +1,11 @@
 package gui; 
 import paser.Networkpaser;
+import wrapper.SimulationWrapper;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
@@ -10,6 +16,7 @@ public class MapCanvas {
     private final Canvas canvas;
     private final GraphicsContext g;
 
+
     private Networkpaser.NetworkModel model;
 
     private double scale = 1.0;
@@ -17,9 +24,22 @@ public class MapCanvas {
     private double offsetY = 400;
     private double lastDragX = 0, lastDragY = 0;
 
+    private List<VehicleData> vehicleDataList = new ArrayList<>(); // Initialize the list
+
+    // This record holds the minimal information needed for rendering a vehicle
+    public static record VehicleData(String id, double x, double y, double angle, javafx.scene.paint.Color color) {
+        // x and y are world coordinates (SUMO coordinates)
+        // angle is the orientation in degrees
+    }
+    // Setter for vehicle data
+    public void setVehicleData(List<VehicleData> vehicleDataList) {
+        this.vehicleDataList = vehicleDataList;
+    }
+    // Constructor of MapCanvas
     public MapCanvas(double w, double h) {
         canvas = new Canvas(w, h);
         g = canvas.getGraphicsContext2D();
+        //vehicleRenderer = new VehicleRenderer();
 
         // Pan
         canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
@@ -53,39 +73,176 @@ public class MapCanvas {
         });
     }
 
+
+    /* 
+    // getters and setters
+
+    private List<VehicleState> vehicles = new ArrayList<>();
+    public static class VehicleState {
+        public final String id;
+        public final double x;  // world coords (SUMO)
+        public final double y;
+        public final double headingRad; // optional, for rectangle orientation
+        public VehicleState(String id, double x, double y, double headingRad) {
+            this.id = id; this.x = x; this.y = y; this.headingRad = headingRad;
+        }
+    }
+    public void setVehicles(List<VehicleState> list) {
+        this.vehicles = (list != null) ? list : new ArrayList<>();
+    }
+
+    */
+
+
+
+
     public Canvas getCanvas() { return canvas; }
     public void setModel(Networkpaser.NetworkModel model) { this.model = model; }
+
+
+
+
+
+    // Simple offset of a polyline by distance d (screen space, after scaling).
+    private List<Point2D> offsetPolyline(List<Point2D> pts, double d) {
+        if (pts.size() < 2) return pts;
+        List<Point2D> out = new ArrayList<>();
+        for (int i = 0; i < pts.size(); i++) {
+            Point2D p = pts.get(i);
+            Point2D dir;
+            if (i == 0) {
+                dir = pts.get(i + 1).subtract(p);
+            } else if (i == pts.size() - 1) {
+                dir = p.subtract(pts.get(i - 1));
+            } else {
+                Point2D d1 = p.subtract(pts.get(i - 1));
+                Point2D d2 = pts.get(i + 1).subtract(p);
+                dir = d1.add(d2);
+            }
+            double len = Math.hypot(dir.getX(), dir.getY());
+            if (len == 0) len = 1;
+            // normal vector
+            double nx = -dir.getY() / len;
+            double ny =  dir.getX() / len;
+            out.add(new Point2D(p.getX() + nx * d, p.getY() + ny * d));
+        }
+        return out;
+    }
+    // Draw polyline given a list of points 
+    private void drawPolyline(GraphicsContext g, List<Point2D> pts) {
+        for (int i = 1; i < pts.size(); i++) {
+            Point2D a = pts.get(i - 1);
+            Point2D b = pts.get(i);
+            g.strokeLine(a.getX(), a.getY(), b.getX(), b.getY());
+        }
+    }
 
     public void render() {
         if (model == null) return;
         g.setFill(Color.WHITE);
         g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
+        // 0) Fill junction polygons trước để tạo nền giao cắt liền mạch
+        Color roadFill = Color.web("#2b2b2b");
+        g.setFill(roadFill);
+        for (Networkpaser.Junction j : model.junctions) {
+            if (j.shapePoints == null || j.shapePoints.size() < 3) continue;
+            // chuyển sang tọa độ màn hình
+            double[] xs = new double[j.shapePoints.size()];
+            double[] ys = new double[j.shapePoints.size()];
+            for (int i = 0; i < j.shapePoints.size(); i++) {
+                Point2D p = j.shapePoints.get(i);
+                xs[i] = p.getX() * scale + offsetX;
+                ys[i] = p.getY() * scale + offsetY;
+            }
+            g.fillPolygon(xs, ys, xs.length);
+        }
+        // edit draw roads
+        double roadHalfWidth = 20.0;      // nửa bề rộng nền đường
+        double centerMarkWidth = 3.0;    // độ dày vạch vàng giữa
+        //double sideMarkWidth   = 2.0;    // độ dày vạch trắng
+        //double laneOffset      = 5.0;    // khoảng lệch cho vạch trắng hai bên
         for (Networkpaser.Edge e : model.edges){
-            boolean internal = e.id.startsWith(":");
-            g.setStroke(internal ? Color.RED : Color.GREEN);
-            g.setLineWidth(internal ? 6.0 : 7.0);
+            if (e.id.startsWith(":")) continue;
 
             for (Networkpaser.Lane lane : e.lanes){
                 if (lane.shapePoints.size() < 2) continue;
-                for(int i = 1; i < lane.shapePoints.size(); i++){
-                    double x1 = lane.shapePoints.get(i - 1).getX() * scale + offsetX;
-                    double y1 = lane.shapePoints.get(i - 1).getY() * scale + offsetY;
-                    double x2 = lane.shapePoints.get(i).getX() * scale + offsetX;
-                    double y2 = lane.shapePoints.get(i).getY() * scale + offsetY;
-                    g.strokeLine(x1, y1, x2, y2);
+
+                // Build screen-space polyline
+                List<Point2D> screenPts = new ArrayList<>();
+                for (Point2D p : lane.shapePoints) {
+                    screenPts.add(new Point2D(p.getX() * scale + offsetX, p.getY() * scale + offsetY));
                 }
+
+                // 1) Nền đường (xám đậm, nét liền, dày)
+                g.setStroke(roadFill);
+                g.setLineWidth(roadHalfWidth * 2);
+                g.setLineDashes(); // solid
+                drawPolyline(g, screenPts);
+
+                // 2) Vạch vàng giữa (nét đứt dài)
+                 List<Point2D> centerMark = offsetPolyline(screenPts, 0.0);
+                g.setStroke(Color.web("#ffd200"));
+                g.setLineWidth(centerMarkWidth);
+                g.setLineDashes(18, 12);
+                drawPolyline(g, centerMark);
+
+                // 3) Vạch trắng chia làn (hai bên, nét đứt ngắn hơn)
+                //List<Point2D> leftMark  = offsetPolyline(screenPts, -laneOffset);
+                //List<Point2D> rightMark = offsetPolyline(screenPts,  laneOffset);
+                g.setStroke(Color.WHITE);
+                //g.setLineWidth(sideMarkWidth);
+                g.setLineDashes(12, 10);
+                //drawPolyline(g, leftMark);
+                //drawPolyline(g, rightMark);
             }
         }
-
+        // junctions points
         g.setFill(Color.ORANGE);
         for (Networkpaser.Junction j : model.junctions) {
             double x = j.x * scale + offsetX;
             double y = j.y * scale + offsetY;
             g.fillOval(x - 2, y - 2, 4, 4);
         }
+
+
+        // --- Vehicle Rendering Logic ---
+        g.setFill(Color.BLUE); // Use the default red or vehicle.color
+
+        // Define the size of the vehicle icon (e.g., 6x6 pixel circle)
+        final double VEHICLE_LENGTH_PX = 12.0;
+        final double VEHICLE_WIDTH_PX =  6.0;
+        for (VehicleData vehicle : vehicleDataList) {
+            // 1. Transform the SUMO coordinates (world coordinates) to screen coordinates
+            double screenX = vehicle.x * scale + offsetX;
+            double screenY = vehicle.y * scale + offsetY;
+            
+            //optional rotation
+           // g.save();
+           // g.translate(screenX, screenY);   // rotate around vehicle center
+           // g.rotate(vehicle.angle);         // degrees; use -vehicle.angle if mirrored
+
+            // 2. Draw a simple shape (e.g., an oval) centered at the position
+            g.setFill(vehicle.color);
+            g.fillRect( //draw rectangle centered at (screenX, screenY)
+                    screenX - VEHICLE_LENGTH_PX / 2.0,
+                    screenY - VEHICLE_WIDTH_PX  / 2.0,
+                    VEHICLE_LENGTH_PX,
+                    VEHICLE_WIDTH_PX
+            );
+            //g.restore();
+        }
     }
 
+
+
+
+
+
+
+
+
+    // Fit and center the map content within the canvas
     public void fitAndCenter() {
         if (model == null) return;
         double minX = Double.POSITIVE_INFINITY, minY = Double.POSITIVE_INFINITY;
@@ -135,7 +292,7 @@ public class MapCanvas {
         offsetY = mouseY - worldY * scale;
         render();
     }
-
+    // clamp value between min and max of double type 
     private double clamp(double v, double min, double max) {
         return Math.max(min, Math.min(max, v));
     }

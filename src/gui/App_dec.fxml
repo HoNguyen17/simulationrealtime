@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.effect.GaussianBlur?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="rootPane" fx:controller="gui.App_dec_controller" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: linear-gradient(from 0% 100% to 100% 0%, #1f4037 0%, #99f2c8 100%);" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+   <left>
+      <VBox prefWidth="300.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label text="TRAFFIC LIGHT&#10;SIMULATION" textFill="WHITE">
+               <font>
+                  <Font name="Arial Black" size="24.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="22.0" top="20.0" />
+               </VBox.margin>
+            </Label>
+            <Pane style="-fx-background-radius: 20; -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 15, 0.0, -5, 0); -fx-background-color: rgba(0,0,0,0.5);">
+               <children>
+                  <VBox prefWidth="300.0">
+                     <children>
+                        <Label text="CONTROL" textFill="WHITE">
+                           <font>
+                              <Font name="Arial Black" size="18.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets left="10.0" top="7.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Pane prefWidth="280.0">
+                           <children>
+                              <VBox prefWidth="290.0">
+                                 <children>
+                                    <Label prefHeight="25.0" prefWidth="147.0" text="Simulation speed" textFill="WHITE">
+                                       <font>
+                                          <Font name="Arial Black" size="14.5" />
+                                       </font>
+                                    </Label>
+                                    <Slider fx:id="sim_spd" majorTickUnit="1.0" max="5.0" maxWidth="205.0" min="0.1" minWidth="205.0" minorTickCount="2" prefWidth="205.0" showTickLabels="true" showTickMarks="true" style="-fx-cursor: hand;">
+                                       <VBox.margin>
+                                          <Insets top="5.0" />
+                                       </VBox.margin>
+                                    </Slider>
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" />
+                                 </padding>
+                              </VBox>
+                           </children>
+                           <VBox.margin>
+                              <Insets left="10.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </Pane>
+                        <Pane prefWidth="280.0">
+                           <children>
+                              <VBox prefWidth="300.0">
+                                 <children>
+                                    <Label text="Traffic Light" textFill="WHITE">
+                                       <font>
+                                          <Font name="Arial Black" size="14.0" />
+                                       </font>
+                                       <VBox.margin>
+                                          <Insets bottom="5.0" left="5.0" />
+                                       </VBox.margin>
+                                    </Label>
+                                    <HBox prefWidth="300.0">
+                                       <VBox.margin>
+                                          <Insets left="5.0" />
+                                       </VBox.margin>
+                                       <children>
+                                          <Button fx:id="tfl_auto" minWidth="100.0" mnemonicParsing="false" onAction="#onClick_tfl_auto" style="-fx-cursor: hand;" text="Auto" textFill="#316556">
+                                             <HBox.margin>
+                                                <Insets right="5.0" />
+                                             </HBox.margin>
+                                             <font>
+                                                <Font name="Arial Black" size="12.0" />
+                                             </font>
+                                          </Button>
+                                          <Button fx:id="tfl_man" minWidth="100.0" mnemonicParsing="false" onAction="#onClick_tfl_man" style="-fx-cursor: hand;" text="Manual" textFill="#316556">
+                                             <font>
+                                                <Font name="Arial Black" size="12.0" />
+                                             </font>
+                                          </Button>
+                                       </children>
+                                    </HBox>
+                                    <Button fx:id="tfl_nextp" mnemonicParsing="false" onAction="#onClick_tfl_nextp" prefWidth="205.0" style="-fx-cursor: hand;" text="Next phase" textFill="#316556">
+                                       <VBox.margin>
+                                          <Insets left="5.0" top="5.0" />
+                                       </VBox.margin>
+                                       <font>
+                                          <Font name="Arial Black" size="12.0" />
+                                       </font>
+                                    </Button>
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" />
+                                 </padding>
+                              </VBox>
+                           </children>
+                           <VBox.margin>
+                              <Insets left="10.0" top="15.0" />
+                           </VBox.margin>
+                        </Pane>
+                        <Pane prefWidth="280.0">
+                           <children>
+                              <VBox prefWidth="300.0">
+                                 <children>
+                                    <Label text="View" textFill="WHITE">
+                                       <font>
+                                          <Font name="Arial Black" size="14.0" />
+                                       </font>
+                                       <VBox.margin>
+                                          <Insets bottom="5.0" left="5.0" />
+                                       </VBox.margin>
+                                    </Label>
+                                    <HBox prefWidth="300.0">
+                                       <VBox.margin>
+                                          <Insets left="5.0" />
+                                       </VBox.margin>
+                                       <children>
+                                          <Button fx:id="v_zin" minWidth="100.0" mnemonicParsing="false" onAction="#onClick_v_zin" style="-fx-cursor: hand;" text="Zoom in" textFill="#316556">
+                                             <HBox.margin>
+                                                <Insets right="5.0" />
+                                             </HBox.margin>
+                                             <font>
+                                                <Font name="Arial Black" size="12.0" />
+                                             </font>
+                                          </Button>
+                                          <Button fx:id="v_zout" minWidth="100.0" mnemonicParsing="false" onAction="#onClick_v_zout" style="-fx-cursor: hand;" text="Zoom out" textFill="#316556">
+                                             <font>
+                                                <Font name="Arial Black" size="12.0" />
+                                             </font>
+                                          </Button>
+                                       </children>
+                                    </HBox>
+                                    <Button fx:id="v_rview" mnemonicParsing="false" onAction="#onClick_v_rview" prefWidth="205.0" style="-fx-cursor: hand;" text="Reset view" textFill="#316556">
+                                       <VBox.margin>
+                                          <Insets left="5.0" top="5.0" />
+                                       </VBox.margin>
+                                       <font>
+                                          <Font name="Arial Black" size="12.0" />
+                                       </font>
+                                    </Button>
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" />
+                                 </padding>
+                              </VBox>
+                           </children>
+                           <VBox.margin>
+                              <Insets left="10.0" top="15.0" />
+                           </VBox.margin>
+                        </Pane>
+                     </children>
+                  </VBox>
+               </children>
+               <opaqueInsets>
+                  <Insets top="50.0" />
+               </opaqueInsets>
+               <VBox.margin>
+                  <Insets bottom="15.0" left="20.0" right="10.0" top="10.0" />
+               </VBox.margin>
+               <padding>
+                  <Insets bottom="50.0" />
+               </padding>
+               <effect>
+                  <GaussianBlur radius="0.0" />
+               </effect>
+            </Pane>
+            <Pane prefHeight="200.0" prefWidth="200.0">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </Pane>
+         </children>
+      </VBox>
+   </left>
+   <center>
+      <StackPane fx:id="mapContainer" prefHeight="150.0" prefWidth="200.0" style="-fx-background-radius: 20; -fx-background-color: gray;" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets bottom="20.0" left="10.0" right="20.0" top="20.0" />
+         </BorderPane.margin>
+      </StackPane>
+   </center>
+</BorderPane>

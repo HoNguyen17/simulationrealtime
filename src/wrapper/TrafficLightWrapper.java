@@ -9,17 +9,21 @@ import java.util.ArrayList;
 public class TrafficLightWrapper {
     String ID;
     String originProgramID;
+
+    // SỬA LỖI: Thêm biến này để SimulationWrapper có thể truy cập
+    public String lightDef;
+
     TrafficLightWrapper(String temp){
         ID = temp;
         System.out.println("Added " + temp + ".");
     }
-//=================GETTER================================
-    // get ID
+
+    //=================GETTER================================
     public String getID(int po) {
         if (po == 1) {System.out.print(" " + ID);}
         return ID;
     }
-    // get phase number
+
     public int getPhaseNum(SimulationWrapper temp, int po) {
         try {
             int tlsPhase = (int)temp.conn.do_job_get(Trafficlight.getPhase(ID));
@@ -31,7 +35,7 @@ public class TrafficLightWrapper {
         }
         return -1;
     }
-    // get phase definition (Red-Green-Yellow)
+
     public String getPhaseDef(SimulationWrapper temp, int po) {
         try {
             String lightState = (String)temp.conn.do_job_get(Trafficlight.getRedYellowGreenState(ID));
@@ -43,76 +47,63 @@ public class TrafficLightWrapper {
         }
         return null;
     }
-    // get controlled links
+
     public List<String[][]> getControlledLinks(SimulationWrapper temp, int po) {
         try {
             List<String[][]> controlledLinks = (List<String[][]>)temp.conn.do_job_get(Trafficlight.getControlledLinks(ID));
             if (po == 1){System.out.println("Current controlled links of " + ID + ":" + controlledLinks.get(0));}
             return controlledLinks;
-        }   
+        }
         catch (Exception C) {
             System.out.println("Cannot get controlled links of traffic light");
         }
         return null;
     }
-//=================SETTER================================
-    // set phase definition (Red-Green-Yellow)
+
+    //=================SETTER================================
     public boolean setPhaseDef(SimulationWrapper temp, String input) {
-        try {               //maybe need check??
+        try {
             temp.conn.do_job_set(Trafficlight.setRedYellowGreenState(ID, input));
-            Thread.sleep(2000); 
+            // Lưu ý: Thread.sleep ở đây sẽ làm dừng cả mô phỏng, hãy cân nhắc khi dùng
+            Thread.sleep(2000);
             temp.conn.do_job_set(Trafficlight.setProgram(ID, "0"));
+            return true;
         }
         catch (Exception D) {
-            System.out.println("Unable to set controlled links of traffic light");
+            System.out.println("Unable to set phase definition");
         }
         return false;
-    // set phase definition with phase time (Red-Green-Yellow with time)  
     }
-        public boolean setPhaseDefWPT(SimulationWrapper temp, String input, double time) {
-        try {               //maybe need check??
+
+    // SỬA LỖI: Đổi tên hàm cho khớp với SimulationWrapper và logic chung
+    public boolean setPhaseDefWithPhaseTime(SimulationWrapper temp, String input, double time) {
+        try {
             long roundedTime = Math.round(time * 200);
             temp.conn.do_job_set(Trafficlight.setRedYellowGreenState(ID, input));
-            Thread.sleep(roundedTime); 
+            Thread.sleep(roundedTime);
             temp.conn.do_job_set(Trafficlight.setProgram(ID, "0"));
+            return true;
         }
         catch (Exception D) {
-            System.out.println("Unable to set controlled links of traffic light");
+            System.out.println("Unable to set phase definition with time");
         }
         return false;
     }
-    //     public boolean setPhaseDef2(SimulationWrapper temp, String input) {
-    //     class TempThread extends Thread {
-    //             boolean debugFlag = false;
-    //         public void run() {
-    //             try {               //maybe need check??
-    //                 temp.conn.do_job_set(Trafficlight.setRedYellowGreenState(ID, input));
-    //                 Thread.sleep(2000); 
-    //                 temp.conn.do_job_set(Trafficlight.setProgram(ID, "0"));
-    //                 debugFlag = true;
-    //             }
-    //             catch (Exception D) {
-    //                 System.out.println("Unable to set controlled links of traffic light");
-    //             }
-    //         }
-    //     }
-    //     TempThread T = new TempThread();
-    //     T.start();
-    //     return T.debugFlag;
-    // }
-//=================STATIC================================
-    // update all traffic light IDs of simulation
+
+    //=================STATIC================================
     public static void updateTrafficLightIDs(SimulationWrapper temp) {
         try {
             @SuppressWarnings("unchecked")
             List<String> IDsList = (List<String>)temp.conn.do_job_get(Trafficlight.getIDList());
             for (String x : IDsList) {
                 TrafficLightWrapper y = new TrafficLightWrapper(x);
-                temp.TrafficLightList.add(y);
+                // SỬA LỖI: TrafficLightList là HashMap nên dùng .put(key, value) thay vì .add()
+                temp.TrafficLightList.put(x, y);
             }
         }
         catch (Exception A) {
             System.out.println("Set up traffic lights failed.");
+            A.printStackTrace(); // In lỗi chi tiết để dễ debug
         }
     }
 }
