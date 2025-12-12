@@ -1,177 +1,135 @@
-import gui.MapCanvas; //
-import gui.VehicleRenderer;
+import gui.MapCanvas;
+import gui.MapCanvas.VehicleData;
+import gui.Dashboard;
+
 import paser.Networkpaser;
-import javafx.application.Application;
+import wrapper.SimulationWrapper;
+import wrapper.VehicleWrapper;
+import wrapper.TrafficLightWrapper;
+import de.tudresden.sumo.cmd.Vehicle;
 import javafx.animation.AnimationTimer;
+import java.util.List;
+import java.util.ArrayList;
+import javafx.application.Platform;
+import de.tudresden.sumo.objects.SumoPosition2D;
+
+import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
-import javafx.scene.layout.VBox;
-import wrapper.SimulationWrapper;
 
 
 public class App extends Application {
+    private MapCanvas mapCanvas;
+    private AnimationTimer simulationTimer;// Field to hold the timer instance
+    private SimulationWrapper simulationWrapper; // Field to hold the simulation wrapper
     @Override
     public void start(Stage stage) throws Exception{
         // Tải model mạng lưới
-        Networkpaser.NetworkModel model = Networkpaser.load("../resource/test_2_traffic.net.xml");
+        Networkpaser.NetworkModel model = Networkpaser.load("../resource/Netedit_requirement.net.xml");
 
         // Canvas bản đồ chuyển thành MapCanvas để quản lý pan/zoom/vẽ
-        MapCanvas mapCanvas = new MapCanvas(1000, 800);
+        mapCanvas = new MapCanvas(1000, 800);
         mapCanvas.setModel(model);
         mapCanvas.fitAndCenter();
         mapCanvas.render();
 
-        // Sidebar trái: control dashboard
-        VBox sidebar = new VBox(10);
-        sidebar.setPadding(new Insets(12));
-        sidebar.setPrefWidth(280);
+        // NEW SIMULATION STARTUP
+        try {
+            simulationWrapper = new SimulationWrapper(
+                    "..\\resource\\Netedit_testrun.sumocfg" // Path to your config
+            );
+            simulationWrapper.conn.runServer(); // Assuming this connects TraCI
+        } catch (Exception e) {
+            System.err.println("Failed to start SUMO or connect TraCI: " + e.getMessage());
+            return;
+        }
 
-        Label title = new Label("Dashboard");
-        title.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-        
-        // Điều khiển tốc độ mô phỏng Simulation speed
-        Label speedLbl = new Label("########");
-        Slider speedSlider = new Slider(0.1, 5.0, 1.0);
-        speedSlider.setShowTickMarks(true);
-        speedSlider.setShowTickLabels(true);
-        speedSlider.valueProperty().addListener((obs, oldV, newV) -> {
-            // TODO: nối với SimulationController.setSpeed(newV.doubleValue());
-            System.out.println("Speed: " + newV.doubleValue());
-        });
-         
+        // --- NEW REAL-TIME ANIMATION LOOP ---
+        simulationTimer = new AnimationTimer() { // <-- 1. Assign timer to the field
+            private long lastUpdate = 0;
+            private static final long UPDATE_INTERVAL = 50_000_000; // ~20 FPS (50ms)
 
-        // Điều khiển đèn giao thông 
-        Label tlLbl = new Label("Traffic light");
-        Button tlAutoBtn = new Button("######");//"Auto mode"
-        Button tlManualBtn = new Button("######");//"Manual mode"
-        Button tlNextPhaseBtn = new Button("######");//"Next phase"
-        tlAutoBtn.setOnAction(e -> {
-            // TODO: TrafficLightController.setAuto(true);
-            System.out.println("TL: auto");
-        });
-        tlManualBtn.setOnAction(e -> {
-            // TODO: TrafficLightController.setAuto(false);
-            System.out.println("TL: manual");
-        });
-        tlNextPhaseBtn.setOnAction(e -> {
-            // TODO: TrafficLightController.stepPhase();
-            System.out.println("TL: next phase");
+            @Override
+            public void handle(long now) {
+                if (now - lastUpdate >= UPDATE_INTERVAL) {
+                    try {
+                        // 1. Step the simulation and fetch new vehicle state
+                        simulationWrapper.Step();
+
+                        // 2. Fetch all vehicle data
+                        List<String> vehicleIDs = VehicleWrapper.getIDList(simulationWrapper, 0);
+                        List<VehicleData> vehicleDataList = new ArrayList<>();
+
+                        for (String id : vehicleIDs) {
+                            VehicleWrapper vehicle = new VehicleWrapper(id);
+                            SumoPosition2D pos = vehicle.getPosition(simulationWrapper, 0);
+                            double angle = vehicle.getAngle(simulationWrapper, 0); // Get vehicle rotation
+
+                            if (pos != null) {
+                                // Convert SumoPosition2D and angle into the VehicleData format
+                                vehicleDataList.add(new VehicleData(
+                                        id,
+                                        pos.x,
+                                        pos.y,
+                                        angle,
+                                        javafx.scene.paint.Color.WHITE // Default color for all vehicles
+                                ));
+                            }
+                        }
+
+                        // 3. Update Canvas and Render
+                        mapCanvas.setVehicleData(vehicleDataList);
+                        mapCanvas.render();
+
+                        lastUpdate = now;
+
+                    } catch (Exception e) {
+                        System.err.println("Simulation Loop Error: " + e.getMessage());
+                        e.printStackTrace();
+                        this.stop();
+                    }
+                }
+            }
+        }; // End of AnimationTimer definition
+        simulationTimer.start(); // Start the timer
+
+        // --- NEW CLEANUP LOGIC ---
+        stage.setOnCloseRequest(e -> {
+            System.out.println("Stopping simulation and exiting...");
+
+            // 1. Stop the timer FIRST to prevent subsequent TraCI calls
+            simulationTimer.stop();
+
+            // 2. Close the TraCI connection safely, checking if it's NOT closed
+            try {
+                if (simulationWrapper != null && !simulationWrapper.conn.isClosed()) { // <-- FIX IS HERE
+                    simulationWrapper.conn.close();
+                }
+            } catch (Exception ignore) {}
+
+            Platform.exit();
         });
 
-        /* 
-        // Điều khiển xe
-        Label vehLbl = new Label("Vehicles");
-        Button spawnVehBtn = new Button("Spawn vehicle");
-        Button clearVehBtn = new Button("Clear vehicles");
-        spawnVehBtn.setOnAction(e -> {
-            // TODO: VehicleController.spawnAtSelectedJunction();
-            System.out.println("Vehicle: spawn");
-        });
-        clearVehBtn.setOnAction(e -> {
-            // TODO: VehicleController.clearAll();
-            System.out.println("Vehicle: clear");
-        });
-        */
 
-        // Zoom nhanh
-        Label viewLbl = new Label("View");
-        Button zoomInBtn = new Button("######");//"Zoom in"
-        Button zoomOutBtn = new Button("######");//"Zoom out"
-        Button resetViewBtn = new Button("######");//"Reset view"
-        zoomInBtn.setOnAction(e -> { mapCanvas.zoomAtCenter(1.1); });
-        zoomOutBtn.setOnAction(e -> { mapCanvas.zoomAtCenter(0.9); });
-        resetViewBtn.setOnAction(e -> { mapCanvas.fitAndCenter(); mapCanvas.render(); });
 
-        //Dashboard layout
-        sidebar.getChildren().addAll(
-            title,
-            speedLbl, speedSlider,
-            tlLbl, tlAutoBtn, tlManualBtn, tlNextPhaseBtn,
-            //vehLbl,spawnVehBtn, clearVehBtn,
-            viewLbl, zoomInBtn, zoomOutBtn, resetViewBtn
-        );
+
+
+        // Sidebar trái: dùng Dashboard trong package gui
+        Dashboard dashboard = new Dashboard(mapCanvas);
 
         BorderPane root = new BorderPane();
-        root.setLeft(sidebar);
+        root.setLeft(dashboard);
         root.setCenter(mapCanvas.getCanvas());
+
+
 
         stage.setTitle("SUMO Network Dashboard");
         stage.setScene(new Scene(root));
         stage.show();
-        
-        // Khởi động simulation và animation loop để cập nhật xe từ XML
-        try {
-            String configFile = "../resource/test_2_traffic.sumocfg";
-            SimulationWrapper sim = new SimulationWrapper(configFile, 1.0, "sumo");
-            sim.Start();
-            
-            VehicleRenderer vehicleRenderer = mapCanvas.getVehicleRenderer();
-            
-            // Chạy simulation trong thread riêng để không block UI
-            Thread simulationThread = new Thread(() -> {
-                try {
-                    while (!Thread.currentThread().isInterrupted()) {
-                        sim.Step();
-                        Thread.sleep(100); // Delay 100ms giữa các bước
-                    }
-                } catch (InterruptedException e) {
-                    // Thread bị interrupt, dừng simulation
-                } catch (Exception e) {
-                    System.err.println("Error in simulation thread: " + e.getMessage());
-                }
-            });
-            simulationThread.setDaemon(true);
-            simulationThread.start();
-            
-            // AnimationTimer để cập nhật và render UI
-            AnimationTimer animationTimer = new AnimationTimer() {
-                private long lastUpdate = 0;
-                private final long UPDATE_INTERVAL = 100_000_000; // 100ms (nanoseconds)
-                
-                @Override
-                public void handle(long now) {
-                    if (now - lastUpdate >= UPDATE_INTERVAL) {
-                        try {
-                            // Cập nhật xe từ simulation (xe từ XML)
-                            vehicleRenderer.updateFromSimulation(sim);
-                            
-                            // Render lại
-                            mapCanvas.render();
-                            
-                            lastUpdate = now;
-                        } catch (Exception e) {
-                            // Bỏ qua lỗi để không crash app
-                            System.err.println("Error updating vehicles: " + e.getMessage());
-                        }
-                    }
-                }
-            };
-            
-            animationTimer.start();
-            
-            // Dừng animation và simulation khi đóng cửa sổ
-            final SimulationWrapper finalSim = sim;
-            stage.setOnCloseRequest(e -> {
-                animationTimer.stop();
-                simulationThread.interrupt();
-                try {
-                    finalSim.End();
-                } catch (Exception ex) {
-                    // Ignore
-                }
-            });
-        } catch (Exception e) {
-            System.err.println("Không thể khởi động simulation: " + e.getMessage());
-            e.printStackTrace();
-        }
+
     }
     public static void main(String[] args) {
         launch(args);
     }
-
 }

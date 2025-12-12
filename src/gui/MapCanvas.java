@@ -187,44 +187,48 @@ public class MapCanvas {
             );
         }
 
-    // draw traffic lights
+        // draw traffic lights (mỗi ký tự trong lightDef là một bóng đèn tại junction)
         if (simulationWrapper != null) {
             final double TL_SIZE = 1.0;
             final double TL_SIZE_PX = transform.worldscreenSize(TL_SIZE);
-            
+            final double GAP_PX = TL_SIZE_PX * 1.2;   // khoảng cách giữa các đèn
+            final int LIGHTS_PER_ROW = 4;             // số đèn trên một hàng
+
             List<String> tlIDs = simulationWrapper.getTLIDsList();
             for (String tlID : tlIDs) {
                 String lightDef = simulationWrapper.getTLPhaseDef(tlID);
-                
-                // Tìm junction tương ứng để lấy vị trí
+
+                // tìm junction tương ứng để lấy vị trí
                 for (Networkpaser.Junction j : model.junctions) {
-                    if (j.id.equals(tlID)) {
-                        double screenX = transform.worldscreenX(j.x);
-                        double screenY = transform.worldscreenY(j.y);
-                        
-                        // Parse lightDef để xác định màu
-                        if (lightDef != null && !lightDef.isEmpty()) {
-                            char firstState = lightDef.charAt(0);
+                    if (!j.id.equals(tlID)) continue;
+
+                    double baseX = transform.worldscreenX(j.x);
+                    double baseY = transform.worldscreenY(j.y);
+
+                    if (lightDef != null && !lightDef.isEmpty()) {
+                        for (int idx = 0; idx < lightDef.length(); idx++) {
+                            char state = lightDef.charAt(idx);
                             Color tlColor;
-                            if (firstState == 'r' || firstState == 'R') {
-                                tlColor = Color.RED;
-                            } else if (firstState == 'y' || firstState == 'Y') {
-                                tlColor = Color.YELLOW;
-                            } else if (firstState == 'g' || firstState == 'G') {
-                                tlColor = Color.GREEN;
-                            } else {
-                                tlColor = Color.GRAY;
-                            }
-                            
-                            // Vẽ traffic light
+                            if (state == 'r' || state == 'R') tlColor = Color.RED;
+                            else if (state == 'y' || state == 'Y') tlColor = Color.YELLOW;
+                            else if (state == 'g' || state == 'G') tlColor = Color.GREEN;
+                            else tlColor = Color.GRAY;
+
+                            int col = idx % LIGHTS_PER_ROW;
+                            int row = idx / LIGHTS_PER_ROW;
+                            double offsetX = (col - (LIGHTS_PER_ROW - 1) / 2.0) * GAP_PX;
+                            double offsetY = -row * GAP_PX; // xếp các hàng lên trên
+                            double cx = baseX + offsetX;
+                            double cy = baseY + offsetY;
+
                             g.setFill(tlColor);
-                            g.fillOval(screenX - TL_SIZE_PX / 2.0, screenY - TL_SIZE_PX / 2.0, TL_SIZE_PX, TL_SIZE_PX);
+                            g.fillOval(cx - TL_SIZE_PX / 2.0, cy - TL_SIZE_PX / 2.0, TL_SIZE_PX, TL_SIZE_PX);
                             g.setStroke(Color.BLACK);
                             g.setLineWidth(1);
-                            g.strokeOval(screenX - TL_SIZE_PX / 2.0, screenY - TL_SIZE_PX / 2.0, TL_SIZE_PX, TL_SIZE_PX);
+                            g.strokeOval(cx - TL_SIZE_PX / 2.0, cy - TL_SIZE_PX / 2.0, TL_SIZE_PX, TL_SIZE_PX);
                         }
-                        break;
                     }
+                    break; // đã tìm thấy junction này, sang tlID khác
                 }
             }
         }
