@@ -4,9 +4,8 @@ import gui.Dashboard;
 
 import paser.Networkpaser;
 import wrapper.SimulationWrapper;
-import wrapper.VehicleWrapper;
-import wrapper.TrafficLightWrapper;
-import de.tudresden.sumo.cmd.Vehicle;
+
+
 import javafx.animation.AnimationTimer;
 import java.util.List;
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws Exception{
         // Tải model mạng lưới
-        Networkpaser.NetworkModel model = Networkpaser.load("../resource/Netedit_requirement.net.xml");
+        Networkpaser.NetworkModel model = Networkpaser.load("C:\\traffic_light-main\\simulationrealtime\\resource\\Netedit_requirement.net.xml");
 
         // Canvas bản đồ chuyển thành MapCanvas để quản lý pan/zoom/vẽ
         mapCanvas = new MapCanvas(1000, 800);
@@ -37,9 +36,10 @@ public class App extends Application {
         // NEW SIMULATION STARTUP
         try {
             simulationWrapper = new SimulationWrapper(
-                    "..\\resource\\Netedit_testrun.sumocfg" // Path to your config
+                    "C:\\traffic_light-main\\simulationrealtime\\resource\\Netedit_testrun.sumocfg" // Path to your config
             );
-            simulationWrapper.conn.runServer(); // Assuming this connects TraCI
+            simulationWrapper.Start(); // Assuming this connects TraCI
+            mapCanvas.setSimulationWrapper(simulationWrapper); // Truyền wrapper vào MapCanvas để render traffic lights
         } catch (Exception e) {
             System.err.println("Failed to start SUMO or connect TraCI: " + e.getMessage());
             return;
@@ -58,13 +58,12 @@ public class App extends Application {
                         simulationWrapper.Step();
 
                         // 2. Fetch all vehicle data
-                        List<String> vehicleIDs = VehicleWrapper.getIDList(simulationWrapper, 0);
+                        List<String> vehicleIDs = simulationWrapper.getVehicleIDsList();
                         List<VehicleData> vehicleDataList = new ArrayList<>();
 
                         for (String id : vehicleIDs) {
-                            VehicleWrapper vehicle = new VehicleWrapper(id);
-                            SumoPosition2D pos = vehicle.getPosition(simulationWrapper, 0);
-                            double angle = vehicle.getAngle(simulationWrapper, 0); // Get vehicle rotation
+                            SumoPosition2D pos = simulationWrapper.getVehiclePosition(id);
+                            double angle = simulationWrapper.getVehicleAngle(id); // Get vehicle rotation
 
                             if (pos != null) {
                                 // Convert SumoPosition2D and angle into the VehicleData format
@@ -103,8 +102,8 @@ public class App extends Application {
 
             // 2. Close the TraCI connection safely, checking if it's NOT closed
             try {
-                if (simulationWrapper != null && !simulationWrapper.conn.isClosed()) { // <-- FIX IS HERE
-                    simulationWrapper.conn.close();
+                if (simulationWrapper != null && !simulationWrapper.isClosed()) { // <-- FIX IS HERE
+                    simulationWrapper.End();
                 }
             } catch (Exception ignore) {}
 

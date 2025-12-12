@@ -101,6 +101,50 @@ public class MapCanvas {
         }
     }
 
+    // Helper method để vẽ một cột đèn giao thông với 3 bóng (red, yellow, green)
+    private void drawTrafficLightPole(GraphicsContext g, double centerX, double centerY, 
+                                      double bulbSize, char state) {
+        final double SPACING = bulbSize * 1.3; // khoảng cách giữa các bóng
+        final double POLE_WIDTH = bulbSize * 0.15; // độ rộng cột đèn
+        
+        // Vẽ cột đèn (màu đen/xám)
+        g.setFill(Color.web("#333333"));
+        g.fillRect(centerX - POLE_WIDTH / 2.0, centerY - SPACING * 1.5, 
+                   POLE_WIDTH, SPACING * 3);
+        
+        // Normalize state về lowercase để so sánh
+        char normalizedState = Character.toLowerCase(state);
+        
+        // Vẽ 3 bóng đèn từ trên xuống: Red, Yellow, Green
+        double[] bulbY = {
+            centerY - SPACING,      // Red (trên cùng)
+            centerY,                 // Yellow (giữa)
+            centerY + SPACING        // Green (dưới cùng)
+        };
+        
+        Color[] bulbColors = {Color.RED, Color.YELLOW, Color.GREEN};
+        char[] bulbStates = {'r', 'y', 'g'};
+        
+        for (int i = 0; i < 3; i++) {
+            // Xác định màu: sáng nếu match state, tắt nếu không
+            Color bulbColor;
+            if (normalizedState == bulbStates[i]) {
+                bulbColor = bulbColors[i]; // Bóng sáng với màu tương ứng
+            } else {
+                bulbColor = Color.web("#444444"); // Tắt (màu xám đậm)
+            }
+            
+            // Vẽ bóng đèn
+            g.setFill(bulbColor);
+            g.fillOval(centerX - bulbSize / 2.0, bulbY[i] - bulbSize / 2.0, bulbSize, bulbSize);
+            
+            // Vẽ viền bóng đèn
+            g.setStroke(Color.BLACK);
+            g.setLineWidth(1);
+            g.strokeOval(centerX - bulbSize / 2.0, bulbY[i] - bulbSize / 2.0, bulbSize, bulbSize);
+        }
+    }
+
     public void render() {
         if (model == null) return;
         // Clear canvas
@@ -187,48 +231,104 @@ public class MapCanvas {
             );
         }
 
-        // draw traffic lights (mỗi ký tự trong lightDef là một bóng đèn tại junction)
+        // draw traffic lights (cột đèn với 3 bóng ở đầu mỗi lane đi vào junction)
+        // 2 đèn dọc và 2 đèn ngang có màu trái ngược nhau, cố định theo phase
         if (simulationWrapper != null) {
-            final double TL_SIZE = 1.0;
-            final double TL_SIZE_PX = transform.worldscreenSize(TL_SIZE);
-            final double GAP_PX = TL_SIZE_PX * 1.2;   // khoảng cách giữa các đèn
-            final int LIGHTS_PER_ROW = 4;             // số đèn trên một hàng
+            final double TL_BULB_SIZE = 0.6; // kích thước mỗi bóng đèn
+            final double TL_BULB_SIZE_PX = transform.worldscreenSize(TL_BULB_SIZE);
 
             List<String> tlIDs = simulationWrapper.getTLIDsList();
+            
             for (String tlID : tlIDs) {
-                String lightDef = simulationWrapper.getTLPhaseDef(tlID);
-
-                // tìm junction tương ứng để lấy vị trí
+                // Lấy phase number để xác định màu
+                int phaseNum = simulationWrapper.getTLPhaseNum(tlID);
+                
+                // Kiểm tra phaseNum hợp lệ
+                if (phaseNum < 0) continue;
+                
+                // Tìm junction tương ứng
+                Networkpaser.Junction targetJunction = null;
                 for (Networkpaser.Junction j : model.junctions) {
-                    if (!j.id.equals(tlID)) continue;
-
-                    double baseX = transform.worldscreenX(j.x);
-                    double baseY = transform.worldscreenY(j.y);
-
-                    if (lightDef != null && !lightDef.isEmpty()) {
-                        for (int idx = 0; idx < lightDef.length(); idx++) {
-                            char state = lightDef.charAt(idx);
-                            Color tlColor;
-                            if (state == 'r' || state == 'R') tlColor = Color.RED;
-                            else if (state == 'y' || state == 'Y') tlColor = Color.YELLOW;
-                            else if (state == 'g' || state == 'G') tlColor = Color.GREEN;
-                            else tlColor = Color.GRAY;
-
-                            int col = idx % LIGHTS_PER_ROW;
-                            int row = idx / LIGHTS_PER_ROW;
-                            double offsetX = (col - (LIGHTS_PER_ROW - 1) / 2.0) * GAP_PX;
-                            double offsetY = -row * GAP_PX; // xếp các hàng lên trên
-                            double cx = baseX + offsetX;
-                            double cy = baseY + offsetY;
-
-                            g.setFill(tlColor);
-                            g.fillOval(cx - TL_SIZE_PX / 2.0, cy - TL_SIZE_PX / 2.0, TL_SIZE_PX, TL_SIZE_PX);
-                            g.setStroke(Color.BLACK);
-                            g.setLineWidth(1);
-                            g.strokeOval(cx - TL_SIZE_PX / 2.0, cy - TL_SIZE_PX / 2.0, TL_SIZE_PX, TL_SIZE_PX);
-                        }
+                    if (j.id.equals(tlID)) {
+                        targetJunction = j;
+                        break;
                     }
-                    break; // đã tìm thấy junction này, sang tlID khác
+                }
+                
+                if (targetJunction == null) continue;
+
+                // Tìm tất cả các edge đi vào junction này (edge.to == junction.id)
+                List<Networkpaser.Lane> incomingLanes = new ArrayList<>();
+                for (Networkpaser.Edge e : model.edges) {
+                    if (e.to != null && e.to.equals(tlID)) {
+                        incomingLanes.addAll(e.lanes);
+                    }
+                }
+
+                if (incomingLanes.isEmpty()) continue;
+
+                // Phân loại lanes thành dọc (vertical) và ngang (horizontal)
+                List<Networkpaser.Lane> verticalLanes = new ArrayList<>();
+                List<Networkpaser.Lane> horizontalLanes = new ArrayList<>();
+                
+                for (Networkpaser.Lane lane : incomingLanes) {
+                    if (lane.shapePoints.size() < 2) continue;
+                    
+                    Point2D start = lane.shapePoints.get(0);
+                    Point2D end = lane.shapePoints.get(lane.shapePoints.size() - 1);
+                    double dx = end.getX() - start.getX();
+                    double dy = end.getY() - start.getY();
+                    
+                    if (Math.abs(dy) > Math.abs(dx)) {
+                        verticalLanes.add(lane);
+                    } else {
+                        horizontalLanes.add(lane);
+                    }
+                }
+
+                // Xác định màu dựa trên phase
+                // Chu kỳ: green -> yellow -> red -> yellow -> green...
+                char verticalState, horizontalState;
+                int phaseMod = phaseNum % 4;
+                
+                if (phaseMod == 0) {
+                    // Phase 0: dọc green, ngang red
+                    verticalState = 'g';
+                    horizontalState = 'r';
+                } else if (phaseMod == 1) {
+                    // Phase 1: dọc yellow (chuyển từ green sang red), ngang red
+                    verticalState = 'y';
+                    horizontalState = 'r';
+                } else if (phaseMod == 2) {
+                    // Phase 2: dọc red, ngang green
+                    verticalState = 'r';
+                    horizontalState = 'g';
+                } else {
+                    // Phase 3: dọc red, ngang yellow (chuyển từ green sang red)
+                    verticalState = 'r';
+                    horizontalState = 'y';
+                }
+
+                // Vẽ đèn cho lanes dọc
+                for (Networkpaser.Lane lane : verticalLanes) {
+                    if (lane.shapePoints.isEmpty()) continue;
+                    
+                    Point2D laneEnd = lane.shapePoints.get(lane.shapePoints.size() - 1);
+                    double screenX = transform.worldscreenX(laneEnd.getX());
+                    double screenY = transform.worldscreenY(laneEnd.getY());
+                    
+                    drawTrafficLightPole(g, screenX, screenY, TL_BULB_SIZE_PX, verticalState);
+                }
+
+                // Vẽ đèn cho lanes ngang
+                for (Networkpaser.Lane lane : horizontalLanes) {
+                    if (lane.shapePoints.isEmpty()) continue;
+                    
+                    Point2D laneEnd = lane.shapePoints.get(lane.shapePoints.size() - 1);
+                    double screenX = transform.worldscreenX(laneEnd.getX());
+                    double screenY = transform.worldscreenY(laneEnd.getY());
+                    
+                    drawTrafficLightPole(g, screenX, screenY, TL_BULB_SIZE_PX, horizontalState);
                 }
             }
         }

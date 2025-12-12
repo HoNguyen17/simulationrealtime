@@ -1,5 +1,5 @@
 package gui;
-import wrapper.VehicleWrapper;
+
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -38,12 +38,12 @@ public class ControlPanel {
         Button zoomInBtn = new Button("Zoom in");
         Button zoomOutBtn = new Button("Zoom out");
         Button resetViewBtn = new Button("Reset view");
-        zoomInBtn.setOnAction(e 
-            -> mapCanvas.zoomAtCenter(1.1));
-        zoomOutBtn.setOnAction(e 
-            -> mapCanvas.zoomAtCenter(0.9));
-        resetViewBtn.setOnAction(e 
-            -> { mapCanvas.fitAndCenter(); mapCanvas.render(); });
+        zoomInBtn.setOnAction(e
+                -> mapCanvas.zoomAtCenter(1.1));
+        zoomOutBtn.setOnAction(e
+                -> mapCanvas.zoomAtCenter(0.9));
+        resetViewBtn.setOnAction(e
+                -> { mapCanvas.fitAndCenter(); mapCanvas.render(); });
 
         box.getChildren().addAll(viewLbl, zoomInBtn, zoomOutBtn, resetViewBtn);
         ScrollPane sp = new ScrollPane(box);

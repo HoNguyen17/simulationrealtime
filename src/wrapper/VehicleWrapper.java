@@ -30,9 +30,19 @@ class VehicleWrapper {
 
     // get Vehicle position
     public SumoPosition2D getPosition(int po) {
-        if (po == 1) {System.out.println("Position of "+ ID +" is " + position.x + " " + position.y);}
+        if (position == null) {
+            if (po == 1) {
+                System.out.println("Position for vehicle " + ID + " is not yet available.");
+            }
+            return null;
+        }
+
+        if (po == 1) {
+            System.out.println("Position of " + ID + ": " + position.x + ", " + position.y);
+        }
         return position;
     }
+
 
     // get Vehicle speed
     public double getSpeed(int po) {

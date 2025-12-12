@@ -214,9 +214,13 @@ public class SimulationWrapper implements Observer {
     // get position of the vehicle
     public SumoPosition2D getVehiclePosition(String ID) {
         VehicleWrapper x = VehicleList.get(ID);
-        SumoPosition2D VehiclePosition = x.getPosition(1);
-        return VehiclePosition;
+        if (x == null) {
+            System.out.println("Vehicle " + ID + " not found in hashmap.");
+            return null;
+        }
+        return x.getPosition(1);
     }
+
     // get Vehicle speed
     public double getVehicleSpeed(String inputID) {
         VehicleWrapper x = VehicleList.get(inputID);
@@ -234,19 +238,12 @@ public class SimulationWrapper implements Observer {
         double vehicleAngle = x.getAngle(1);
         return vehicleAngle;
     }
-    // get Vehicle's ID list
+    //     // get Vehicle's ID list
     public List<String> getVehicleIDsList() {
         List<String> returnVehicleList = new ArrayList<>(VehicleList.keySet());
         return returnVehicleList;
     }
-    // get average speed of all vehicle
-    public double getVehicleAverageSpeed(int po) {
-        double result = 0;
-        for (VehicleWrapper x : VehicleList.values()) {result += x.speed;}
-        result /= VehicleList.size();
-        if (po == 1) {System.out.println("Average speed is " + result);}
-        return result;
-    }
+
     //     // get Vehicle's type ID
 //     public String getTypeID(String ID) {
 //         VehicleWrapper v = new wrapper.VehicleWrapper(ID);
