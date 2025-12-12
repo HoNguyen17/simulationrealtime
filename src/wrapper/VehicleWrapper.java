@@ -9,10 +9,10 @@ import de.tudresden.sumo.objects.SumoColor;
 import java.util.List;
 import java.util.ArrayList;
 
-public class VehicleWrapper {
+class VehicleWrapper {
     String ID;
     SumoColor color;
-    double speed;               
+    double speed;
     SumoPosition2D position;
     double angle;
     // constructor
@@ -21,7 +21,7 @@ public class VehicleWrapper {
         color = inputColor;
         System.out.println("Added vehicle " + inputID + ".");
     }
-//=================GETTER================================
+    //=================GETTER================================
     // get Vehicle ID
     public String getID(int po) {
         if (po == 1) {System.out.println(ID);}
@@ -30,9 +30,19 @@ public class VehicleWrapper {
 
     // get Vehicle position
     public SumoPosition2D getPosition(int po) {
-        if (po == 1) {System.out.println("Position of "+ ID +" is " + position.x + " " + position.y);}
+        if (position == null) {
+            if (po == 1) {
+                System.out.println("Position for vehicle " + ID + " is not yet available.");
+            }
+            return null;
+        }
+
+        if (po == 1) {
+            System.out.println("Position of " + ID + ": " + position.x + ", " + position.y);
+        }
         return position;
     }
+
 
     // get Vehicle speed
     public double getSpeed(int po) {
@@ -84,7 +94,7 @@ public class VehicleWrapper {
         if (po == 1) {System.out.println("Vehicle " + ID + " is facing " + angle);}
         return angle;
     }
-//=================SETTER================================
+    //=================SETTER================================
     // set Vehicle's speed
     public void setSpeed(SimulationWrapper temp, double inputSpeed, int po) {
         try {
@@ -107,7 +117,7 @@ public class VehicleWrapper {
             System.out.println("Cannot set the color of the vehicle that has the ID " + ID + e.getMessage());
         }
     }
-//=================STATIC================================
+    //=================STATIC================================
     protected static void addVehicle(SimulationWrapper temp, String inputID, String inputRoute) {
         try {
             temp.conn.do_job_set(Vehicle.add(inputID, "DEFAULT_VEHTYPE", inputRoute, 0, 0, 0, (byte)0));
