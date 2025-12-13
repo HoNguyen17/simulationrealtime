@@ -4,7 +4,9 @@ import paser.Networkpaser;
 import wrapper.SimulationWrapper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
@@ -101,50 +103,6 @@ public class MapCanvas {
         }
     }
 
-    // Helper method để vẽ một cột đèn giao thông với 3 bóng (red, yellow, green)
-    private void drawTrafficLightPole(GraphicsContext g, double centerX, double centerY, 
-                                      double bulbSize, char state) {
-        final double SPACING = bulbSize * 1.3; // khoảng cách giữa các bóng
-        final double POLE_WIDTH = bulbSize * 0.15; // độ rộng cột đèn
-        
-        // Vẽ cột đèn (màu đen/xám)
-        g.setFill(Color.web("#333333"));
-        g.fillRect(centerX - POLE_WIDTH / 2.0, centerY - SPACING * 1.5, 
-                   POLE_WIDTH, SPACING * 3);
-        
-        // Normalize state về lowercase để so sánh
-        char normalizedState = Character.toLowerCase(state);
-        
-        // Vẽ 3 bóng đèn từ trên xuống: Red, Yellow, Green
-        double[] bulbY = {
-            centerY - SPACING,      // Red (trên cùng)
-            centerY,                 // Yellow (giữa)
-            centerY + SPACING        // Green (dưới cùng)
-        };
-        
-        Color[] bulbColors = {Color.RED, Color.YELLOW, Color.GREEN};
-        char[] bulbStates = {'r', 'y', 'g'};
-        
-        for (int i = 0; i < 3; i++) {
-            // Xác định màu: sáng nếu match state, tắt nếu không
-            Color bulbColor;
-            if (normalizedState == bulbStates[i]) {
-                bulbColor = bulbColors[i]; // Bóng sáng với màu tương ứng
-            } else {
-                bulbColor = Color.web("#444444"); // Tắt (màu xám đậm)
-            }
-            
-            // Vẽ bóng đèn
-            g.setFill(bulbColor);
-            g.fillOval(centerX - bulbSize / 2.0, bulbY[i] - bulbSize / 2.0, bulbSize, bulbSize);
-            
-            // Vẽ viền bóng đèn
-            g.setStroke(Color.BLACK);
-            g.setLineWidth(1);
-            g.strokeOval(centerX - bulbSize / 2.0, bulbY[i] - bulbSize / 2.0, bulbSize, bulbSize);
-        }
-    }
-
     public void render() {
         if (model == null) return;
         // Clear canvas
@@ -231,25 +189,17 @@ public class MapCanvas {
             );
         }
 
-        // draw traffic lights (cột đèn với 3 bóng ở đầu mỗi lane được điều khiển)
-        // Mỗi ký tự trong lightDef tương ứng với một hướng đi (controlled lane)
+        // draw traffic lights as lines using getDefFromTo and incoming lanes (SUMO/netedit style)
         if (simulationWrapper != null) {
-            final double TL_BULB_SIZE = 0.8; // tăng kích thước đèn
-            final double TL_BULB_SIZE_PX = transform.worldscreenSize(TL_BULB_SIZE);
+            final double TL_LINE_WIDTH = 0.3; // line width in world units
+            final double TL_LINE_LENGTH = 1.5; // line length in world units
+            final double TL_LINE_WIDTH_PX = transform.worldscreenSize(TL_LINE_WIDTH);
+            final double TL_LINE_LENGTH_PX = transform.worldscreenSize(TL_LINE_LENGTH);
 
             List<String> tlIDs = simulationWrapper.getTLIDsList();
             
             for (String tlID : tlIDs) {
-                String lightDef = simulationWrapper.getTLPhaseDef(tlID);
-                
-                if (lightDef == null || lightDef.isEmpty()) {
-                    System.out.println("TL " + tlID + ": lightDef is null or empty");
-                    continue;
-                }
-
-                System.out.println("TL " + tlID + ": lightDef = " + lightDef + " (length: " + lightDef.length() + ")");
-
-                // Tìm junction tương ứng
+                // Find junction corresponding to this traffic light
                 Networkpaser.Junction targetJunction = null;
                 for (Networkpaser.Junction j : model.junctions) {
                     if (j.id.equals(tlID)) {
@@ -259,46 +209,96 @@ public class MapCanvas {
                 }
                 
                 if (targetJunction == null) {
-                    System.out.println("TL " + tlID + ": junction not found");
                     continue;
                 }
 
-                // Lấy số lượng controlled links
+                // Get number of controlled links
                 int controlledLinksNum = simulationWrapper.getTLControlledLinksNum(tlID);
-                System.out.println("TL " + tlID + ": controlledLinksNum = " + controlledLinksNum);
-
-                // Tìm tất cả các edge đi vào junction này
-                List<Networkpaser.Lane> incomingLanes = new ArrayList<>();
+                
+                // Build a map of incoming lanes by lane ID for quick lookup
+                Map<String, Networkpaser.Lane> incomingLaneMap = new HashMap<>();
                 for (Networkpaser.Edge e : model.edges) {
                     if (e.to != null && e.to.equals(tlID)) {
-                        incomingLanes.addAll(e.lanes);
+                        for (Networkpaser.Lane lane : e.lanes) {
+                            incomingLaneMap.put(lane.id, lane);
+                        }
                     }
                 }
-                
-                System.out.println("TL " + tlID + ": found " + incomingLanes.size() + " incoming lanes");
 
-                // Vẽ đèn cho mỗi ký tự trong lightDef
-                // Ánh xạ với incoming lanes theo thứ tự
-                int numLights = Math.min(lightDef.length(), incomingLanes.size());
-                
-                for (int idx = 0; idx < numLights; idx++) {
-                    char state = lightDef.charAt(idx);
+                // Iterate through controlled links using getDefFromTo
+                for (int idx = 0; idx < controlledLinksNum; idx++) {
+                    List<String> defFromTo = simulationWrapper.getTLDefFromTo(tlID, idx);
+                    if (defFromTo == null || defFromTo.size() < 3) {
+                        continue;
+                    }
                     
-                    Networkpaser.Lane lane = incomingLanes.get(idx);
-                    if (lane.shapePoints.isEmpty()) {
-                        System.out.println("  Lane " + idx + ": empty shapePoints");
+                    String stateStr = defFromTo.get(0);
+                    String fromLaneId = defFromTo.get(1);
+                    
+                    if (stateStr == null || stateStr.isEmpty()) {
+                        continue;
+                    }
+                    
+                    char state = Character.toLowerCase(stateStr.charAt(0));
+                    
+                    // Find the incoming lane that matches the "from" lane ID
+                    Networkpaser.Lane matchedLane = incomingLaneMap.get(fromLaneId);
+                    if (matchedLane == null || matchedLane.shapePoints.size() < 2) {
                         continue;
                     }
 
-                    // Lấy điểm cuối của lane (gần junction) để vẽ đèn
-                    Point2D laneEnd = lane.shapePoints.get(lane.shapePoints.size() - 1);
+                    // Get the last two points to determine lane direction
+                    Point2D laneEnd = matchedLane.shapePoints.get(matchedLane.shapePoints.size() - 1);
+                    Point2D laneBeforeEnd = matchedLane.shapePoints.get(matchedLane.shapePoints.size() - 2);
+                    
+                    // Calculate lane direction vector
+                    double dirX = laneEnd.getX() - laneBeforeEnd.getX();
+                    double dirY = laneEnd.getY() - laneBeforeEnd.getY();
+                    double dirLen = Math.hypot(dirX, dirY);
+                    if (dirLen == 0) continue;
+                    
+                    // Normalize direction
+                    dirX /= dirLen;
+                    dirY /= dirLen;
+                    
+                    // Calculate perpendicular direction (rotate 90 degrees)
+                    double perpX = -dirY;
+                    double perpY = dirX;
+                    
+                    // Determine color based on state
+                    Color lightColor;
+                    switch (state) {
+                        case 'r':
+                            lightColor = Color.RED;
+                            break;
+                        case 'y':
+                            lightColor = Color.YELLOW;
+                            break;
+                        case 'g':
+                            lightColor = Color.GREEN;
+                            break;
+                        default:
+                            lightColor = Color.GRAY;
+                            break;
+                    }
+                    
+                    // Convert to screen coordinates
                     double screenX = transform.worldscreenX(laneEnd.getX());
                     double screenY = transform.worldscreenY(laneEnd.getY());
-
-                    System.out.println("  Drawing light " + idx + " at (" + screenX + ", " + screenY + ") with state: " + state);
-
-                    // Vẽ cột đèn giao thông với 3 bóng theo state
-                    drawTrafficLightPole(g, screenX, screenY, TL_BULB_SIZE_PX, state);
+                    
+                    // Calculate perpendicular vector in screen space
+                    double screenPerpX = perpX * TL_LINE_LENGTH_PX / 2.0;
+                    double screenPerpY = perpY * TL_LINE_LENGTH_PX / 2.0;
+                    
+                    // Draw line perpendicular to lane direction
+                    g.setStroke(lightColor);
+                    g.setLineWidth(TL_LINE_WIDTH_PX);
+                    g.strokeLine(
+                        screenX - screenPerpX,
+                        screenY - screenPerpY,
+                        screenX + screenPerpX,
+                        screenY + screenPerpY
+                    );
                 }
             }
         }
