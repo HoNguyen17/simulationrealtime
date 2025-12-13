@@ -26,7 +26,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws Exception{
         // Tải model mạng lưới
-        Networkpaser.NetworkModel model = Networkpaser.load("C:\\Users\\LENOVO\\IdeaProjects\\simulationrealtime\\resource\\Netedit_requirement.net.xml");
+        Networkpaser.NetworkModel model = Networkpaser.load("../resource/Netedit_requirement.net.xml");
 
         // Canvas bản đồ chuyển thành MapCanvas để quản lý pan/zoom/vẽ
         mapCanvas = new MapCanvas(1000, 800);
@@ -35,20 +35,19 @@ public class App extends Application {
         mapCanvas.render();
 
         // NEW SIMULATION STARTUP
-        try {
-            simulationWrapper = new SimulationWrapper(
-                    "C:\\Users\\LENOVO\\IdeaProjects\\simulationrealtime\\resource\\Netedit_testrun.sumocfg" // Path to your config
-            );
+        try {// Path to your config
+            simulationWrapper = new SimulationWrapper("../resource/Netedit_testrun.sumocfg" );
             simulationWrapper.Start(); // Assuming this connects TraCI
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             System.err.println("Failed to start SUMO or connect TraCI: " + e.getMessage());
             return;
         }
 
         // --- NEW REAL-TIME ANIMATION LOOP ---
         simulationTimer = new AnimationTimer() { // <-- 1. Assign timer to the field
-            private long lastUpdate = 0;
-            private static final long UPDATE_INTERVAL = 50_000_000; // ~20 FPS (50ms)
+        private long lastUpdate = 0;
+        private static final long UPDATE_INTERVAL = 50_000_000; // ~20 FPS (50ms)
 
             @Override
             public void handle(long now) {
@@ -121,14 +120,10 @@ public class App extends Application {
         root.setLeft(dashboard);
         root.setCenter(mapCanvas.getCanvas());
 
-
-
         stage.setTitle("SUMO Network Dashboard");
         stage.setScene(new Scene(root));
         stage.show();
         
     }
-    public static void main(String[] args) {
-        launch(args);
-    }
+    public static void main(String[] args) {launch(args);}
 }
