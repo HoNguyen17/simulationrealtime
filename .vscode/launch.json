@@ -9,8 +9,7 @@
             "name": "Run App (JavaFX)",
             "request": "launch",
             "mainClass": "App",
-            "projectName": "simulationrealtime_443a8a52",
-            "cwd": "C:/Honguyen/VGU/Nam 3/sems1/Java/simulationrealtime/src",
+            "cwd": "C:/Honguyen/VGU/Nam 3/sems1/Java/Project/simulationrealtime/src",
             "vmArgs": "--module-path \"C:/Program Files/javafx-sdk-17.0.17/lib\" --add-modules javafx.controls,javafx.fxml"
         }
     ]

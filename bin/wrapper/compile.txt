@@ -1,0 +1,7 @@
+cd src/wrapper/;
+javac -cp "../../lib/TraaS.jar;." *.java; 
+
+not work
+javac -cp "../../lib/TraaS.jar;." SimulationWrapper.java; 
+javac -cp "../../lib/TraaS.jar;." TrafficLightWrapper.java; 
+javac -cp "../../lib/TraaS.jar;." VehicleWrapper.java; 

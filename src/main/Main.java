@@ -1,11 +1,14 @@
 import wrapper.SimulationWrapper;
-import wrapper.TrafficLightWrapper;
+
 public class Main { 
-public static void main ( String [] args){ 
-        String config_file = "../../resource/test_2_traffic.sumocfg";
-        double step_length = 1;
-        SimulationWrapper A = new SimulationWrapper();
-        A.Test();
+public static void main ( String [] args){
+        String config = "../resource/test_2_traffic.sumocfg";
+        double step = 1.0;
+        String sumo_bin = "sumo-gui";
+
+        SimulationWrapper A = new SimulationWrapper(config, step, sumo_bin);
+
+
         A.End();
     }
 } 
