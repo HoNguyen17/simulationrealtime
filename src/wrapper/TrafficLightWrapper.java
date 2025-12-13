@@ -23,12 +23,14 @@ class TrafficLightWrapper {
     String lightDef;
     List<String> from;
     List<String> to;
+    int controlledLinksNum;
     // constructor
     TrafficLightWrapper(String inputID, String startProgram, List<String> inputFrom, List<String> inputTo){
         ID = inputID;
         originProgramID = startProgram;
         from = inputFrom;
         to = inputTo;
+        controlledLinksNum = inputFrom.size();
         System.out.println("Added " + ID + " with program " + originProgramID);
     }
 //=================GETTER================================
@@ -55,10 +57,22 @@ class TrafficLightWrapper {
         return lightDef;
     }
     // get controlled links
+    public int getControlledLinksNum(int po) {
+        if (po == 1) {System.out.println(controlledLinksNum);}
+        return controlledLinksNum;
+    }
+    public List<String> getDefFromTo(int index, int po) {
+        List<String> result = new ArrayList<String>();
+        result.add("" + lightDef.charAt(index));
+        result.add(from.get(index));
+        result.add(to.get(index));
+        if (po == 1) {System.out.println(result);}
+        return result;
+    }
     public void getControlledLinks(SimulationWrapper temp, int po) {
         try {
             if (po == 1){
-                //System.out.println("Current direction of " + ID + ":" + test1);
+                System.out.println("Number of links of " + ID + ":" + controlledLinksNum);
                 System.out.println("From of " + ID + ":" + to);
                 System.out.println("To of " + ID + ":" + from);
                 System.out.println("Current light of " + ID + ":" + lightDef);

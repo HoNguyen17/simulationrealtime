@@ -23,6 +23,12 @@ public static void main ( String [] args){
                 //A.getTLPhaseDef("J3");
                 //A.getTLPhaseDef("J6");
                 A.getTLControlledLinks("J1");
+                A.getTLDefFromTo("J1", 0);
+                A.getTLDefFromTo("J1", 1);
+                A.getTLDefFromTo("J1", 2);
+                A.getTLDefFromTo("J1", 3);
+                A.getTLDefFromTo("J1", 4);
+                A.getTLDefFromTo("J1", 7);
                 //String[][] ab = testxyz.get(0);
                 //System.out.println(testxyz.get(0));
                 //A.getTLControlledLinks("J1");
