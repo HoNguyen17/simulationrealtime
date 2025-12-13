@@ -189,7 +189,7 @@ public class MapCanvas {
             );
         }
 
-        // draw traffic lights as lines using getDefFromTo and incoming lanes (SUMO/netedit style)
+        // draw traffic lights as lines using getDefFromTo and incoming lanes
         // Track turns by their "to" lane direction - each turn direction has its own color
         if (simulationWrapper != null) {
             final double TL_LINE_WIDTH = 0.3; // line width in world units
@@ -239,7 +239,7 @@ public class MapCanvas {
                     
                     String stateStr = defFromTo.get(0);
                     String fromLaneId = defFromTo.get(1);
-                    String toLaneId = defFromTo.get(2); // Track turn direction (hướng quẹo)
+                    String toLaneId = defFromTo.get(2); // Track turn direction
                     
                     if (stateStr == null || stateStr.isEmpty()) {
                         continue;
@@ -247,7 +247,7 @@ public class MapCanvas {
                     
                     char state = Character.toLowerCase(stateStr.charAt(0));
                     
-                    // Track turn direction and its color - mỗi hướng quẹo có màu riêng
+                    // Track turn direction and its color
                     turnDirectionColors.put(toLaneId, state);
                     
                     // Find the incoming lane that matches the "from" lane ID
