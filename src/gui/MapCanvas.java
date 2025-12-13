@@ -231,21 +231,24 @@ public class MapCanvas {
             );
         }
 
-        // draw traffic lights (cột đèn với 3 bóng ở đầu mỗi lane đi vào junction)
-        // 2 đèn dọc và 2 đèn ngang có màu trái ngược nhau, cố định theo phase
+        // draw traffic lights (cột đèn với 3 bóng ở đầu mỗi lane được điều khiển)
+        // Mỗi ký tự trong lightDef tương ứng với một hướng đi (controlled lane)
         if (simulationWrapper != null) {
-            final double TL_BULB_SIZE = 0.6; // kích thước mỗi bóng đèn
+            final double TL_BULB_SIZE = 0.8; // tăng kích thước đèn
             final double TL_BULB_SIZE_PX = transform.worldscreenSize(TL_BULB_SIZE);
 
             List<String> tlIDs = simulationWrapper.getTLIDsList();
             
             for (String tlID : tlIDs) {
-                // Lấy phase number để xác định màu
-                int phaseNum = simulationWrapper.getTLPhaseNum(tlID);
+                String lightDef = simulationWrapper.getTLPhaseDef(tlID);
                 
-                // Kiểm tra phaseNum hợp lệ
-                if (phaseNum < 0) continue;
-                
+                if (lightDef == null || lightDef.isEmpty()) {
+                    System.out.println("TL " + tlID + ": lightDef is null or empty");
+                    continue;
+                }
+
+                System.out.println("TL " + tlID + ": lightDef = " + lightDef + " (length: " + lightDef.length() + ")");
+
                 // Tìm junction tương ứng
                 Networkpaser.Junction targetJunction = null;
                 for (Networkpaser.Junction j : model.junctions) {
@@ -255,80 +258,47 @@ public class MapCanvas {
                     }
                 }
                 
-                if (targetJunction == null) continue;
+                if (targetJunction == null) {
+                    System.out.println("TL " + tlID + ": junction not found");
+                    continue;
+                }
 
-                // Tìm tất cả các edge đi vào junction này (edge.to == junction.id)
+                // Lấy số lượng controlled links
+                int controlledLinksNum = simulationWrapper.getTLControlledLinksNum(tlID);
+                System.out.println("TL " + tlID + ": controlledLinksNum = " + controlledLinksNum);
+
+                // Tìm tất cả các edge đi vào junction này
                 List<Networkpaser.Lane> incomingLanes = new ArrayList<>();
                 for (Networkpaser.Edge e : model.edges) {
                     if (e.to != null && e.to.equals(tlID)) {
                         incomingLanes.addAll(e.lanes);
                     }
                 }
-
-                if (incomingLanes.isEmpty()) continue;
-
-                // Phân loại lanes thành dọc (vertical) và ngang (horizontal)
-                List<Networkpaser.Lane> verticalLanes = new ArrayList<>();
-                List<Networkpaser.Lane> horizontalLanes = new ArrayList<>();
                 
-                for (Networkpaser.Lane lane : incomingLanes) {
-                    if (lane.shapePoints.size() < 2) continue;
+                System.out.println("TL " + tlID + ": found " + incomingLanes.size() + " incoming lanes");
+
+                // Vẽ đèn cho mỗi ký tự trong lightDef
+                // Ánh xạ với incoming lanes theo thứ tự
+                int numLights = Math.min(lightDef.length(), incomingLanes.size());
+                
+                for (int idx = 0; idx < numLights; idx++) {
+                    char state = lightDef.charAt(idx);
                     
-                    Point2D start = lane.shapePoints.get(0);
-                    Point2D end = lane.shapePoints.get(lane.shapePoints.size() - 1);
-                    double dx = end.getX() - start.getX();
-                    double dy = end.getY() - start.getY();
-                    
-                    if (Math.abs(dy) > Math.abs(dx)) {
-                        verticalLanes.add(lane);
-                    } else {
-                        horizontalLanes.add(lane);
+                    Networkpaser.Lane lane = incomingLanes.get(idx);
+                    if (lane.shapePoints.isEmpty()) {
+                        System.out.println("  Lane " + idx + ": empty shapePoints");
+                        continue;
                     }
-                }
 
-                // Xác định màu dựa trên phase
-                // Chu kỳ: green -> yellow -> red -> yellow -> green...
-                char verticalState, horizontalState;
-                int phaseMod = phaseNum % 4;
-                
-                if (phaseMod == 0) {
-                    // Phase 0: dọc green, ngang red
-                    verticalState = 'g';
-                    horizontalState = 'r';
-                } else if (phaseMod == 1) {
-                    // Phase 1: dọc yellow (chuyển từ green sang red), ngang red
-                    verticalState = 'y';
-                    horizontalState = 'r';
-                } else if (phaseMod == 2) {
-                    // Phase 2: dọc red, ngang green
-                    verticalState = 'r';
-                    horizontalState = 'g';
-                } else {
-                    // Phase 3: dọc red, ngang yellow (chuyển từ green sang red)
-                    verticalState = 'r';
-                    horizontalState = 'y';
-                }
-
-                // Vẽ đèn cho lanes dọc
-                for (Networkpaser.Lane lane : verticalLanes) {
-                    if (lane.shapePoints.isEmpty()) continue;
-                    
+                    // Lấy điểm cuối của lane (gần junction) để vẽ đèn
                     Point2D laneEnd = lane.shapePoints.get(lane.shapePoints.size() - 1);
                     double screenX = transform.worldscreenX(laneEnd.getX());
                     double screenY = transform.worldscreenY(laneEnd.getY());
-                    
-                    drawTrafficLightPole(g, screenX, screenY, TL_BULB_SIZE_PX, verticalState);
-                }
 
-                // Vẽ đèn cho lanes ngang
-                for (Networkpaser.Lane lane : horizontalLanes) {
-                    if (lane.shapePoints.isEmpty()) continue;
-                    
-                    Point2D laneEnd = lane.shapePoints.get(lane.shapePoints.size() - 1);
-                    double screenX = transform.worldscreenX(laneEnd.getX());
-                    double screenY = transform.worldscreenY(laneEnd.getY());
-                    
-                    drawTrafficLightPole(g, screenX, screenY, TL_BULB_SIZE_PX, horizontalState);
+                    System.out.println("  Drawing light " + idx + " at (" + screenX + ", " + screenY + ") with state: " + state);
+
+                    // Vẽ cột đèn giao thông với 3 bóng theo state
+                    drawTrafficLightPole(g, screenX, screenY, TL_BULB_SIZE_PX, state);
                 }
             }
         }
