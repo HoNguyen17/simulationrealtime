@@ -187,10 +187,22 @@ public class SimulationWrapper implements Observer {
         String phaseDef = x.getPhaseDef(1);
         return phaseDef;
     }
-    public List<String[][]> getTLControlledLinks(String inputID) {
+    public int getTLControlledLinksNum(String inputID) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
-        List<String[][]> controlledLinks = x.getControlledLinks(this, 1);
-        return null;
+        int linkNum = x.getControlledLinksNum(1);
+        return linkNum;
+    }
+    public List<String> getTLDefFromTo(String inputID, int index) {
+        TrafficLightWrapper x = TrafficLightList.get(inputID);
+        if (index < x.controlledLinksNum) {
+            List<String> defFromTo = x.getDefFromTo(index, 1);
+            return defFromTo;
+        }
+        else {return null;}
+    }
+    public void getTLControlledLinks(String inputID) {
+        TrafficLightWrapper x = TrafficLightList.get(inputID);
+        x.getControlledLinks(this, 1);
     }
     //===== SETTER ============================================
     public void setTLPhaseDef(String inputID, String inputDef) {
@@ -214,13 +226,9 @@ public class SimulationWrapper implements Observer {
     // get position of the vehicle
     public SumoPosition2D getVehiclePosition(String ID) {
         VehicleWrapper x = VehicleList.get(ID);
-        if (x == null) {
-            System.out.println("Vehicle " + ID + " not found in hashmap.");
-            return null;
-        }
-        return x.getPosition(1);
+        SumoPosition2D VehiclePosition = x.getPosition(1);
+        return VehiclePosition;
     }
-
     // get Vehicle speed
     public double getVehicleSpeed(String inputID) {
         VehicleWrapper x = VehicleList.get(inputID);
@@ -238,12 +246,19 @@ public class SimulationWrapper implements Observer {
         double vehicleAngle = x.getAngle(1);
         return vehicleAngle;
     }
-    //     // get Vehicle's ID list
+    // get Vehicle's ID list
     public List<String> getVehicleIDsList() {
         List<String> returnVehicleList = new ArrayList<>(VehicleList.keySet());
         return returnVehicleList;
     }
-
+    // get average speed of all vehicle
+    public double getVehicleAverageSpeed(int po) {
+        double result = 0;
+        for (VehicleWrapper x : VehicleList.values()) {result += x.speed;}
+        result /= VehicleList.size();
+        if (po == 1) {System.out.println("Average speed is " + result);}
+        return result;
+    }
     //     // get Vehicle's type ID
 //     public String getTypeID(String ID) {
 //         VehicleWrapper v = new wrapper.VehicleWrapper(ID);
