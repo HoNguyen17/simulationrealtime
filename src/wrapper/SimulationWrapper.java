@@ -160,7 +160,6 @@ public class SimulationWrapper implements Observer {
                 SumoPrimitive sp = (SumoPrimitive) so.object;
                 TrafficLightWrapper x = TrafficLightList.get(so.id);
                 x.lightDef = (String) sp.val;
-                //System.out.println("traffic light "+ so.id + " "+ sp.val);
             }
         }
     }
@@ -184,13 +183,25 @@ public class SimulationWrapper implements Observer {
     // get phase definition of a traffic light (current light state)
     public String getTLPhaseDef(String inputID) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
-        String phaseDef = x.getPhaseDef(0);
+        String phaseDef = x.getPhaseDef(1);
         return phaseDef;
     }
-    public List<String[][]> getTLControlledLinks(String inputID) {
+    public int getTLControlledLinksNum(String inputID) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
-        List<String[][]> controlledLinks = x.getControlledLinks(this, 0);
-        return null;
+        int linkNum = x.getControlledLinksNum(1);
+        return linkNum;
+    }
+    public List<String> getTLDefFromTo(String inputID, int index) {
+        TrafficLightWrapper x = TrafficLightList.get(inputID);
+        if (index < x.controlledLinksNum) {
+            List<String> defFromTo = x.getDefFromTo(index, 0);
+            return defFromTo;
+        }
+        else {return null;}
+    }
+    public void getTLControlledLinks(String inputID) {
+        TrafficLightWrapper x = TrafficLightList.get(inputID);
+        x.getControlledLinks(this, 0);
     }
 //===== SETTER ============================================
     public void setTLPhaseDef(String inputID, String inputDef) {
@@ -217,7 +228,6 @@ public class SimulationWrapper implements Observer {
         SumoPosition2D VehiclePosition = x.getPosition(0);
         return VehiclePosition;
     }
-
     // get Vehicle speed
     public double getVehicleSpeed(String inputID) {
         VehicleWrapper x = VehicleList.get(inputID);
@@ -235,12 +245,19 @@ public class SimulationWrapper implements Observer {
         double vehicleAngle = x.getAngle(0);
         return vehicleAngle;
     }
-//     // get Vehicle's ID list
+    // get Vehicle's ID list
     public List<String> getVehicleIDsList() {
         List<String> returnVehicleList = new ArrayList<>(VehicleList.keySet());
         return returnVehicleList;
     }
-
+    // get average speed of all vehicle
+    public double getVehicleAverageSpeed(int po) {
+        double result = 0;
+        for (VehicleWrapper x : VehicleList.values()) {result += x.speed;}
+        result /= VehicleList.size();
+        if (po == 1) {System.out.println("Average speed is " + result);}
+        return result;
+    }
 //     // get Vehicle's type ID
 //     public String getTypeID(String ID) {
 //         VehicleWrapper v = new wrapper.VehicleWrapper(ID);
