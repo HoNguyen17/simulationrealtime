@@ -5,9 +5,9 @@ import java.util.List;
 public class MainTest { 
 public static void main ( String [] args){ 
         // config_file path is based on this class path
-        String config_file = "../resource/test_5_wrapper.sumocfg"; 
+        String config_file = "../resource/test_6_lane.sumocfg"; 
         double step_length = 1;
-        String sumo_bin = "sumo-gui";
+        String sumo_bin = "sumo";
         SimulationWrapper A = new SimulationWrapper(config_file, step_length, sumo_bin);
         try {
             A.Start();
@@ -16,15 +16,26 @@ public static void main ( String [] args){
                 A.getTime(1);
                 A.getVehicleAverageSpeed(1);
                 // System.out.println("list: " +A.getVehicleIDsList());
-                // System.out.println("listTL: " +A.getTLIDsList());
+                System.out.println("listTL: " +A.getTLIDsList());
                 // A.getTLPhaseNum("J5");
-                // A.getTLPhaseDef("J5");
+                //A.getTLPhaseDef("J0");
+                //A.getTLPhaseDef("J2");
+                //A.getTLPhaseDef("J3");
+                //A.getTLPhaseDef("J6");
+                A.getTLControlledLinks("J1");
+                //String[][] ab = testxyz.get(0);
+                //System.out.println(testxyz.get(0));
                 //A.getTLControlledLinks("J1");
-                if(i == 11){
+                if(i == 11 && 1==0){
                     class Test2 extends Thread {
                         public void run() {
                             try {
-                                //A.setTLPhaseDef("J1","GGGGGGGGGGGG");
+                                A.setTLPhaseDef("J5","rrrrrrrrrrrr");
+                                A.setTLPhaseDef("J1","rrrrrr");
+                                A.setTLPhaseDef("J0","rrrrrr");
+                                A.setTLPhaseDef("J2","rrrrrrrrrrrr");
+                                A.setTLPhaseDef("J3","rrrrrrrrrrrr");
+                                A.setTLPhaseDef("J6","rrrrrr");
                                 //A.setTLPhaseDefWithPhaseTime("J3","gggggg", 5);
                                 //Thread.sleep(200); 
                                 A.setTLPhaseDefOrigin("J1");
@@ -75,7 +86,7 @@ public static void main ( String [] args){
                 //     A.setSpeed("f_0.0", 40);
                 // }
                 if(i == 99) {
-                    A.test();
+                    //A.test();
                     // A.addVehicleBasic("x0");
                 }
             }

@@ -187,10 +187,9 @@ public class SimulationWrapper implements Observer {
         String phaseDef = x.getPhaseDef(1);
         return phaseDef;
     }
-    public List<String[][]> getTLControlledLinks(String inputID) {
+    public void getTLControlledLinks(String inputID) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
-        List<String[][]> controlledLinks = x.getControlledLinks(this, 1);
-        return null;
+        x.getControlledLinks(this, 1);
     }
 //===== SETTER ============================================
     public void setTLPhaseDef(String inputID, String inputDef) {
