@@ -22,10 +22,16 @@ public class MapCanvas {
     private final Transform transform; // coordinate transformation manager
     private View viewManager; // view manager for zooming/panning
     private List<VehicleData> vehicleDataList = new ArrayList<>();
+    //...
+    private final Map<String, TrafficLightSprite> trafficLightSprites = new HashMap<>();
+    private List<TrafficLightData> trafficLightDataList = new ArrayList<>();
 
     protected  double lastDragX = 0, lastDragY = 0; // last mouse drag positions
 
     public static record VehicleData(String id, double x, double y, double angle, Color color) {}
+    //...
+    // states[i] applies to the controlled link from[i] -> to[i]
+    public static record TrafficLightData(String id, double x, double y, List<Character> states, List<String> fromLaneIds, List<String> toLaneIds) {}
     
 
 
@@ -96,6 +102,26 @@ public class MapCanvas {
         private void updateBounds() {
         }
     }
+    //...
+
+    private static class TrafficLightSprite {
+        final String id;
+        double worldX, worldY;
+        List<Character> states; // r/y/g for each controlled link
+
+        TrafficLightSprite(String id, double x, double y, List<Character> states) {
+            this.id = id;
+            this.worldX = x;
+            this.worldY = y;
+            this.states = new ArrayList<>(states);
+        }
+
+        void update(double x, double y, List<Character> states) {
+            this.worldX = x;
+            this.worldY = y;
+            this.states = new ArrayList<>(states);
+        }
+    }
 
     // Set vehicle data for rendering
     public void setVehicleData(List<VehicleData> vehicleDataList) {
@@ -115,6 +141,25 @@ public class MapCanvas {
         //delete sprites for vehicles no longer present
         vehicleSprites.keySet().removeIf(id ->
             vehicleDataList.stream().noneMatch(vd -> vd.id().equals(id))
+        );
+    }
+
+
+//...
+    // Set traffic light data for rendering (call from wrapper)
+    public void setTrafficLightData(List<TrafficLightData> trafficLights) {
+        this.trafficLightDataList = trafficLights != null ? trafficLights : List.of();
+        for (TrafficLightData tl : this.trafficLightDataList) {
+            TrafficLightSprite sprite = trafficLightSprites.get(tl.id());
+            if (sprite == null) {
+                sprite = new TrafficLightSprite(tl.id(), tl.x(), tl.y(), tl.states());
+                trafficLightSprites.put(tl.id(), sprite);
+            } else {
+                sprite.update(tl.x(), tl.y(), tl.states());
+            }
+        }
+        trafficLightSprites.keySet().removeIf(id ->
+            trafficLightDataList.stream().noneMatch(tl -> tl.id().equals(id))
         );
     }
 
@@ -251,6 +296,63 @@ public class MapCanvas {
             );
             g.restore();
         }
+
+        //...
+
+        // draw traffic lights as lane-end bars similar to SUMO GUI
+        final double BAR_LENGTH = transform.worldscreenSize(2.0);
+        final double BAR_WIDTH = transform.worldscreenSize(0.6);
+        for (TrafficLightData tlData : trafficLightDataList) {
+            List<Character> states = tlData.states();
+            List<String> fromIds = tlData.fromLaneIds();
+            if (states == null || fromIds == null) continue;
+            int n = Math.min(states.size(), fromIds.size());
+            for (int i = 0; i < n; i++) {
+                Networkpaser.Lane lane = findLaneById(fromIds.get(i));
+                if (lane == null || lane.shapePoints.size() < 2) continue;
+                // use the last segment of the lane polyline to place the bar
+                Point2D p2 = lane.shapePoints.get(lane.shapePoints.size()-1);
+                Point2D p1 = lane.shapePoints.get(lane.shapePoints.size()-2);
+                // transform to screen
+                Point2D s1 = new Point2D(transform.worldscreenX(p1.getX()), transform.worldscreenY(p1.getY()));
+                Point2D s2 = new Point2D(transform.worldscreenX(p2.getX()), transform.worldscreenY(p2.getY()));
+                // direction and normal
+                Point2D dir = s2.subtract(s1);
+                double len = Math.hypot(dir.getX(), dir.getY());
+                if (len == 0) continue;
+                Point2D unit = new Point2D(dir.getX()/len, dir.getY()/len);
+                Point2D normal = new Point2D(-unit.getY(), unit.getX());
+                // center of bar slightly before junction along lane direction
+                double cx = s2.getX() - unit.getX() * transform.worldscreenSize(1.0);
+                double cy = s2.getY() - unit.getY() * transform.worldscreenSize(1.0);
+                // bar endpoints across lane using normal
+                double hx = normal.getX() * (BAR_LENGTH/2.0);
+                double hy = normal.getY() * (BAR_LENGTH/2.0);
+                double x1 = cx - hx, y1 = cy - hy;
+                double x2 = cx + hx, y2 = cy + hy;
+                // color by state
+                Color c;
+                char st = states.get(i);
+                if (st == 'r' || st == 'R') c = Color.RED;
+                else if (st == 'y' || st == 'Y') c = Color.YELLOW;
+                else if (st == 'g' || st == 'G') c = Color.LIMEGREEN;
+                else c = Color.GRAY;
+                g.setStroke(c);
+                g.setLineWidth(BAR_WIDTH);
+                g.setLineDashes();
+                g.strokeLine(x1, y1, x2, y2);
+            }
+        }
+    }
+
+    private Networkpaser.Lane findLaneById(String laneId) {
+        if (laneId == null || model == null) return null;
+        for (Networkpaser.Edge e : model.edges) {
+            for (Networkpaser.Lane l : e.lanes) {
+                if (laneId.equals(l.id)) return l;
+            }
+        }
+        return null;
     }
 
     public void fitAndCenter() {

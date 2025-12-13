@@ -61,7 +61,7 @@ public class App extends Application {
 
         //Start simulation
         simulationWrapper = new SimulationWrapper(SUMOCFG_FILE); // initialize with SUMO config file
-        simulationWrapper.setDelay(50); //  set step delay in ms
+        simulationWrapper.setDelay(500); //  set step delay in ms
         simulationWrapper.Start();
 
         // background thread to advance SUMO steps
@@ -80,6 +80,7 @@ public class App extends Application {
             public void handle(long now) {
                 List<String> ids = simulationWrapper.getVehicleIDsList();
                 List<MapCanvas.VehicleData> vds = new ArrayList<>();
+
                 if (ids != null) {
                     for (String id : ids) {
                         SumoPosition2D pos = simulationWrapper.getVehiclePosition(id);
@@ -94,6 +95,36 @@ public class App extends Application {
                 }
                 mapCanvas.setVehicleData(vds);
                 mapCanvas.render();
+
+                // Traffic lights: build lane-end bars data
+                List<MapCanvas.TrafficLightData> tlDatas = new ArrayList<>();
+                List<String> tlIds = simulationWrapper.getTLIDsList();
+                if (tlIds != null) {
+                    for (String tlId : tlIds) {
+                    String def = simulationWrapper.getTLPhaseDef(tlId); // e.g., "rygR..."
+                    if (def == null) continue;
+
+                    List<Character> states = new ArrayList<>();
+                    for (int i = 0; i < def.length(); i++) states.add(def.charAt(i));
+
+                    // Collect from/to lane ids per controlled link
+                    List<String> fromLaneIds = new ArrayList<>();
+                    List<String> toLaneIds = new ArrayList<>();
+                    int links = simulationWrapper.getTLControlledLinksNum(tlId);
+                    for (int i = 0; i < links; i++) {
+                        List<String> defFromTo = simulationWrapper.getTLDefFromTo(tlId, i);
+                        if (defFromTo == null || defFromTo.size() < 3) continue;
+                        // format from wrapper: [stateChar, fromLaneId, toLaneId]
+                        fromLaneIds.add(defFromTo.get(1));
+                        toLaneIds.add(defFromTo.get(2));
+                }
+
+                // Position (x,y) not needed for bar rendering; pass 0,0
+                tlDatas.add(new MapCanvas.TrafficLightData(tlId, 0, 0, states, fromLaneIds, toLaneIds));
+    }
+}
+mapCanvas.setTrafficLightData(tlDatas);
+                
             }
         };
         simulationTimer.start();
