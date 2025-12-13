@@ -1,16 +1,16 @@
 import gui.MapCanvas;
-import gui.MapCanvas.VehicleData;
 import gui.Dashboard;
 
 import paser.Networkpaser;
 import wrapper.SimulationWrapper;
-import wrapper.VehicleWrapper;
-import wrapper.TrafficLightWrapper;
-import de.tudresden.sumo.cmd.Vehicle;
+
+
 import javafx.animation.AnimationTimer;
 import java.util.List;
 import java.util.ArrayList;
-import javafx.application.Platform;
+import gui.Transform;
+import javafx.scene.paint.Color;
+import de.tudresden.sumo.objects.SumoColor;
 import de.tudresden.sumo.objects.SumoPosition2D;
 
 import javafx.application.Application;
@@ -21,98 +21,29 @@ import javafx.stage.Stage;
 
 public class App extends Application {
     private MapCanvas mapCanvas;
+    private Transform transform;
     private AnimationTimer simulationTimer;// Field to hold the timer instance
     private SimulationWrapper simulationWrapper; // Field to hold the simulation wrapper
+    private Thread simulationThread; // background simulation stepper
+    private volatile boolean simRunning = false;
+
+    private static final String NET_FILE = "..\\resource\\Netedit_requirement.net.xml";
+    private static final String SUMOCFG_FILE = "..\\resource\\Netedit_testrun.sumocfg";
+
+    private Networkpaser.NetworkModel model;
+
+
+
+
     @Override
     public void start(Stage stage) throws Exception{
         // Tải model mạng lưới
-        Networkpaser.NetworkModel model = Networkpaser.load("../resource/Netedit_requirement.net.xml");
-
+        model = Networkpaser.parse(NET_FILE);
         // Canvas bản đồ chuyển thành MapCanvas để quản lý pan/zoom/vẽ
         mapCanvas = new MapCanvas(1000, 800);
         mapCanvas.setModel(model);
         mapCanvas.fitAndCenter();
         mapCanvas.render();
-
-        // NEW SIMULATION STARTUP
-        try {
-            simulationWrapper = new SimulationWrapper(
-                    "..\\resource\\Netedit_testrun.sumocfg" // Path to your config
-            );
-            simulationWrapper.conn.runServer(); // Assuming this connects TraCI
-        } catch (Exception e) {
-            System.err.println("Failed to start SUMO or connect TraCI: " + e.getMessage());
-            return;
-        }
-
-        // --- NEW REAL-TIME ANIMATION LOOP ---
-        simulationTimer = new AnimationTimer() { // <-- 1. Assign timer to the field
-            private long lastUpdate = 0;
-            private static final long UPDATE_INTERVAL = 50_000_000; // ~20 FPS (50ms)
-
-            @Override
-            public void handle(long now) {
-                if (now - lastUpdate >= UPDATE_INTERVAL) {
-                    try {
-                        // 1. Step the simulation and fetch new vehicle state
-                        simulationWrapper.Step();
-
-                        // 2. Fetch all vehicle data
-                        List<String> vehicleIDs = VehicleWrapper.getIDList(simulationWrapper, 0);
-                        List<VehicleData> vehicleDataList = new ArrayList<>();
-
-                        for (String id : vehicleIDs) {
-                            VehicleWrapper vehicle = new VehicleWrapper(id);
-                            SumoPosition2D pos = vehicle.getPosition(simulationWrapper, 0);
-                            double angle = vehicle.getAngle(simulationWrapper, 0); // Get vehicle rotation
-
-                            if (pos != null) {
-                                // Convert SumoPosition2D and angle into the VehicleData format
-                                vehicleDataList.add(new VehicleData(
-                                        id,
-                                        pos.x,
-                                        pos.y,
-                                        angle,
-                                        javafx.scene.paint.Color.WHITE // Default color for all vehicles
-                                ));
-                            }
-                        }
-
-                        // 3. Update Canvas and Render
-                        mapCanvas.setVehicleData(vehicleDataList);
-                        mapCanvas.render();
-
-                        lastUpdate = now;
-
-                    } catch (Exception e) {
-                        System.err.println("Simulation Loop Error: " + e.getMessage());
-                        e.printStackTrace();
-                        this.stop();
-                    }
-                }
-            }
-        }; // End of AnimationTimer definition
-        simulationTimer.start(); // Start the timer
-
-        // --- NEW CLEANUP LOGIC ---
-        stage.setOnCloseRequest(e -> {
-            System.out.println("Stopping simulation and exiting...");
-
-            // 1. Stop the timer FIRST to prevent subsequent TraCI calls
-            simulationTimer.stop();
-
-            // 2. Close the TraCI connection safely, checking if it's NOT closed
-            try {
-                if (simulationWrapper != null && !simulationWrapper.conn.isClosed()) { // <-- FIX IS HERE
-                    simulationWrapper.conn.close();
-                }
-            } catch (Exception ignore) {}
-
-            Platform.exit();
-        });
-
-
-
 
 
         // Sidebar trái: dùng Dashboard trong package gui
@@ -127,7 +58,57 @@ public class App extends Application {
         stage.setTitle("SUMO Network Dashboard");
         stage.setScene(new Scene(root));
         stage.show();
+
+        //Start simulation
+        simulationWrapper = new SimulationWrapper(SUMOCFG_FILE); // initialize with SUMO config file
+        simulationWrapper.setDelay(50); //  set step delay in ms
+        simulationWrapper.Start();
+
+        // background thread to advance SUMO steps
+        simRunning = true;
+        simulationThread = new Thread(() -> {
+            while (simRunning && !simulationWrapper.isClosed()) {
+                simulationWrapper.Step();
+            }
+        }, "Sumo-Stepper");
+        simulationThread.setDaemon(true);
+        simulationThread.start();
+
+        // UI timer to fetch data and render vehicles
+        simulationTimer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                List<String> ids = simulationWrapper.getVehicleIDsList();
+                List<MapCanvas.VehicleData> vds = new ArrayList<>();
+                if (ids != null) {
+                    for (String id : ids) {
+                        SumoPosition2D pos = simulationWrapper.getVehiclePosition(id);
+                        if (pos == null) continue;
+                        double angle = simulationWrapper.getVehicleAngle(id);
+                        SumoColor sc = simulationWrapper.getVehicleColor(id);
+
+                        //  add vehicke Color
+                        Color vehicleColor = Color.WHITE;
+                        vds.add(new MapCanvas.VehicleData(id, pos.x, pos.y, angle, vehicleColor));
+                    }
+                }
+                mapCanvas.setVehicleData(vds);
+                mapCanvas.render();
+            }
+        };
+        simulationTimer.start();
+
+        // Ensure proper shutdown
+        stage.setOnCloseRequest(e -> {
+            simRunning = false;
+            if (simulationTimer != null) simulationTimer.stop();
+            if (simulationThread != null) {
+                try { simulationThread.join(500); } catch (InterruptedException ex) { /* ignore */ }
+            }
+            simulationWrapper.End();
+        });
         
+
     }
     public static void main(String[] args) {
         launch(args);

@@ -3,7 +3,9 @@ package gui;
 import paser.Networkpaser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
@@ -13,17 +15,20 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 
 public class MapCanvas {
-    private final Canvas canvas;
-    private final GraphicsContext g;
-
-    private Networkpaser.NetworkModel model;
-    private final Transform transform;
-    private View viewManager;
+    private final Canvas canvas; // the drawing surface
+    private final GraphicsContext g; // for drawing
+    private final Map<String, VehicleSprite> vehicleSprites = new HashMap<>();
+    private Networkpaser.NetworkModel model; // the network model to render
+    private final Transform transform; // coordinate transformation manager
+    private View viewManager; // view manager for zooming/panning
     private List<VehicleData> vehicleDataList = new ArrayList<>();
 
-    protected  double lastDragX = 0, lastDragY = 0;
+    protected  double lastDragX = 0, lastDragY = 0; // last mouse drag positions
 
     public static record VehicleData(String id, double x, double y, double angle, Color color) {}
+    
+
+
 
     // Constructor of MapCanvas
     public MapCanvas(double w, double h) {
@@ -32,17 +37,21 @@ public class MapCanvas {
         transform = new Transform(h);
         viewManager = new View(canvas, transform, null);
 
+        // Mouse event handlers for panning and zooming
         canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, e -> {
             lastDragX = e.getX();
             lastDragY = e.getY();
             viewManager.startPan(e.getX(), e.getY());
         });
+        // render on drag events
         canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, e -> {
             viewManager.updatePan(e.getX(), e.getY());
             lastDragX = e.getX();
             lastDragY = e.getY();
             render();
         });
+
+        // render on scroll events
         canvas.addEventHandler(ScrollEvent.SCROLL, e -> {
             double factor = (e.getDeltaY() > 0) ? 1.1 : 0.9;
             viewManager.zoompoint(factor, e.getX(), e.getY());
@@ -59,10 +68,62 @@ public class MapCanvas {
         this.viewManager.resetView();
     }
 
-    public void setVehicleData(List<VehicleData> vehicleDataList) {
-        this.vehicleDataList = vehicleDataList;
+
+
+    private static class VehicleSprite {
+        final String id;
+        double worldX, worldY;
+        double angle; // góc đã quy đổi sang hệ toạ độ màn hình
+        Color color;
+
+        VehicleSprite(String id, double x, double y, double sumoAngleDeg, Color color) {
+            this.id = id;
+            updatePosition(new double[]{x, y, sumoAngleDeg});
+            this.color = color;
+        }
+
+        public void updatePosition(double[] sumoData) {
+            this.worldX = sumoData[0];
+            this.worldY = sumoData[1];
+            if (sumoData.length > 2) {
+                // SUMO angle (deg) -> JavaFX screen angle (deg)
+                // công thức của bạn: -(90 - sumoAngle)
+                double screenAngle = - (90.0 - sumoData[2]);
+                this.angle = screenAngle;
+            }
+            updateBounds();
+        }
+
+        private void updateBounds() {
+        }
     }
 
+    // Set vehicle data for rendering
+    public void setVehicleData(List<VehicleData> vehicleDataList) {
+        this.vehicleDataList = vehicleDataList;
+
+        // Đồng bộ danh sách sprite theo vehicleDataList
+        // Thêm/cập nhật
+        for (VehicleData vd : vehicleDataList) {
+            VehicleSprite sprite = vehicleSprites.get(vd.id());
+            if (sprite == null) {
+                sprite = new VehicleSprite(vd.id(), vd.x(), vd.y(), vd.angle(), vd.color());
+                vehicleSprites.put(vd.id(), sprite);
+            } else {
+                sprite.color = vd.color();
+                sprite.updatePosition(new double[]{vd.x(), vd.y(), vd.angle()});
+            }
+        }
+        // Xoá xe không còn trong frame
+        vehicleSprites.keySet().removeIf(id ->
+            vehicleDataList.stream().noneMatch(vd -> vd.id().equals(id))
+        );
+    }
+
+
+    
+
+    // Offset polyline points by distance d
     private List<Point2D> offsetPolyline(List<Point2D> pts, double d) {
         if (pts.size() < 2) return pts;
         List<Point2D> out = new ArrayList<>();
@@ -86,7 +147,7 @@ public class MapCanvas {
         }
         return out;
     }
-
+    // Draw polyline from list of points
     private void drawPolyline(GraphicsContext g, List<Point2D> pts) {
         for (int i = 1; i < pts.size(); i++) {
             Point2D a = pts.get(i - 1);
@@ -117,7 +178,7 @@ public class MapCanvas {
         }
 
         // add sizes for roads
-        double roadsize = 5.0;      // e.g. 4 meters half-width
+        double roadsize = 4.0;      // e.g. 4 meters
         double centermarksize = 0.5;   // e.g. 15 cm
 
         // Convert to pixels based on current transform (scale * zoom)
@@ -149,36 +210,48 @@ public class MapCanvas {
         }
 
         // Draw junctions
-        g.setFill(Color.ORANGE);
+        // Draw junction polygons (skip internal junctions)
+        Color junctionFill = Color.web("#7a7a7aff"); 
+        g.setFill(junctionFill);
         for (Networkpaser.Junction j : model.junctions) {
-            double x = transform.worldscreenX(j.x);
-            double y = transform.worldscreenY(j.y);
-            // junction mark size in world units (e.g. 0.3m)
-            double junctionDotWorld = 0.3;
-            double r = transform.worldscreenSize(junctionDotWorld);
-            g.fillOval(x - r, y - r, r * 2, r * 2);
+            if (j.id != null && j.id.contains(":")) continue; // bỏ qua junction nội bộ
+            if (j.shapePoints == null || j.shapePoints.size() < 3) continue;
+
+            double[] xs = new double[j.shapePoints.size()];
+            double[] ys = new double[j.shapePoints.size()];
+            for (int i = 0; i < j.shapePoints.size(); i++) {
+                Point2D p = j.shapePoints.get(i);
+                xs[i] = transform.worldscreenX(p.getX());
+                ys[i] = transform.worldscreenY(p.getY());
+            }
+            g.fillPolygon(xs, ys, xs.length);
         }
 
+
+
         // draw vehicles
-        final double VEHICLE_LENGTH = 4.5; 
+        final double VEHICLE_LENGTH = 4.5;
         final double VEHICLE_WIDTH = 1.5;
         final double VEHICLE_LENGTH_PX = transform.worldscreenSize(VEHICLE_LENGTH);
         final double VEHICLE_WIDTH_PX = transform.worldscreenSize(VEHICLE_WIDTH);
 
-        for (VehicleData vehicle : vehicleDataList) { // draw each vehicle 
-            double screenX = transform.worldscreenX(vehicle.x);
-            double screenY = transform.worldscreenY(vehicle.y);
+        for (VehicleSprite sprite : vehicleSprites.values()) {
+            double screenX = transform.worldscreenX(sprite.worldX);
+            double screenY = transform.worldscreenY(sprite.worldY);
+
+            g.save();
+            g.translate(screenX, screenY);
+            g.rotate(-sprite.angle);
             
-
-
-            // Draw rectangle for vehicle
-            g.setFill(vehicle.color);
+            g.setFill(sprite.color);
+            // draw centered rectangle
             g.fillRect(
-                screenX - VEHICLE_LENGTH_PX / 2.0,
-                screenY - VEHICLE_WIDTH_PX / 2.0,
+                -VEHICLE_LENGTH_PX,
+                -VEHICLE_WIDTH_PX / 2.0,
                 VEHICLE_LENGTH_PX,
                 VEHICLE_WIDTH_PX
             );
+            g.restore();
         }
     }
 

@@ -214,9 +214,13 @@ public class SimulationWrapper implements Observer {
     // get position of the vehicle
     public SumoPosition2D getVehiclePosition(String ID) {
         VehicleWrapper x = VehicleList.get(ID);
-        SumoPosition2D VehiclePosition = x.getPosition(1);
-        return VehiclePosition;
+        if (x == null) {
+            System.out.println("Vehicle " + ID + " not found in hashmap.");
+            return null;
+        }
+        return x.getPosition(1);
     }
+
     // get Vehicle speed
     public double getVehicleSpeed(String inputID) {
         VehicleWrapper x = VehicleList.get(inputID);
