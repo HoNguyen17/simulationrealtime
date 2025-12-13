@@ -73,7 +73,7 @@ public class MapCanvas {
     private static class VehicleSprite {
         final String id;
         double worldX, worldY;
-        double angle; // góc đã quy đổi sang hệ toạ độ màn hình
+        double angle; // in degrees
         Color color;
 
         VehicleSprite(String id, double x, double y, double sumoAngleDeg, Color color) {
@@ -87,7 +87,6 @@ public class MapCanvas {
             this.worldY = sumoData[1];
             if (sumoData.length > 2) {
                 // SUMO angle (deg) -> JavaFX screen angle (deg)
-                // công thức của bạn: -(90 - sumoAngle)
                 double screenAngle = - (90.0 - sumoData[2]);
                 this.angle = screenAngle;
             }
@@ -102,8 +101,7 @@ public class MapCanvas {
     public void setVehicleData(List<VehicleData> vehicleDataList) {
         this.vehicleDataList = vehicleDataList;
 
-        // Đồng bộ danh sách sprite theo vehicleDataList
-        // Thêm/cập nhật
+        // update or create vehicle sprites
         for (VehicleData vd : vehicleDataList) {
             VehicleSprite sprite = vehicleSprites.get(vd.id());
             if (sprite == null) {
@@ -114,7 +112,7 @@ public class MapCanvas {
                 sprite.updatePosition(new double[]{vd.x(), vd.y(), vd.angle()});
             }
         }
-        // Xoá xe không còn trong frame
+        //delete sprites for vehicles no longer present
         vehicleSprites.keySet().removeIf(id ->
             vehicleDataList.stream().noneMatch(vd -> vd.id().equals(id))
         );
@@ -178,8 +176,8 @@ public class MapCanvas {
         }
 
         // add sizes for roads
-        double roadsize = 4.0;      // e.g. 4 meters
-        double centermarksize = 0.5;   // e.g. 15 cm
+        double roadsize = 2.6;     
+        double centermarksize = 0.5;  
 
         // Convert to pixels based on current transform (scale * zoom)
         double roadsizePx = transform.worldscreenSize(roadsize);
@@ -210,11 +208,10 @@ public class MapCanvas {
         }
 
         // Draw junctions
-        // Draw junction polygons (skip internal junctions)
-        Color junctionFill = Color.web("#7a7a7aff"); 
+        Color junctionFill = Color.web("#210303ff");
         g.setFill(junctionFill);
         for (Networkpaser.Junction j : model.junctions) {
-            if (j.id != null && j.id.contains(":")) continue; // bỏ qua junction nội bộ
+            if (j.id != null && j.id.contains(":")) continue; // skip internal junctions
             if (j.shapePoints == null || j.shapePoints.size() < 3) continue;
 
             double[] xs = new double[j.shapePoints.size()];
@@ -226,6 +223,7 @@ public class MapCanvas {
             }
             g.fillPolygon(xs, ys, xs.length);
         }
+
 
 
 
