@@ -190,6 +190,7 @@ public class MapCanvas {
         }
 
         // draw traffic lights as lines using getDefFromTo and incoming lanes (SUMO/netedit style)
+        // Track turns by their "to" lane direction - each turn direction has its own color
         if (simulationWrapper != null) {
             final double TL_LINE_WIDTH = 0.3; // line width in world units
             final double TL_LINE_LENGTH = 1.5; // line length in world units
@@ -225,6 +226,10 @@ public class MapCanvas {
                     }
                 }
 
+                // Map to track turn directions by "to" lane: toLaneId -> color state
+                // This allows tracking which turn direction has which color
+                Map<String, Character> turnDirectionColors = new HashMap<>();
+
                 // Iterate through controlled links using getDefFromTo
                 for (int idx = 0; idx < controlledLinksNum; idx++) {
                     List<String> defFromTo = simulationWrapper.getTLDefFromTo(tlID, idx);
@@ -234,12 +239,16 @@ public class MapCanvas {
                     
                     String stateStr = defFromTo.get(0);
                     String fromLaneId = defFromTo.get(1);
+                    String toLaneId = defFromTo.get(2); // Track turn direction (hướng quẹo)
                     
                     if (stateStr == null || stateStr.isEmpty()) {
                         continue;
                     }
                     
                     char state = Character.toLowerCase(stateStr.charAt(0));
+                    
+                    // Track turn direction and its color - mỗi hướng quẹo có màu riêng
+                    turnDirectionColors.put(toLaneId, state);
                     
                     // Find the incoming lane that matches the "from" lane ID
                     Networkpaser.Lane matchedLane = incomingLaneMap.get(fromLaneId);
@@ -265,7 +274,7 @@ public class MapCanvas {
                     double perpX = -dirY;
                     double perpY = dirX;
                     
-                    // Determine color based on state
+                    // Determine color based on state - màu của hướng quẹo này
                     Color lightColor;
                     switch (state) {
                         case 'r':
@@ -291,6 +300,7 @@ public class MapCanvas {
                     double screenPerpY = perpY * TL_LINE_LENGTH_PX / 2.0;
                     
                     // Draw line perpendicular to lane direction
+                    // Mỗi hướng quẹo (toLaneId) sẽ có màu riêng theo state của nó
                     g.setStroke(lightColor);
                     g.setLineWidth(TL_LINE_WIDTH_PX);
                     g.strokeLine(
@@ -300,6 +310,9 @@ public class MapCanvas {
                         screenY + screenPerpY
                     );
                 }
+                
+                // turnDirectionColors map now contains: toLaneId -> state (color)
+                // Có thể sử dụng map này để track màu của từng hướng quẹo
             }
         }
     }
