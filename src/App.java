@@ -27,8 +27,8 @@ public class App extends Application {
     private Thread simulationThread; // background simulation stepper
     private volatile boolean simRunning = false;
 
-    private static final String NET_FILE = "..\\resource\\Netedit_requirement.net.xml";
-    private static final String SUMOCFG_FILE = "..\\resource\\Netedit_testrun.sumocfg";
+    private static final String NET_FILE = "..\\resource\\test_5_wrapper.net.xml";
+    private static final String SUMOCFG_FILE = "..\\resource\\test_5_wrapper.sumocfg";
 
     private Networkpaser.NetworkModel model;
 
@@ -59,7 +59,7 @@ public class App extends Application {
 
         //Start simulation
         simulationWrapper = new SimulationWrapper(SUMOCFG_FILE); // initialize with SUMO config file
-        simulationWrapper.setDelay(500); //  set step delay in ms
+        simulationWrapper.setDelay(200); //  set step delay in ms
         simulationWrapper.Start();
 
         // background thread to advance SUMO steps

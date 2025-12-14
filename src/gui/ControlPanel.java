@@ -1,10 +1,10 @@
 package gui;
 
-
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.ScrollPane;
+import java.util.List;
 
 import wrapper.SimulationWrapper;
 
@@ -26,7 +26,7 @@ public class ControlPanel {
         Button tlNextPhaseBtn = new Button("Next phase");
         tlAutoBtn.setOnAction(e -> System.out.println("TL: auto"));
         tlManualBtn.setOnAction(e -> System.out.println("TL: manual"));
-        tlNextPhaseBtn.setOnAction(e -> System.out.println("TL: next phase"));
+        tlNextPhaseBtn.setOnAction(e -> setTLNextPhaseAll());
         box.getChildren().addAll(tlLbl, tlAutoBtn, tlManualBtn, tlNextPhaseBtn);
         ScrollPane sp = new ScrollPane(box);
         sp.setFitToWidth(true);
@@ -67,5 +67,10 @@ public class ControlPanel {
         return sp;
     }
 
-
+    public void setTLNextPhaseAll() {
+        List<String> TLIDList = sim.getTLIDsList();
+        for (String tlID : TLIDList) {
+            sim.setTLPhaseNext(tlID);
+        }
+    } 
 }
