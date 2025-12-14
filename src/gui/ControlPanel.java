@@ -12,6 +12,7 @@ import wrapper.SimulationWrapper;
 public class ControlPanel {
     private final MapCanvas mapCanvas;
     private SimulationWrapper sim;
+    private long uniqueID = 0;
 
     public ControlPanel(MapCanvas mapCanvas, SimulationWrapper inputSim) {
         this.mapCanvas = mapCanvas;
@@ -39,9 +40,8 @@ public class ControlPanel {
         Label vehicleLable = new Label("Vehicle");
         Button addVehicle = new Button("Add 1 vehicle");
         Button stressTest1 = new Button("Stress Test Max");
-        //sim.addVehicleBasic(String.valueOf("x0")
         addVehicle.setOnAction(e -> System.out.println("TL: manual"));
-        stressTest1.setOnAction(e -> System.out.println("TL: manual"));
+        stressTest1.setOnAction(e -> StressTest1());
         box.getChildren().addAll(vehicleLable, addVehicle, stressTest1);
         ScrollPane sp = new ScrollPane(box);
         sp.setFitToWidth(true);
@@ -66,11 +66,18 @@ public class ControlPanel {
         sp.setFitToWidth(true);
         return sp;
     }
-
+// control operations
     public void setTLNextPhaseAll() {
         List<String> TLIDList = sim.getTLIDsList();
         for (String tlID : TLIDList) {
             sim.setTLPhaseNext(tlID);
         }
     } 
+    public void StressTest1() {
+        for(int i = 0; i < 10; i++) {
+            String newID = String.valueOf(uniqueID);
+            uniqueID += 1;
+            sim.addVehicleBasic(newID);
+        }
+    }
 }
