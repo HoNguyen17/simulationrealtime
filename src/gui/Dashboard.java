@@ -1,3 +1,4 @@
+
 package gui;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
@@ -20,8 +21,8 @@ public class Dashboard extends VBox {
 
         var tls = controlPanel.createTrafficLightControls();
         var view = controlPanel.createViewControls();
-        
-        
+
+
         this.getChildren().addAll(title, tls, view);
     }
 }

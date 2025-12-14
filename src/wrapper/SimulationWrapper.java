@@ -160,7 +160,6 @@ public class SimulationWrapper implements Observer {
                 SumoPrimitive sp = (SumoPrimitive) so.object;
                 TrafficLightWrapper x = TrafficLightList.get(so.id);
                 x.lightDef = (String) sp.val;
-                //System.out.println("traffic light "+ so.id + " "+ sp.val);
             }
         }
     }
@@ -178,7 +177,7 @@ public class SimulationWrapper implements Observer {
     // get phase number of a traffic light
     public int getTLPhaseNum(String inputID) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
-        int phaseNum = x.getPhaseNum(this, 1);
+        int phaseNum = x.getPhaseNum(this, 0);
         return phaseNum;
     }
     // get phase definition of a traffic light (current light state)
@@ -195,14 +194,14 @@ public class SimulationWrapper implements Observer {
     public List<String> getTLDefFromTo(String inputID, int index) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
         if (index < x.controlledLinksNum) {
-            List<String> defFromTo = x.getDefFromTo(index, 1);
+            List<String> defFromTo = x.getDefFromTo(index, 0);
             return defFromTo;
         }
         else {return null;}
     }
     public void getTLControlledLinks(String inputID) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
-        x.getControlledLinks(this, 1);
+        x.getControlledLinks(this, 0);
     }
     //===== SETTER ============================================
     public void setTLPhaseDef(String inputID, String inputDef) {
@@ -226,24 +225,24 @@ public class SimulationWrapper implements Observer {
     // get position of the vehicle
     public SumoPosition2D getVehiclePosition(String ID) {
         VehicleWrapper x = VehicleList.get(ID);
-        SumoPosition2D VehiclePosition = x.getPosition(1);
+        SumoPosition2D VehiclePosition = x.getPosition(0);
         return VehiclePosition;
     }
     // get Vehicle speed
     public double getVehicleSpeed(String inputID) {
         VehicleWrapper x = VehicleList.get(inputID);
-        double vehicleSpeed = x.getSpeed(1);
+        double vehicleSpeed = x.getSpeed(0);
         return vehicleSpeed;
     }
     // get Vehicle's color
     public SumoColor getVehicleColor(String inputID) {
         VehicleWrapper x = VehicleList.get(inputID);
-        SumoColor vehicleColor = x.getColor(1);
+        SumoColor vehicleColor = x.getColor(0);
         return vehicleColor;
     }
     public double getVehicleAngle(String inputID) {
         VehicleWrapper x = VehicleList.get(inputID);
-        double vehicleAngle = x.getAngle(1);
+        double vehicleAngle = x.getAngle(0);
         return vehicleAngle;
     }
     // get Vehicle's ID list
@@ -268,7 +267,7 @@ public class SimulationWrapper implements Observer {
     // set Vehicle's speed
     public void setVehicleSpeed(String inputID, double inputSpeed) {
         VehicleWrapper x = VehicleList.get(inputID);
-        x.setSpeed(this, inputSpeed, 1);
+        x.setSpeed(this, inputSpeed, 0);
     }
     // set Vehicle's color
     public void setVehicleColor(String inputID, int r, int b, int g, int a) {

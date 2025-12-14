@@ -134,26 +134,7 @@ class TrafficLightWrapper {
         }
         return false;
     }
-    //     public boolean setPhaseDef2(SimulationWrapper temp, String input) {
-    //     class TempThread extends Thread {
-    //             boolean debugFlag = false;
-    //         public void run() {
-    //             try {               //maybe need check??
-    //                 temp.conn.do_job_set(Trafficlight.setRedYellowGreenState(ID, input));
-    //                 Thread.sleep(2000);
-    //                 temp.conn.do_job_set(Trafficlight.setProgram(ID, "0"));
-    //                 debugFlag = true;
-    //             }
-    //             catch (Exception D) {
-    //                 System.out.println("Unable to set controlled links of traffic light");
-    //             }
-    //         }
-    //     }
-    //     TempThread T = new TempThread();
-    //     T.start();
-    //     return T.debugFlag;
-    // }
-//=================STATIC================================
+    //=================STATIC================================
     // update all traffic light IDs of simulation
     protected static void updateTrafficLightIDs(SimulationWrapper temp) {
         try {

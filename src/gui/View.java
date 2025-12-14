@@ -1,3 +1,4 @@
+
 package gui;
 
 import javafx.scene.canvas.Canvas;
@@ -28,29 +29,40 @@ public class View {
         updateTransform();
     }
 
-    //Fit entire network to canvas with margins and reset zoom/pan 
+    //Fit entire network to canvas with margins and reset zoom/pan
     public void resetView() {
         double margin = 60.0; // Margin in screen pixels
         double minX = Double.POSITIVE_INFINITY, minY = Double.POSITIVE_INFINITY;
         double maxX = Double.NEGATIVE_INFINITY, maxY = Double.NEGATIVE_INFINITY;
 
         if (network != null) {
-            for (paser.Networkpaser.Edge e : network.edges) {
-                for (paser.Networkpaser.Lane l : e.lanes) {
-                    for (javafx.geometry.Point2D p : l.shapePoints) {
-                        if (p.getX() < minX) minX = p.getX();
-                        if (p.getY() < minY) minY = p.getY();
-                        if (p.getX() > maxX) maxX = p.getX();
-                        if (p.getY() > maxY) maxY = p.getY();
+            // Prefer bounds from NetworkModel if available
+            if (Double.isFinite(network.minX) && Double.isFinite(network.minY)
+                    && Double.isFinite(network.maxX) && Double.isFinite(network.maxY)
+                    && network.maxX > network.minX && network.maxY > network.minY) {
+                minX = network.minX;
+                minY = network.minY;
+                maxX = network.maxX;
+                maxY = network.maxY;
+            } else {
+                // Fallback: compute from geometry
+                for (paser.Networkpaser.Edge e : network.edges) {
+                    for (paser.Networkpaser.Lane l : e.lanes) {
+                        for (javafx.geometry.Point2D p : l.shapePoints) {
+                            if (p.getX() < minX) minX = p.getX();
+                            if (p.getY() < minY) minY = p.getY();
+                            if (p.getX() > maxX) maxX = p.getX();
+                            if (p.getY() > maxY) maxY = p.getY();
+                        }
                     }
                 }
-            }
-            if (!Double.isFinite(minX)) {
-                for (Networkpaser.Junction j : network.junctions) {
-                    if (j.x < minX) minX = j.x;
-                    if (j.y < minY) minY = j.y;
-                    if (j.x > maxX) maxX = j.x;
-                    if (j.y > maxY) maxY = j.y;
+                if (!Double.isFinite(minX)) {
+                    for (Networkpaser.Junction j : network.junctions) {
+                        if (j.x < minX) minX = j.x;
+                        if (j.y < minY) minY = j.y;
+                        if (j.x > maxX) maxX = j.x;
+                        if (j.y > maxY) maxY = j.y;
+                    }
                 }
             }
         }

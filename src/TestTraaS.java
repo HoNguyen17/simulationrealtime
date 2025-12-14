@@ -10,9 +10,9 @@ import de.tudresden.sumo.cmd.Vehicletype;
 import java.util.List;
 
 public class TestTraaS {
-public static void main ( String [] args){ 
-String sumo_bin = "sumo";
-        String config_file = "../resource/test_2_traffic.sumocfg";
+    public static void main ( String [] args){
+        String sumo_bin = "sumo-gui";
+        String config_file = "../resource/Netedit_testrun.sumocfg";
         double step_length = 1;
 
         if (args.length > 0) {
@@ -33,7 +33,7 @@ String sumo_bin = "sumo";
             List<String> vehicletype = (List<String>)conn.do_job_get(Vehicletype.getIDList());
             System.out.println("Vehicle type: " + vehicletype);
 
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 300; i++) {
                 Thread.sleep(1000);
                 conn.do_timestep();
 
