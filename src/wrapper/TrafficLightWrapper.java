@@ -125,7 +125,7 @@ class TrafficLightWrapper {
             SumoTLSController TLController = (SumoTLSController) temp.conn.do_job_get(Trafficlight.getCompleteRedYellowGreenDefinition(ID));
             int phaseNumLimit = TLController.programs.get(program).phases.size();
             int currentPhaseNum = (int)temp.conn.do_job_get(Trafficlight.getPhase(ID));
-            if(currentPhaseNum < phaseNumLimit) {temp.conn.do_job_set(Trafficlight.setPhase(ID, currentPhaseNum + 1));}
+            if(currentPhaseNum < phaseNumLimit - 1) {temp.conn.do_job_set(Trafficlight.setPhase(ID, currentPhaseNum + 1));}
             else {temp.conn.do_job_set(Trafficlight.setPhase(ID, 0));}
             return true;
         }
