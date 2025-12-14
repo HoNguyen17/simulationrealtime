@@ -122,7 +122,7 @@ class TrafficLightWrapper {
     public boolean setPhaseNext(SimulationWrapper temp) {
         try {
             String program = (String)temp.conn.do_job_get(Trafficlight.getProgram(ID));
-            SumoTLSController TLController = (SumoTLSController) temp.conn.do_job_get(Trafficlight.getCompleteRedYellowGreenDefinition("J1"));
+            SumoTLSController TLController = (SumoTLSController) temp.conn.do_job_get(Trafficlight.getCompleteRedYellowGreenDefinition(ID));
             int phaseNumLimit = TLController.programs.get(program).phases.size();
             int currentPhaseNum = (int)temp.conn.do_job_get(Trafficlight.getPhase(ID));
             if(currentPhaseNum < phaseNumLimit) {temp.conn.do_job_set(Trafficlight.setPhase(ID, currentPhaseNum + 1));}

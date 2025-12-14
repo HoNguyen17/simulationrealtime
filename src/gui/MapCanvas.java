@@ -14,6 +14,23 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 
+/*
+Encapsulate: 
+Mapcanvas encapsulates the sprite management and rendering
+logic for the network map, vehicles, and traffic lights.
+It uses a Transform object for coordinate conversions.
+
+Compostion:
+- MapCanvas compose of:
+  + Canvas: the drawing surface
+  + GraphicsContext: for drawing operations
+  + Transform: for coordinate transformation during rendering
+  + View: for managing zoom/pan interactions
+  + Sprites are modeled as inner classes (VehicleSprite, 
+  TrafficLightSprite) that encapsulate per-entity state
+  and update logic, scoped to MapCanvas.
+
+*/
 public class MapCanvas {
     private final Canvas canvas; // the drawing surface
     private final GraphicsContext g; // for drawing
@@ -65,6 +82,7 @@ public class MapCanvas {
         });
     }
 
+    // Get the canvas
     public Canvas getCanvas() { return canvas; }
 
     // Set the network model to be rendered
@@ -75,35 +93,37 @@ public class MapCanvas {
     }
 
 
-
+    // Inner class representing a vehicle sprite
     private static class VehicleSprite {
         final String id;
         double worldX, worldY;
         double angle; // in degrees
         Color color;
 
-        VehicleSprite(String id, double x, double y, double sumoAngleDeg, Color color) {
+        // Constructor of VehicleSprite
+        VehicleSprite(String id, double x, double y, double angleDeg, Color color) {
             this.id = id;
-            updatePosition(new double[]{x, y, sumoAngleDeg});
+            updatePosition(new double[]{x, y, angleDeg});
             this.color = color;
         }
 
+        // Update vehicle position and angle from SUMO data
         public void updatePosition(double[] sumoData) {
             this.worldX = sumoData[0];
             this.worldY = sumoData[1];
             if (sumoData.length > 2) {
-                // SUMO angle (deg) -> JavaFX screen angle (deg)
-                double screenAngle = - (90.0 - sumoData[2]);
+                // Convert SUMO angle (0=East, CCW) to screen angle (0=North, CW)
+                double screenAngle =  (90.0 - sumoData[2]);
                 this.angle = screenAngle;
             }
             updateBounds();
         }
 
+        // Update bounding box or other derived properties if needed
         private void updateBounds() {
         }
     }
-    //...
-
+    // Inner class representing a traffic light sprite
     private static class TrafficLightSprite {
         final String id;
         double worldX, worldY;
@@ -113,7 +133,7 @@ public class MapCanvas {
             this.id = id;
             this.worldX = x;
             this.worldY = y;
-            this.states = new ArrayList<>(states);
+            this.states = new ArrayList<>(states); // copy list of states
         }
 
         void update(double x, double y, List<Character> states) {
@@ -145,19 +165,19 @@ public class MapCanvas {
     }
 
 
-//...
     // Set traffic light data for rendering (call from wrapper)
     public void setTrafficLightData(List<TrafficLightData> trafficLights) {
         this.trafficLightDataList = trafficLights != null ? trafficLights : List.of();
-        for (TrafficLightData tl : this.trafficLightDataList) {
-            TrafficLightSprite sprite = trafficLightSprites.get(tl.id());
-            if (sprite == null) {
+        for (TrafficLightData tl : this.trafficLightDataList) { // update or create traffic light sprites
+            TrafficLightSprite sprite = trafficLightSprites.get(tl.id()); // get existing sprite
+            if (sprite == null) { 
                 sprite = new TrafficLightSprite(tl.id(), tl.x(), tl.y(), tl.states());
                 trafficLightSprites.put(tl.id(), sprite);
             } else {
                 sprite.update(tl.x(), tl.y(), tl.states());
             }
         }
+        // remove sprites for traffic lights no longer present
         trafficLightSprites.keySet().removeIf(id ->
             trafficLightDataList.stream().noneMatch(tl -> tl.id().equals(id))
         );
@@ -205,8 +225,8 @@ public class MapCanvas {
         g.setFill(Color.WHITE);
         g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-        // Draw roads
-        Color roadFill = Color.web("#210303ff");
+        // Draw roads from network model parsed data
+        Color roadFill = Color.web("#add9deff");
         g.setFill(roadFill);
         for (Networkpaser.Junction j : model.junctions) {
             if (j.shapePoints == null || j.shapePoints.size() < 3) continue;
@@ -219,11 +239,9 @@ public class MapCanvas {
             }
             g.fillPolygon(xs, ys, xs.length);
         }
-
         // add sizes for roads
         double roadsize = 2.6;     
         double centermarksize = 0.5;  
-
         // Convert to pixels based on current transform (scale * zoom)
         double roadsizePx = transform.worldscreenSize(roadsize);
         double centermarksizePx = transform.worldscreenSize(centermarksize);
@@ -238,14 +256,14 @@ public class MapCanvas {
                         transform.worldscreenY(p.getY())
                     ));
                 }
-                g.setStroke(roadFill); 
+                g.setStroke(roadFill);  // road color
                 g.setLineWidth(roadsizePx * 2); // full road width in px
-                g.setLineDashes();
+                g.setLineDashes(); // solid line
                 drawPolyline(g, screenPts);
 
                 // Draw center line inside the road
                 List<Point2D> centerline = offsetPolyline(screenPts, 0.0);
-                g.setStroke(Color.web("#bb87a7ff"));
+                g.setStroke(Color.web("#559f3bff"));
                 g.setLineWidth(centermarksizePx);
                 g.setLineDashes(18, 12); // optionally scale dash lengths too
                 drawPolyline(g, centerline);
@@ -253,7 +271,7 @@ public class MapCanvas {
         }
 
         // Draw junctions
-        Color junctionFill = Color.web("#210303ff");
+        Color junctionFill = Color.web("#add9deff");
         g.setFill(junctionFill);
         for (Networkpaser.Junction j : model.junctions) {
             if (j.id != null && j.id.contains(":")) continue; // skip internal junctions
@@ -266,6 +284,7 @@ public class MapCanvas {
                 xs[i] = transform.worldscreenX(p.getX());
                 ys[i] = transform.worldscreenY(p.getY());
             }
+            // fill a polygon shape for the junction
             g.fillPolygon(xs, ys, xs.length);
         }
 
@@ -278,15 +297,15 @@ public class MapCanvas {
         final double VEHICLE_LENGTH_PX = transform.worldscreenSize(VEHICLE_LENGTH);
         final double VEHICLE_WIDTH_PX = transform.worldscreenSize(VEHICLE_WIDTH);
 
-        for (VehicleSprite sprite : vehicleSprites.values()) {
-            double screenX = transform.worldscreenX(sprite.worldX);
+        for (VehicleSprite sprite : vehicleSprites.values()) { // draw each vehicle
+            double screenX = transform.worldscreenX(sprite.worldX); // convert to screen coordinates
             double screenY = transform.worldscreenY(sprite.worldY);
 
-            g.save();
-            g.translate(screenX, screenY);
-            g.rotate(-sprite.angle);
+            g.save(); // save current transform
+            g.translate(screenX, screenY); // move to vehicle position
+            g.rotate(sprite.angle); // rotate to vehicle heading
             
-            g.setFill(sprite.color);
+            g.setFill(sprite.color); // set vehicle color
             // draw centered rectangle
             g.fillRect(
                 -VEHICLE_LENGTH_PX,
@@ -294,21 +313,20 @@ public class MapCanvas {
                 VEHICLE_LENGTH_PX,
                 VEHICLE_WIDTH_PX
             );
-            g.restore();
+            g.restore(); // restore transform
         }
 
-        //...
 
-        // draw traffic lights as lane-end bars similar to SUMO GUI
-        final double BAR_LENGTH = transform.worldscreenSize(2.0);
-        final double BAR_WIDTH = transform.worldscreenSize(0.6);
-        for (TrafficLightData tlData : trafficLightDataList) {
-            List<Character> states = tlData.states();
-            List<String> fromIds = tlData.fromLaneIds();
+        // draw traffic lights as lane-end bars near junctions
+        final double BAR_LENGTH = transform.worldscreenSize(2.0); // length of the bar
+        final double BAR_WIDTH = transform.worldscreenSize(0.6); // width of the bar
+        for (TrafficLightData tlData : trafficLightDataList) { // draw each traffic light
+            List<Character> states = tlData.states(); // get states of the traffic light
+            List<String> fromIds = tlData.fromLaneIds(); // get from-lane ids
             if (states == null || fromIds == null) continue;
-            int n = Math.min(states.size(), fromIds.size());
+            int n = Math.min(states.size(), fromIds.size()); // number of controlled links
             for (int i = 0; i < n; i++) {
-                Networkpaser.Lane lane = findLaneById(fromIds.get(i));
+                Networkpaser.Lane lane = findLaneById(fromIds.get(i)); // find lane by ID
                 if (lane == null || lane.shapePoints.size() < 2) continue;
                 // use the last segment of the lane polyline to place the bar
                 Point2D p2 = lane.shapePoints.get(lane.shapePoints.size()-1);
@@ -317,19 +335,19 @@ public class MapCanvas {
                 Point2D s1 = new Point2D(transform.worldscreenX(p1.getX()), transform.worldscreenY(p1.getY()));
                 Point2D s2 = new Point2D(transform.worldscreenX(p2.getX()), transform.worldscreenY(p2.getY()));
                 // direction and normal
-                Point2D dir = s2.subtract(s1);
-                double len = Math.hypot(dir.getX(), dir.getY());
+                Point2D dir = s2.subtract(s1); // lane direction vector
+                double len = Math.hypot(dir.getX(), dir.getY()); // length of direction vector
                 if (len == 0) continue;
-                Point2D unit = new Point2D(dir.getX()/len, dir.getY()/len);
-                Point2D normal = new Point2D(-unit.getY(), unit.getX());
+                Point2D unit = new Point2D(dir.getX()/len, dir.getY()/len); // unit direction vector
+                Point2D normal = new Point2D(-unit.getY(), unit.getX()); // normal vector to lane
                 // center of bar slightly before junction along lane direction
-                double cx = s2.getX() - unit.getX() * transform.worldscreenSize(1.0);
-                double cy = s2.getY() - unit.getY() * transform.worldscreenSize(1.0);
+                double centerx = s2.getX() - unit.getX() * transform.worldscreenSize(1.0);
+                double centery = s2.getY() - unit.getY() * transform.worldscreenSize(1.0);
                 // bar endpoints across lane using normal
                 double hx = normal.getX() * (BAR_LENGTH/2.0);
                 double hy = normal.getY() * (BAR_LENGTH/2.0);
-                double x1 = cx - hx, y1 = cy - hy;
-                double x2 = cx + hx, y2 = cy + hy;
+                double x1 = centerx - hx, y1 = centery - hy;
+                double x2 = centerx + hx, y2 = centery + hy;
                 // color by state
                 Color c;
                 char st = states.get(i);

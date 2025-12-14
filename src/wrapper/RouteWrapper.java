@@ -10,7 +10,11 @@ class RouteWrapper {
     static void updateRouteIDs(SimulationWrapper temp) {
         try {
             List<String> newRouteList = (List<String>) temp.conn.do_job_get(Route.getIDList());
-            temp.RouteList = newRouteList;
+            List<String> validRoute = new ArrayList<String>();
+            for (String x : newRouteList) {
+                if (x.charAt(0) != '!') {validRoute.add(x);}
+            }
+            temp.RouteList = validRoute;
         }
         catch(Exception e) {System.out.println("Unable to update route list");}
     }

@@ -1,5 +1,10 @@
 package gui;
 
+/*
+Transform encapsulates coordinate transformations 
+between world coordinates and screen coordinates.Holds state
+for scale, offset, zoom, and pan.
+*/
 public class Transform {
     private double scale, offsetX, offsetY, zoom, panX, panY;
     protected  double canvasHeight;

@@ -12,14 +12,15 @@ import org.w3c.dom.NodeList;
 import javafx.geometry.Point2D;
 import java.io.File;
 
+/*
+Networkpaser.java is responsible for parsing the network XML file
+and constructing a NetworkModel object that encapsulates the network's
+junctions, edges, and lanes.
+*/
 
 
-
-
+// Main class for parsing network XML
 public class Networkpaser {
-    /*
-    First we need to build 3 class for the network
-    */
 
     //class Junction
     public static class Junction {
@@ -30,7 +31,7 @@ public class Networkpaser {
         public String shape;
         public List<Point2D> shapePoints = new ArrayList<>();
 
-        // Constructor đầy đủ
+        // Constructor of Junction class
         public Junction(String id, double x, double y, String type, String shape) {
             this.id = id;
             this.x = x;
@@ -40,12 +41,12 @@ public class Networkpaser {
             this.shapePoints = parseShape(shape);
         }
 
-        // Constructor mặc định
+        // Constructor default
         public Junction() {}
     }
 
     
-
+    //class lane
     public static class Lane {
         public String id;
         public int index;
@@ -54,7 +55,7 @@ public class Networkpaser {
         public double width;
         public List<Point2D> shapePoints = new ArrayList<>();// the list of the point(take it in shape in lane(xml file)) <point2D>
 
-        // Constructor đầy đủ
+        // Constructor of Lane class
         public Lane(String id, int index, double speed, double length, double width, List<Point2D> shapePoints) {
             this.id = id;
             this.index = index;
@@ -64,7 +65,7 @@ public class Networkpaser {
             if (shapePoints != null) this.shapePoints = shapePoints; else this.shapePoints = new ArrayList<>();
         }
 
-        // Constructor mặc định
+        // Constructor default
         public Lane() {}
     }
 
@@ -75,7 +76,7 @@ public class Networkpaser {
         public String to;
         public List<Lane> lanes; //<lane>
 
-        // Constructor đầy đủ
+        // Constructor of Edge class
         public Edge(String id, String from, String to, List<Lane> lanes) {
             this.id = id;
             this.from = from;
@@ -83,18 +84,18 @@ public class Networkpaser {
             this.lanes = lanes;
         }
 
-        // Constructor mặc định
+        // Constructor default
         public Edge() {}
     }
 
-    //class Networkmodel : use to overrall all the Junction, Lane, Edge together
+    //class NetworkModel : use to overall all the Junction, Lane, Edge together
     public static class NetworkModel {
-        public List<Edge> edges;
-        public List<Junction> junctions;
-        public double minX, maxX, minY, maxY;
+        public List<Edge> edges; // all edges in the network can use in View.java,MapCanvas.java
+        public List<Junction> junctions; // all junctions in the network can use in View.java,MapCanvas.java
+        public double minX, maxX, minY, maxY; // bounds of the network use in View.java
 
 
-        // Constructor đầy đủ
+        // Constructor of NetworkModel class
         public NetworkModel(List<Edge> edges, List<Junction> junctions, double minX, double maxX, double minY, double maxY) {
             this.edges = edges;
             this.junctions = junctions;
@@ -104,17 +105,17 @@ public class Networkpaser {
             this.maxY = maxY;
         }
 
-        // Constructor mặc định
+        // Constructor default
         public NetworkModel() {}
     }
 
-    // Parse shape string into list of Point2D
+    // Parse shape string into list of Point2D, e.g., "0,0 10,0 10,10" -> [(0,0), (10,0), (10,10)]
     private static List<Point2D> parseShape(String shape) {
         List<Point2D> points = new ArrayList<>();
         if (shape == null || shape.isEmpty()) return points;
-        String[] coords = shape.trim().split(" ");
+        String[] coords = shape.trim().split(" "); // Split by space to get individual "x,y" pairs
         for (String coord : coords) {
-            String[] xy = coord.split(",");
+            String[] xy = coord.split(","); // Split by comma to get x and y
             if (xy.length != 2) continue;
             try {
                 double x = Double.parseDouble(xy[0]);
@@ -127,24 +128,27 @@ public class Networkpaser {
         return points;
     }
     
-
+    // Main parsing method to create NetworkModel from XML file can use in App.java, View.java, MapCanvas.java
     public static NetworkModel parse(String path) throws Exception {
-        File xmlFile = new File(path);
+        File xmlFile = new File(path); //xml file path in App.java
         if (!xmlFile.exists()) {
             throw new IOException("File not found: " + path);
         }
 
+        /*
+        use DocumentBuilder to parse the XML file and extract junctions, edges, and lanes.
+        */
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document doc = dBuilder.parse(xmlFile);
         doc.getDocumentElement().normalize();
 
         // Parse junctions
-        NodeList junctionNodes = doc.getElementsByTagName("junction");
-        List<Junction> junctions = new ArrayList<>();
-        double minX = Double.MAX_VALUE, maxX = Double.MIN_VALUE, minY = Double.MAX_VALUE, maxY = Double.MIN_VALUE;
+        NodeList junctionNodes = doc.getElementsByTagName("junction"); // get all junction nodes from xml file
+        List<Junction> junctions = new ArrayList<>(); // list of junctions
+        double minX = Double.MAX_VALUE, maxX = Double.MIN_VALUE, minY = Double.MAX_VALUE, maxY = Double.MIN_VALUE; // bounds initialization
 
-        for (int i = 0; i < junctionNodes.getLength(); i++) {
+        for (int i = 0; i < junctionNodes.getLength(); i++) { // iterate through all junction nodes
             Node node = junctionNodes.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 Element elem = (Element) node;
@@ -155,7 +159,7 @@ public class Networkpaser {
                 String shape = elem.getAttribute("shape");
 
                 Junction junction = new Junction(id, x, y, type, shape);
-                junctions.add(junction);
+                junctions.add(junction); // add junction to list
 
                 // Update bounds
                 if (x < minX) minX = x;
@@ -166,9 +170,9 @@ public class Networkpaser {
         }
 
         // Parse edges
-        NodeList edgeNodes = doc.getElementsByTagName("edge");
-        List<Edge> edges = new ArrayList<>();
-        for (int i = 0; i < edgeNodes.getLength(); i++) {
+        NodeList edgeNodes = doc.getElementsByTagName("edge"); // get all edge nodes from xml file
+        List<Edge> edges = new ArrayList<>(); // list of edges
+        for (int i = 0; i < edgeNodes.getLength(); i++) { // iterate through all edge nodes
             Node node = edgeNodes.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 Element elem = (Element) node;
@@ -201,13 +205,18 @@ public class Networkpaser {
                 }
             }
         }
-        return new NetworkModel(edges, junctions, minX, maxX, minY, maxY);
+        return new NetworkModel(edges, junctions, minX, maxX, minY, maxY); // return the constructed NetworkModel
     }
 
+
+    
+    // Safe parsing helpers for double
     private static double safeParseDouble(String s, double def) {
         if (s == null || s.isEmpty()) return def;
         try { return Double.parseDouble(s); } catch (NumberFormatException ex) { return def; }
     }
+
+    // Safe parsing helpers for int
     private static int safeParseInt(String s, int def) {
         if (s == null || s.isEmpty()) return def;
         try { return Integer.parseInt(s); } catch (NumberFormatException ex) { return def; }

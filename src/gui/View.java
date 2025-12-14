@@ -4,6 +4,11 @@ import javafx.scene.canvas.Canvas;
 import paser.Networkpaser;
 
 //Manages view transformations: zoom, pan, and coordinate system
+/*
+View encapsulates view logic (fit/reset, zoom at center/point,
+ pan interactions) It updates a Transform object used for coordinate 
+ conversions.
+*/
 
 public class View {
     private final Canvas canvas;
