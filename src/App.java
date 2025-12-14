@@ -27,8 +27,8 @@ public class App extends Application {
     private Thread simulationThread; // background simulation stepper
     private volatile boolean simRunning = false;
 
-    private static final String NET_FILE = "..\\resource\\test_5_wrapper.net.xml";
-    private static final String SUMOCFG_FILE = "..\\resource\\test_5_wrapper.sumocfg";
+    private static final String NET_FILE = "..\\resource\\test_7_huge.net.xml";
+    private static final String SUMOCFG_FILE = "..\\resource\\test_7_huge.sumocfg";
 
     private Networkpaser.NetworkModel model;
 
@@ -87,7 +87,11 @@ public class App extends Application {
                         SumoColor sc = simulationWrapper.getVehicleColor(id);
 
                         //  add vehicke Color
-                        Color vehicleColor = new Color((sc.r & 0xFF)/255, (sc.g & 0xFF/255), (sc.b & 0xFF)/255, (sc.a & 0xFF)/255);;
+                        double tempR = ((double)(sc.r & 0xFF))/255;
+                        double tempG = ((double)(sc.g & 0xFF))/255;
+                        double tempB = ((double)(sc.b & 0xFF))/255;
+                        double tempA = ((double)(sc.a & 0xFF))/255;
+                        Color vehicleColor = new Color(tempR, tempG, tempB, tempA);
                         vds.add(new MapCanvas.VehicleData(id, pos.x, pos.y, angle, vehicleColor));
                     }
                 }

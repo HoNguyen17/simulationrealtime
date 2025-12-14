@@ -130,7 +130,7 @@ public class SimulationWrapper implements Observer {
                     for (String vehID : ssl) {
                         try {
                             VehicleList.remove(vehID);
-                            //System.out.println("Delete " + vehID + " from the hashmap");
+                            System.out.println("Delete " + vehID + " from the hashmap");
                         }
                         catch (Exception ex) {
                             System.err.println("Unable to delete " + vehID + " from hashmap");
@@ -274,6 +274,7 @@ public class SimulationWrapper implements Observer {
         x.setColor(this, r, g, b, a);
     }
 //===== ADDER =============================================
+    // add a vehicle into the 1st route in RouteList
     public void addVehicleBasic(String inputID) {
         try {
             RouteWrapper.updateRouteIDs(this);
@@ -282,5 +283,40 @@ public class SimulationWrapper implements Observer {
         }
         catch (Exception e) {System.out.println("hmm");}
     }
-}
+    //add a vehicle into selected route
+    public void addVehicleNormal(String inputID, int inputRoute) {
+        try {
+            RouteWrapper.updateRouteIDs(this);
+            if (RouteList.size() == 0 || inputRoute >= RouteList.size()) {System.out.println("Invalid injection");}
+            else {VehicleWrapper.addVehicle(this, inputID, RouteList.get(inputRoute));}
+        }
+        catch (Exception e) {System.out.println("Error when adding vehicle normally");}
+    }
+    public void addVehicleNormalx(String inputID, int inputRoute) {
+        try {
+            RouteWrapper.updateRouteIDs(this);
+            if (RouteList.size() == 0) {System.out.println("No available route");}
+            else {VehicleWrapper.addVehicle(this, inputID, "r_1");}
+        }
+        catch (Exception e) {System.out.println("Error when adding vehicle normally");}
+    }
+    public void testRoute() {
+        try {
+            RouteWrapper.updateRouteIDs(this);
+            System.out.println(RouteList);
+            List<String> temp1 = (List<String>)conn.do_job_get(Route.getEdges(RouteList.get(0)));
+            //List<String> temp2 = (List<String>)conn.do_job_get(Route.getEdges(RouteList.get(1)));
+            System.out.println(temp1);
+            //System.out.println(temp2);
+        }
+        catch (Exception e) {System.out.println("test_Route failed");}
+    }
 //===== ROUTE STUFF ========================================
+    //get number of available route
+    public int getRouteNum(int po) {
+        RouteWrapper.updateRouteIDs(this);
+        int routeNum = RouteList.size();
+        if (po == 1) {System.out.println(routeNum);}
+        return routeNum;
+    }
+}

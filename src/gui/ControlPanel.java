@@ -40,7 +40,7 @@ public class ControlPanel {
         Label vehicleLable = new Label("Vehicle");
         Button addVehicle = new Button("Add 1 vehicle");
         Button stressTest1 = new Button("Stress Test Max");
-        addVehicle.setOnAction(e -> System.out.println("TL: manual"));
+        addVehicle.setOnAction(e -> addSingleVehicle1());
         stressTest1.setOnAction(e -> StressTest1());
         box.getChildren().addAll(vehicleLable, addVehicle, stressTest1);
         ScrollPane sp = new ScrollPane(box);
@@ -73,11 +73,20 @@ public class ControlPanel {
             sim.setTLPhaseNext(tlID);
         }
     } 
+    public void addSingleVehicle1() {
+        String newID = String.valueOf(uniqueID);
+        uniqueID += 1;
+        sim.addVehicleBasic(newID);
+    }
     public void StressTest1() {
-        for(int i = 0; i < 10; i++) {
-            String newID = String.valueOf(uniqueID);
-            uniqueID += 1;
-            sim.addVehicleBasic(newID);
+        for(int x = 0; x < 5; x++) {
+            int temp = sim.getRouteNum(0);
+            for(int y = 0; y < temp; y++) {
+                String newID = String.valueOf(uniqueID);
+                uniqueID += 1;
+                sim.addVehicleNormal(newID, y);
+                System.out.println("add" + newID + " into "+ x);
+            }
         }
     }
 }

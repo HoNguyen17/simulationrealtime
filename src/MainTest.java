@@ -3,30 +3,32 @@ import wrapper.*;
 public class MainTest { 
 public static void main ( String [] args){ 
         // config_file path is based on this class path
-        String config_file = "../resource/test_2_traffic.sumocfg"; 
+        String config_file = "../resource/test_5_wrapper.sumocfg"; 
         double step_length = 1;
         String sumo_bin = "sumo-gui";
         SimulationWrapper A = new SimulationWrapper(config_file, step_length, sumo_bin);
         try {
             A.Start();
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 1000; i++) {
                 A.Step();
                 A.getTime(1);
+                A.testRoute();
+                A.getRouteNum(1);
                 // A.getTLPhaseNum("J1");
                 // A.getTLPhaseDef("J1");
                 // A.getTLControlledLinks("J1");
-                if(i == 10){
-                    //A.setTLPhaseDef2(0,"rrrrrrrrrrrr");
-                    class Test2 extends Thread {
-                        public void run() {
-                            A.setTLPhaseDef("J1","GGGGGGGGGGGG");
-                            A.setTLPhaseDefWithPhaseTime("J3","gggggg", 30);
-                        }
-                    }
-                    Test2 hmm = new Test2();
-                    hmm.start();
-                //     A.setDelay(50);
-                }
+                // if(i == 10){
+                //     //A.setTLPhaseDef2(0,"rrrrrrrrrrrr");
+                //     class Test2 extends Thread {
+                //         public void run() {
+                //             A.setTLPhaseDef("J1","GGGGGGGGGGGG");
+                //             A.setTLPhaseDefWithPhaseTime("J3","gggggg", 30);
+                //         }
+                //     }
+                //     Test2 hmm = new Test2();
+                //     hmm.start();
+                // //     A.setDelay(50);
+                // }
                 // if (i > 10 && i < 45){
                 //     A.getVehicleSpeed("f_0.0");
                 //     A.getVehiclePosition("f_0.0");
@@ -49,8 +51,9 @@ public static void main ( String [] args){
                 //     System.out.println("No vehicles found");
                 // }
                 // System.out.println("-----------------------------------------------");
-                if(i == 99) {
+                if(i == 1) {
                     A.test();
+                    A.addVehicleNormal("x0", 2);
                 }
             }
             A.End();
