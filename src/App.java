@@ -46,16 +46,16 @@ public class App extends Application {
         mapCanvas.render();
 
 
-        // Sidebar trái: dùng Dashboard trong package gui
-        Dashboard dashboard = new Dashboard(mapCanvas);
+        // // Sidebar trái: dùng Dashboard trong package gui
+        // Dashboard dashboard = new Dashboard(mapCanvas);
 
-        BorderPane root = new BorderPane();
-        root.setLeft(dashboard);
-        root.setCenter(mapCanvas.getCanvas());
+        // BorderPane root = new BorderPane();
+        // root.setLeft(dashboard);
+        // root.setCenter(mapCanvas.getCanvas());
 
-        stage.setTitle("SUMO Network Dashboard");
-        stage.setScene(new Scene(root));
-        stage.show();
+        // stage.setTitle("SUMO Network Dashboard");
+        // stage.setScene(new Scene(root));
+        // stage.show();
 
         //Start simulation
         simulationWrapper = new SimulationWrapper(SUMOCFG_FILE); // initialize with SUMO config file
@@ -87,7 +87,7 @@ public class App extends Application {
                         SumoColor sc = simulationWrapper.getVehicleColor(id);
 
                         //  add vehicke Color
-                        Color vehicleColor = Color.WHITE;
+                        Color vehicleColor = new Color((sc.r & 0xFF)/255, (sc.g & 0xFF/255), (sc.b & 0xFF)/255, (sc.a & 0xFF)/255);;
                         vds.add(new MapCanvas.VehicleData(id, pos.x, pos.y, angle, vehicleColor));
                     }
                 }
@@ -126,6 +126,17 @@ mapCanvas.setTrafficLightData(tlDatas);
             }
         };
         simulationTimer.start();
+
+        // Sidebar trái: dùng Dashboard trong package gui
+        Dashboard dashboard = new Dashboard(mapCanvas, simulationWrapper);
+
+        BorderPane root = new BorderPane();
+        root.setLeft(dashboard);
+        root.setCenter(mapCanvas.getCanvas());
+
+        stage.setTitle("SUMO Network Dashboard");
+        stage.setScene(new Scene(root));
+        stage.show();
 
         // Ensure proper shutdown
         stage.setOnCloseRequest(e -> {

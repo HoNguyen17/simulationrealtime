@@ -72,7 +72,6 @@ public class SimulationWrapper implements Observer {
             vs.addCommand(Constants.VAR_ARRIVED_VEHICLES_IDS);
             conn.do_subscription(vs);//start the subscription
 
-            System.out.println("this still work");
             TrafficLightWrapper.updateTrafficLightIDs(this);
             System.out.println("Started successfully.");
         }
@@ -183,12 +182,12 @@ public class SimulationWrapper implements Observer {
     // get phase definition of a traffic light (current light state)
     public String getTLPhaseDef(String inputID) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
-        String phaseDef = x.getPhaseDef(1);
+        String phaseDef = x.getPhaseDef(0);
         return phaseDef;
     }
     public int getTLControlledLinksNum(String inputID) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
-        int linkNum = x.getControlledLinksNum(1);
+        int linkNum = x.getControlledLinksNum(0);
         return linkNum;
     }
     public List<String> getTLDefFromTo(String inputID, int index) {
