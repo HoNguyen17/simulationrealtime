@@ -53,8 +53,6 @@ public class App extends Application {
         root.setLeft(dashboard);
         root.setCenter(mapCanvas.getCanvas());
 
-
-
         stage.setTitle("SUMO Network Dashboard");
         stage.setScene(new Scene(root));
         stage.show();
@@ -141,7 +139,5 @@ mapCanvas.setTrafficLightData(tlDatas);
         
 
     }
-    public static void main(String[] args) {
-        launch(args);
-    }
+    public static void main(String[] args) {launch(args);}
 }

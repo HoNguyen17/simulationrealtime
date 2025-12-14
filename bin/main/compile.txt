@@ -1,4 +1,0 @@
-not working
-cd src/main/
-javac -cp "../../lib/TraaS.jar;." ../wrapper/SimulationWrapper.java Main.java; 
-java -cp "../../lib/TraaS.jar;." Main;

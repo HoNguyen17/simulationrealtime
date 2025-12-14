@@ -1,5 +1,5 @@
 import wrapper.SimulationWrapper;
-import wrapper.TrafficLightWrapper;
+
 public class Main { 
 public static void main ( String [] args){
         String config = "../resource/test_2_traffic.sumocfg";
