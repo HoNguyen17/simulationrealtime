@@ -93,7 +93,7 @@ public class MapCanvas {
             this.worldY = sumoData[1];
             if (sumoData.length > 2) {
                 // SUMO angle (deg) -> JavaFX screen angle (deg)
-                double screenAngle = - (90.0 - sumoData[2]);
+                double screenAngle =  (90.0 - sumoData[2]);
                 this.angle = screenAngle;
             }
             updateBounds();
@@ -284,7 +284,7 @@ public class MapCanvas {
 
             g.save();
             g.translate(screenX, screenY);
-            g.rotate(-sprite.angle);
+            g.rotate(sprite.angle);
             
             g.setFill(sprite.color);
             // draw centered rectangle

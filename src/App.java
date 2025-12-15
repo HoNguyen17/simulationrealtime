@@ -27,8 +27,8 @@ public class App extends Application {
     private Thread simulationThread; // background simulation stepper
     private volatile boolean simRunning = false;
 
-    private static final String NET_FILE = "C:\\Users\\LENOVO\\IdeaProjects\\simulationrealtime\\resource\\Netedit_requirement.net.xml";
-    private static final String SUMOCFG_FILE = "C:\\Users\\LENOVO\\IdeaProjects\\simulationrealtime\\resource\\Netedit_testrun.sumocfg";
+    private static final String NET_FILE = "..\\resource\\test_7_huge.net.xml";
+    private static final String SUMOCFG_FILE = "..\\resource\\test_7_huge.sumocfg";
 
     private Networkpaser.NetworkModel model;
 
@@ -46,20 +46,20 @@ public class App extends Application {
         mapCanvas.render();
 
 
-        // Sidebar trái: dùng Dashboard trong package gui
-        Dashboard dashboard = new Dashboard(mapCanvas);
+        // // Sidebar trái: dùng Dashboard trong package gui
+        // Dashboard dashboard = new Dashboard(mapCanvas);
 
-        BorderPane root = new BorderPane();
-        root.setLeft(dashboard);
-        root.setCenter(mapCanvas.getCanvas());
+        // BorderPane root = new BorderPane();
+        // root.setLeft(dashboard);
+        // root.setCenter(mapCanvas.getCanvas());
 
-        stage.setTitle("SUMO Network Dashboard");
-        stage.setScene(new Scene(root));
-        stage.show();
+        // stage.setTitle("SUMO Network Dashboard");
+        // stage.setScene(new Scene(root));
+        // stage.show();
 
         //Start simulation
         simulationWrapper = new SimulationWrapper(SUMOCFG_FILE); // initialize with SUMO config file
-        simulationWrapper.setDelay(500); //  set step delay in ms
+        simulationWrapper.setDelay(200); //  set step delay in ms
         simulationWrapper.Start();
 
         // background thread to advance SUMO steps
@@ -87,7 +87,11 @@ public class App extends Application {
                         SumoColor sc = simulationWrapper.getVehicleColor(id);
 
                         //  add vehicke Color
-                        Color vehicleColor = Color.WHITE;
+                        double tempR = ((double)(sc.r & 0xFF))/255;
+                        double tempG = ((double)(sc.g & 0xFF))/255;
+                        double tempB = ((double)(sc.b & 0xFF))/255;
+                        double tempA = ((double)(sc.a & 0xFF))/255;
+                        Color vehicleColor = new Color(tempR, tempG, tempB, tempA);
                         vds.add(new MapCanvas.VehicleData(id, pos.x, pos.y, angle, vehicleColor));
                     }
                 }
@@ -126,6 +130,17 @@ mapCanvas.setTrafficLightData(tlDatas);
             }
         };
         simulationTimer.start();
+
+        // Sidebar trái: dùng Dashboard trong package gui
+        Dashboard dashboard = new Dashboard(mapCanvas, simulationWrapper);
+
+        BorderPane root = new BorderPane();
+        root.setLeft(dashboard);
+        root.setCenter(mapCanvas.getCanvas());
+
+        stage.setTitle("SUMO Network Dashboard");
+        stage.setScene(new Scene(root));
+        stage.show();
 
         // Ensure proper shutdown
         stage.setOnCloseRequest(e -> {
