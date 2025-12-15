@@ -17,10 +17,12 @@ import de.tudresden.sumo.subscription.ResponseType;
 import java.util.List;
 import java.util.ArrayList;
 
-class TrafficLightWrapper {
+// This entire class serves to encapsulate the complexities of TraCI commands and organize traffic light data for easy manipulation and monitoring from the main SimulationWrapper
+class TrafficLightWrapper { // helper class to simplify the interaction with single traffic light entity within a SUMO simulation
     String ID;
     String originProgramID;
-    String lightDef;
+    String lightDef; // current state of the traffic light signals as a sequence of characters like "rGGryg"
+    // lists of the edge IDs that lead to (from) and lead away from (to) the traffic light, corresponding to the controlled links
     List<String> from;
     List<String> to;
     int controlledLinksNum;
@@ -30,16 +32,16 @@ class TrafficLightWrapper {
         originProgramID = startProgram;
         from = inputFrom;
         to = inputTo;
-        controlledLinksNum = inputFrom.size();
+        controlledLinksNum = inputFrom.size(); // the number of controlled links by the traffic light, equal to the size of the (from) and (to) lists
         System.out.println("Added " + ID + " with program " + originProgramID);
     }
 //=================GETTER================================
-    // get ID
+    // get the traffic light ID
     public String getID(int po) {
         if (po == 1) {System.out.print(" " + ID);}
         return ID;
     }
-    // get phase number
+    // get the current phase index (number) of the traffic light's program from SUMO
     public int getPhaseNum(SimulationWrapper temp, int po) {
         try {
             int tlsPhase = (int)temp.conn.do_job_get(Trafficlight.getPhase(ID));
@@ -51,16 +53,18 @@ class TrafficLightWrapper {
         }
         return -1;
     }
-    // get phase definition (Red-Green-Yellow)
+    // get phase definition (Red-Green-Yellow) stored in the wrapper object, updated asynchronously via subscription
     public String getPhaseDef(int po) {
         if (po == 1) {System.out.println(String.format("Current phase definition of %s: %s", ID, lightDef));}
         return lightDef;
     }
-    // get controlled links
+    // get the number of controlled links
     public int getControlledLinksNum(int po) {
         if (po == 1) {System.out.println(controlledLinksNum);}
         return controlledLinksNum;
     }
+
+    // get a list containing the light state, the (from) edge ID, and the (to) edge ID for a specific controlled link index
     public List<String> getDefFromTo(int index, int po) {
         List<String> result = new ArrayList<String>();
         result.add("" + lightDef.charAt(index));
@@ -69,6 +73,8 @@ class TrafficLightWrapper {
         if (po == 1) {System.out.println(result);}
         return result;
     }
+
+    // get a summary of the traffic light's controlled links and current light state
     public void getControlledLinks(SimulationWrapper temp, int po) {
         try {
             if (po == 1){
@@ -93,7 +99,7 @@ class TrafficLightWrapper {
             System.out.println("Unable to set controlled links of traffic light");
         }
         return false;
-    // set phase definition with phase time (Red-Green-Yellow with time)  
+    // set phase definition within a specified time, then set back to the originProgramID  (Red-Green-Yellow with time)
     }
     public boolean setPhaseDefWithPhaseTime(SimulationWrapper temp, String inputDef, double inputTime) {
         try {               //maybe need check??
@@ -118,7 +124,7 @@ class TrafficLightWrapper {
         }
         return false;
     }
-    // set next phase
+    // set the traffic light program to the next phase
     public boolean setPhaseNext(SimulationWrapper temp) {
         try {
             String program = (String)temp.conn.do_job_get(Trafficlight.getProgram(ID));
@@ -139,23 +145,24 @@ class TrafficLightWrapper {
     protected static void updateTrafficLightIDs(SimulationWrapper temp) {
         try {
             @SuppressWarnings("unchecked")
-            List<String> IDsList = (List<String>)temp.conn.do_job_get(Trafficlight.getIDList());
-            for (String x : IDsList) {
+            List<String> IDsList = (List<String>)temp.conn.do_job_get(Trafficlight.getIDList()); // fetch a list of all traffic light IDs in the network
+            for (String x : IDsList) { // for each ID (x)
                 // set up base variable
-                String program = (String)temp.conn.do_job_get(Trafficlight.getProgram(x));
+                String program = (String)temp.conn.do_job_get(Trafficlight.getProgram(x)); // retrieve the current program ID
                 List<String> inputFrom = new ArrayList<String>();
                 List<String> inputTo = new ArrayList<String>();
-                List<SumoLink> controlledLinks = (List<SumoLink>)temp.conn.do_job_get(Trafficlight.getControlledLinks(x));
+                List<SumoLink> controlledLinks = (List<SumoLink>)temp.conn.do_job_get(Trafficlight.getControlledLinks(x)); // retrieve the list of controlled links, which are then parsed to populate the (inputFrom) and (inputTo) lists
                 for (int i = 0; i < controlledLinks.size(); i++) {
                     SumoLink link = controlledLinks.get(i);
                     inputFrom.add(link.from);
                     inputTo.add(link.to);
                 }
+                // create a new TrafficLightWrapper object with the gathered data and add to the temp.TrafficLightList HashMap in the SimulationWrapper
                 TrafficLightWrapper y = new TrafficLightWrapper(x, program, inputFrom, inputTo);
                 temp.TrafficLightList.put(x, y);
 
                 // set up subscription for traffic light
-                VariableSubscription vs = new VariableSubscription(SubscribtionVariable.trafficlight, 0, 100000 * 60, x);
+                VariableSubscription vs = new VariableSubscription(SubscribtionVariable.trafficlight, 0, 100000 * 60, x); // initiates a variable subscription for each traffic light ID
                 vs.addCommand(Constants.TL_RED_YELLOW_GREEN_STATE);
                 temp.conn.do_subscription(vs);
                 System.out.println("subscribe " + x);

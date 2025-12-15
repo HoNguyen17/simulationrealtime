@@ -9,12 +9,13 @@ import de.tudresden.sumo.objects.SumoColor;
 import java.util.List;
 import java.util.ArrayList;
 
+// This entire class acts as an intermediary, holding local data and providing simplified methods to interact with the vehicle in the running simulation
 class VehicleWrapper {
     String ID;
     SumoColor color;
     double speed;
-    SumoPosition2D position;
-    double angle;
+    SumoPosition2D position; // current 2D coordinates (X, Y) of the vehicle in the simulation world, updated via subscription
+    double angle; // current angle (heading) of the vehicle in degrees, updated via subscription
     // constructor
     VehicleWrapper(String inputID, SumoColor inputColor){
         ID = inputID;
@@ -22,27 +23,27 @@ class VehicleWrapper {
         System.out.println("Added vehicle " + inputID + ".");
     }
     //=================GETTER================================
-    // get Vehicle ID
+    // get Vehicle's ID
     public String getID(int po) {
         if (po == 1) {System.out.println(ID);}
         return ID;
     }
 
-    // get Vehicle position
+    // get Vehicle's current position as a SumoPosition2D object
     public SumoPosition2D getPosition(int po) {
         if (po == 1 && position != null) {System.out.println("Position of "+ ID +" is " + position.x + " " + position.y);}
         return position;
     }
 
 
-    // get Vehicle speed
+    // get Vehicle's current speed
     public double getSpeed(int po) {
         if (po == 1) {System.out.println("Speed of "+ ID +" is " + speed);}
         return speed;
     }
 
     // get Vehicle's ID list
-    public static List<String> getIDList(SimulationWrapper temp, int po) { // the method should be static, because it returns all vehicles, not one.
+    public static List<String> getIDList(SimulationWrapper temp, int po) { // the method should be static, because it returns all vehicles, not one
         try {
             @SuppressWarnings("unchecked")
             List<String> idList = (List<String>) temp.conn.do_job_get(Vehicle.getIDList());
@@ -59,7 +60,7 @@ class VehicleWrapper {
         }
     }
 
-    // get Vehicle's type ID
+    // get Vehicle's type ID (each type of vehicle gets the different ID)
     public String getTypeID(SimulationWrapper temp, int po) {
         try {
             String typeID = (String) temp.conn.do_job_get(Vehicle.getTypeID(ID));
@@ -72,7 +73,7 @@ class VehicleWrapper {
         return null;
     }
 
-    // get Vehicle's color
+    // get Vehicle's color as a SumoColor object
     public SumoColor getColor(int po) {
         // SUMO default color (undefined)
         if (color.r == -1 && color.g == -1 && color.b == 0 && color.a == -1 && po == 1) {
@@ -81,12 +82,14 @@ class VehicleWrapper {
         else if (po == 1) {System.out.println(String.format("Color of vehicle " + ID + ": " + color));}
         return color;
     }
+
+    // get Vehicle's current angle/heading in degrees
     public double getAngle(int po) {
         if (po == 1) {System.out.println("Vehicle " + ID + " is facing " + angle);}
         return angle;
     }
     //=================SETTER================================
-    // set Vehicle's speed
+    // set Vehicle's speed -> override the vehicle's internal speed logic until another command is sent or the simulation takes over
     public void setSpeed(SimulationWrapper temp, double inputSpeed, int po) {
         try {
             temp.conn.do_job_set(Vehicle.setSpeed(ID, inputSpeed));
@@ -97,7 +100,7 @@ class VehicleWrapper {
         }
     }
 
-    // set Vehicle's color
+    // set Vehicle's color, also update the local (color) variable in the wrapper object
     public void setColor(SimulationWrapper temp, int r, int g, int b, int a) {
         try {
             SumoColor inputColor = new SumoColor(r, g, b, a);
@@ -109,9 +112,9 @@ class VehicleWrapper {
         }
     }
     //=================STATIC================================
-    protected static void addVehicle(SimulationWrapper temp, String inputID, String inputRoute) {
+    protected static void addVehicle(SimulationWrapper temp, String inputID, String inputRoute) { // injecting a new vehicle into the simulation
         try {
-            temp.conn.do_job_set(Vehicle.add(inputID, "DEFAULT_VEHTYPE", inputRoute, 0, 0, 0, (byte)0));
+            temp.conn.do_job_set(Vehicle.add(inputID, "DEFAULT_VEHTYPE", inputRoute, 0, 0, 0, (byte)0)); // default vehicle type has the initial departure time, position, and speed = 0
         }
         catch(Exception e){System.out.println("add vehicle fail");}
     }
