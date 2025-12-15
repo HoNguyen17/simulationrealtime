@@ -4,17 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import javafx.geometry.Point2D;
+import java.io.File;
+
+/*
+Networkpaser.java is responsible for parsing the network XML file
+and constructing a NetworkModel object that encapsulates the network's
+junctions, edges, and lanes.
+*/
 
 
-// This class is responsible for reading and parsing a SUMO network XML file into an organized, and object-oriented data structure
+// Main class for parsing network XML
 public class Networkpaser {
     // The class first defines four inner static classes to represent the core elements of a SUMO network model
 
@@ -29,174 +34,200 @@ public class Networkpaser {
         public List<Point2D> shapePoints = new ArrayList<>(); // A list storing the parsed coordinates of the shape
     }
 
-    public static class Lane { // represent a single lane within an edge
-        public String id;
-        public double length;
-        public List<Point2D> shapePoints = new ArrayList<>();// the list of the point(take it in shape in lane(xml file)) <point2D> storing the parsed coordinates that define a lane's path
+        // Constructor of Junction class -> takes all field values as arguments and automatically calls parseShape to populate shapePoints
+        public Junction(String id, double x, double y, String type, String shape) {
+            this.id = id;
+            this.x = x;
+            this.y = y;
+            this.type = type;
+            this.shape = shape;
+            this.shapePoints = parseShape(shape);
+        }
+
+        // Constructor default
+        public Junction() {}
     }
 
-    // class edge
+
+    // class lane
+    public static class Lane { // represent a single lane within an edge
+        public String id;
+        public int index;
+        public double speed;
+        public double length;
+        public double width;
+        public List<Point2D> shapePoints = new ArrayList<>(); // the list of the point(take it in shape in lane(xml file)) <point2D> storing the parsed coordinates that define a lane's path
+
+        // Constructor of Lane class -> takes all values and initializes the shapePoints list
+        public Lane(String id, int index, double speed, double length, double width, List<Point2D> shapePoints) {
+            this.id = id;
+            this.index = index;
+            this.speed = speed;
+            this.length = length;
+            this.width = width;
+            if (shapePoints != null) this.shapePoints = shapePoints; else this.shapePoints = new ArrayList<>();
+        }
+
+        // Constructor default
+        public Lane() {}
+    }
+
+    //class edge
     public static class Edge { // represent a road-segment
         public String id;
         public String from, to; // IDs of the junctions/nodes when connecting will make an edge
-        public List<Lane> lanes = new ArrayList<>(); //<lane>
+        public List<Lane> lanes; //<lane>
+
+        // Constructor of Edge class
+        public Edge(String id, String from, String to, List<Lane> lanes) {
+            this.id = id;
+            this.from = from;
+            this.to = to;
+            this.lanes = lanes;
+        }
+
+        // Constructor default
+        public Edge() {}
     }
 
-    //class Networkmodel : use to overrall all the Junction, Lane, Edge together
+    //class NetworkModel : use to overall all the Junction, Lane, Edge together
     public static class NetworkModel { // hold the entire parsed network data
-        public List<Edge> edges = new ArrayList<>();
-        public List<Junction> junctions = new ArrayList<>();
+        public List<Edge> edges; // all edges in the network can use in View.java,MapCanvas.java
+        public List<Junction> junctions; // all junctions in the network can use in View.java,MapCanvas.java
+        public double minX, maxX, minY, maxY; // bounds of the network are calculated during parsing to define the total geographic area covered by the network, which is useful for initial map centering and scaling, can use in View.java
+
+
+        // Constructor of NetworkModel class
+        public NetworkModel(List<Edge> edges, List<Junction> junctions, double minX, double maxX, double minY, double maxY) {
+            this.edges = edges;
+            this.junctions = junctions;
+            this.minX = minX;
+            this.maxX = maxX;
+            this.minY = minY;
+            this.maxY = maxY;
+        }
+
+        // Constructor default
+        public NetworkModel() {}
     }
-    // method parse shape from string to list point2D
+
+    // Parse shape string into list of Point2D, e.g., "0,0 10,0 10,10" -> [(0,0), (10,0), (10,10)]
     private static List<Point2D> parseShape(String shape) { // convert coordinate strings found in the XML file into a usable list of Java Point2D objects
-        List<Point2D> pts = new ArrayList<>();
+        List<Point2D> points = new ArrayList<>();
+
         // the input shape string is a series of space-separated coordinate pairs, like "x1,y1 x2,y2 x3,y3..."
-        if (shape == null || shape.isEmpty()) return pts;
-        String[] tokens = shape.trim().split("\\s+"); // splits the string by spaces
-        for (String t : tokens) {
-            String[] xy = t.split(","); // splits each token by the comma to get the x and y values
-            if (xy.length == 2) {
-                try { // parse those tokens into double to create Point2D objects
-                    double x = Double.parseDouble(xy[0]);
-                    double y = Double.parseDouble(xy[1]);
-                    pts.add(new Point2D(x, y));
-                } catch (NumberFormatException ignore) {}
+        if (shape == null || shape.isEmpty()) return points;
+        String[] coords = shape.trim().split(" "); // split the string by spaces to get individual "x,y" pairs
+        for (String coord : coords) {
+            String[] xy = coord.split(","); // splits each token by the comma to get the x and y values
+            if (xy.length != 2) continue;
+            try { // parse those tokens into double to create Point2D objects
+                double x = Double.parseDouble(xy[0]);
+                double y = Double.parseDouble(xy[1]);
+                points.add(new Point2D(x, y));
+            } catch (NumberFormatException e) {
+                // Skip invalid coordinate
             }
         }
-        return pts;
+        return points;
     }
-    @SuppressWarnings("UseSpecificCatch")
-    public static NetworkModel load(String path) throws Exception { // this is the central function that orchestrates the XML parsing using the Document Object Model (DOM) API
-        // create factory and builder to read and parse file xml follow DOM lib
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document doc = builder.parse(path); // read file -> call builder.parse(path) to load the SUMO network XML file into a Document object
 
-        NetworkModel model = new NetworkModel(); // create an empty NetworkModel to hold the results
+    // Main parsing method to create NetworkModel from XML file can use in App.java, View.java, MapCanvas.java
+    // this is the central function that orchestrates the XML parsing using the Document Object Model (DOM) API
+    public static NetworkModel parse(String path) throws Exception {
+        File xmlFile = new File(path); //xml file path in App.java
+        if (!xmlFile.exists()) { // verify whether the input XML file path is valid/exists
+            throw new IOException("File not found: " + path);
+        }
 
-        // parse junctions
-        // take a list all the element in junction
-        NodeList jList = doc.getElementsByTagName("junction"); // retrieve all XML elements with the tag name "junction"
-        for(int i=0; i < jList.getLength(); i++){ // iterate through the list, extract attributes like "id", "type", "x", "y", and "shape"
-            Node n = jList.item(i);
-            if(n.getNodeType() == Node.ELEMENT_NODE){
-                //Element is in org.w3c.dom.Element and cast 
-                Element j = (Element) n;
-                Junction jj = new Junction();
-                jj.id  = j.getAttribute("id");
-                jj.type = j.getAttribute("type");
-                jj.shape = j.getAttribute("shape"); //shape will become x and y coordinate
+        /*
+        use DocumentBuilder to parse the XML file and extract junctions, edges, and lanes.
+        */
+        // DOM Setup: initializes the DocumentBuilderFactory and DocumentBuilder to read the XML file into a DOM Document object
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        Document doc = dBuilder.parse(xmlFile); // read file -> call dbuilder.parse(path) to load the SUMO network XML file into a Document object
+        doc.getDocumentElement().normalize();
+
+        // Parse junctions and Calculate bounds
+        NodeList junctionNodes = doc.getElementsByTagName("junction"); // get all junction nodes/elements from xml file with the tag "junctions"
+        List<Junction> junctions = new ArrayList<>(); // list of junctions
+        double minX = Double.MAX_VALUE, maxX = Double.MIN_VALUE, minY = Double.MAX_VALUE, maxY = Double.MIN_VALUE; // bounds initialization
+
+        for (int i = 0; i < junctionNodes.getLength(); i++) { // iterate through all junction nodes, extract the attributes, and use the "Junction" constructor to create object
+            Node node = junctionNodes.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element elem = (Element) node; //catch element
+                String id = elem.getAttribute("id");
+
                 // the raw x and y coordinates are parsed directly
-                try { // use a catch to ??
-                    jj.x = Double.parseDouble(j.getAttribute("x"));
-                    jj.y = Double.parseDouble(j.getAttribute("y"));
-                } catch (Exception ignore) {}
-                jj.shapePoints = parseShape(jj.shape); // call parseShape method to parse shape string to list point2D
-                model.junctions.add(jj); // each fully populated "junction" object is added to model.junctions
+                double x = safeParseDouble(elem.getAttribute("x"), 0.0);
+                double y = safeParseDouble(elem.getAttribute("y"), 0.0);
+                String type = elem.getAttribute("type");
+                String shape = elem.getAttribute("shape"); // shape will become x and y coordinates
+
+                Junction junction = new Junction(id, x, y, type, shape);
+                junctions.add(junction); // add junction to list
+
+                // Update bounds by tracking the minimum and maximum "x" and "y" values to calculate the network bounds
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
             }
         }
 
-        // parse edges(+ lanes)
-        NodeList edgeList = doc.getElementsByTagName("edge"); // retrieve all XML elements with the tag name "edge"
-        for(int i = 0; i < edgeList.getLength(); i++){ // for each "edge" element, extract attributes like "id", "length", and "shape"
-            Node e = edgeList.item(i);
-            if(e.getNodeType() == Node.ELEMENT_NODE){
-                Element edge = (Element) e;
-                Edge ee = new Edge();
-                ee.id = edge.getAttribute("id");
-                ee.from = edge.getAttribute("from");
-                ee.to = edge.getAttribute("to");
+        // Parse edges and lanes
+        NodeList edgeNodes = doc.getElementsByTagName("edge"); // retrieve all XML elements with the tag name "edge" from the XML file
+        List<Edge> edges = new ArrayList<>(); // list of edges
+        for (int i = 0; i < edgeNodes.getLength(); i++) { // iterate through all edge nodes and extract the attributes
+            Node node = edgeNodes.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element elem = (Element) node;
+                String id = elem.getAttribute("id");
+                String from = elem.getAttribute("from");
+                String to = elem.getAttribute("to");
 
-                // because lanes is a child in edge,you can see it in xml file
-                NodeList laneList = edge.getElementsByTagName("lane"); // retrieve all child elements with the tag name "lane"
-                for(int j = 0; j < laneList. getLength(); j++){ // for each "lane" element, extract attributes like "id", "length", and "shape"
-                    Node l = laneList.item(j);
-                    if(l.getNodeType() == Node.ELEMENT_NODE){
-                        Element lane = (Element) l;
-                        Lane ll = new Lane();
-                        ll.id = lane.getAttribute("id");
-                        try { // parse length from string to double
-                            ll.length = Double.parseDouble(lane.getAttribute("length"));
-                        } catch (Exception ignore) {
-                        }
-                        // parse x,y x,y ... from shape to coordinate x,y
-                        String shape = lane.getAttribute("shape");
-                        for(String pair : shape.split(" ")){
-                            String[] xy = pair.split(",");
-                            if(xy.length == 2){
-                                try {
-                                    double x = Double.parseDouble(xy[0]);
-                                    double y = Double.parseDouble(xy[1]);
-                                    ll.shapePoints.add(new Point2D(x, y)); // parse the "shape" attribute into Point2D objects
-                                } catch (Exception ignore) {}
-                            }
+                // Parse lanes within this edge
+                NodeList laneNodes = elem.getElementsByTagName("lane"); // retrieve all child elements with the tag name "lane" from the XML file
+                List<Lane> lanes = new ArrayList<>();
+                for (int j = 0; j < laneNodes.getLength(); j++) { // iterate through all lane nodes and extract the attributes
+                    Node laneNode = laneNodes.item(j);
+                    if (laneNode.getNodeType() == Node.ELEMENT_NODE) {
+                        Element laneElem = (Element) laneNode;
+                        String laneId = laneElem.getAttribute("id");
+                        int index = safeParseInt(laneElem.getAttribute("index"), j);
+                        double speed = safeParseDouble(laneElem.getAttribute("speed"), 0.0);
+                        double length = safeParseDouble(laneElem.getAttribute("length"), 0.0);
+                        double width = safeParseDouble(laneElem.getAttribute("width"), 3.0);
+                        String shape = laneElem.getAttribute("shape");
+                        List<Point2D> shapePoints = parseShape(shape);
 
-                        }
-                        ee.lanes.add(ll); // add "lane" to the current edge's lanes list
+                        lanes.add( new Lane(laneId, index, speed, length, width, shapePoints));
                     }
                 }
-                model.edges.add(ee); // add the fully populated "edge" to model.edges
+                // Only add edges if it contains one or more "Lane" objects
+                if(!lanes.isEmpty()) {
+                    Edge edge = new Edge(id, from, to, lanes);
+                    edges.add(edge);
+                }
             }
         }
-
-        return model; // return the model after parse all the element in xml file, containing all parsed junctions and edges
+        return new NetworkModel(edges, junctions, minX, maxX, minY, maxY); // return the constructed NetworkModel
     }
 
 
 
-    public static void main(String[] args) { // test case to demonstrate the DOM parsing logic for edges and lanes
-        // the code help tap to xml file
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        try {
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            // return the document object and (=) give the name xml file you want parse
-            // standard exception handling (try-catch blocks) is included to manage file and parsing errors
-            Document doc =builder.parse("../resource/test_2_traffic.net.xml");
-            NodeList edgeList = doc.getElementsByTagName("edge"); // handle the nodelist as edgelist
-
-            // iterate through the "edge" tags and, for each edge, iterates through its nested "lane" tags
-            for(int i=0; i<edgeList.getLength();i++){
-                Node e = edgeList.item(i);
-                if(e.getNodeType()==Node.ELEMENT_NODE){
-                    // get the id of edge
-                    Element edge  = (Element) e;
-                    String id = edge.getAttribute("id");
-                    // go inside a edge 
-                    NodeList laneList = edge.getElementsByTagName("lane");
-                    // look through laneList
-                    for(int j=0; j < laneList.getLength(); j++){
-                        Node l = laneList.item(j);
-
-                        // next step: we need to grab the attribute of lane
-                        if(l.getNodeType() == Node.ELEMENT_NODE){ // check if it is an element node
-                            Element lane = (Element) l;
-                            String laneId = lane.getAttribute("id");
-                            String length = lane.getAttribute("length");
-                            String shape = lane.getAttribute("shape");
-
-                            System.out.println("Edge ID: " + id + ", lane ID: " + laneId + ", length: " + length + ", shape" + shape);
-                        }
-                    }
-
-                }
-
-            }
-
-
-
-
-
-        } catch (ParserConfigurationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (SAXException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+    // These methods are designed to make the XML parsing process robust and prevent the application from crashing if the data in the SUMO network file (.net.xml) is missing, empty, or incorrectly formatted
+    // Safe parsing helpers for double
+    private static double safeParseDouble(String s, double def) {
+        if (s == null || s.isEmpty()) return def;
+        try { return Double.parseDouble(s); } catch (NumberFormatException ex) { return def; }
     }
 
-
+    // Safe parsing helpers for int
+    private static int safeParseInt(String s, int def) {
+        if (s == null || s.isEmpty()) return def;
+        try { return Integer.parseInt(s); } catch (NumberFormatException ex) { return def; }
+    }
 }
