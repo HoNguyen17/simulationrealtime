@@ -151,7 +151,7 @@ public class Networkpaser {
         for (int i = 0; i < junctionNodes.getLength(); i++) { // iterate through all junction nodes
             Node node = junctionNodes.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                Element elem = (Element) node;
+                Element elem = (Element) node; //catch element
                 String id = elem.getAttribute("id");
                 double x = safeParseDouble(elem.getAttribute("x"), 0.0);
                 double y = safeParseDouble(elem.getAttribute("y"), 0.0);

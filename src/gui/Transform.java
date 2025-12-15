@@ -21,6 +21,7 @@ public class Transform {
         this.panY = 0.0;
     }
 
+    // Update all transform parameters
     public void updateTransform(double scale, double offsetX, double offsetY, double zoom, double panX, double panY) {
         this.scale = scale;
         this.offsetX = offsetX;

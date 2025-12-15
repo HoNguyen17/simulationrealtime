@@ -4,6 +4,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import wrapper.SimulationWrapper;
 
+// Dashboard panel containing control sections
 public class Dashboard extends VBox {
     private final MapCanvas mapCanvas;
     private final ControlPanel controlPanel;

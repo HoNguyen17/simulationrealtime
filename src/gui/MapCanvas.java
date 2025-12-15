@@ -39,14 +39,12 @@ public class MapCanvas {
     private final Transform transform; // coordinate transformation manager
     private View viewManager; // view manager for zooming/panning
     private List<VehicleData> vehicleDataList = new ArrayList<>();
-    //...
-    private final Map<String, TrafficLightSprite> trafficLightSprites = new HashMap<>();
     private List<TrafficLightData> trafficLightDataList = new ArrayList<>();
 
     protected  double lastDragX = 0, lastDragY = 0; // last mouse drag positions
 
     public static record VehicleData(String id, double x, double y, double angle, Color color) {}
-    //...
+    
     // states[i] applies to the controlled link from[i] -> to[i]
     public static record TrafficLightData(String id, double x, double y, List<Character> states, List<String> fromLaneIds, List<String> toLaneIds) {}
     
@@ -107,6 +105,7 @@ public class MapCanvas {
             this.color = color;
         }
 
+
         // Update vehicle position and angle from SUMO data
         public void updatePosition(double[] sumoData) {
             this.worldX = sumoData[0];
@@ -123,25 +122,7 @@ public class MapCanvas {
         private void updateBounds() {
         }
     }
-    // Inner class representing a traffic light sprite
-    private static class TrafficLightSprite {
-        final String id;
-        double worldX, worldY;
-        List<Character> states; // r/y/g for each controlled link
-
-        TrafficLightSprite(String id, double x, double y, List<Character> states) {
-            this.id = id;
-            this.worldX = x;
-            this.worldY = y;
-            this.states = new ArrayList<>(states); // copy list of states
-        }
-
-        void update(double x, double y, List<Character> states) {
-            this.worldX = x;
-            this.worldY = y;
-            this.states = new ArrayList<>(states);
-        }
-    }
+    
 
     // Set vehicle data for rendering
     public void setVehicleData(List<VehicleData> vehicleDataList) {
@@ -167,20 +148,7 @@ public class MapCanvas {
 
     // Set traffic light data for rendering (call from wrapper)
     public void setTrafficLightData(List<TrafficLightData> trafficLights) {
-        this.trafficLightDataList = trafficLights != null ? trafficLights : List.of();
-        for (TrafficLightData tl : this.trafficLightDataList) { // update or create traffic light sprites
-            TrafficLightSprite sprite = trafficLightSprites.get(tl.id()); // get existing sprite
-            if (sprite == null) { 
-                sprite = new TrafficLightSprite(tl.id(), tl.x(), tl.y(), tl.states());
-                trafficLightSprites.put(tl.id(), sprite);
-            } else {
-                sprite.update(tl.x(), tl.y(), tl.states());
-            }
-        }
-        // remove sprites for traffic lights no longer present
-        trafficLightSprites.keySet().removeIf(id ->
-            trafficLightDataList.stream().noneMatch(tl -> tl.id().equals(id))
-        );
+        this.trafficLightDataList = trafficLights != null ? trafficLights : List.of(); // avoid null
     }
 
 
@@ -343,26 +311,30 @@ public class MapCanvas {
                 // center of bar slightly before junction along lane direction
                 double centerx = s2.getX() - unit.getX() * transform.worldscreenSize(1.0);
                 double centery = s2.getY() - unit.getY() * transform.worldscreenSize(1.0);
-                // bar endpoints across lane using normal
-                double hx = normal.getX() * (BAR_LENGTH/2.0);
-                double hy = normal.getY() * (BAR_LENGTH/2.0);
-                double x1 = centerx - hx, y1 = centery - hy;
-                double x2 = centerx + hx, y2 = centery + hy;
+                // bar endpoints across lane using normal vector half-length
+                double halfx = normal.getX() * (BAR_LENGTH/2.0);
+                double halfy = normal.getY() * (BAR_LENGTH/2.0);
+
+                // draw the bar
+                double x1 = centerx - halfx, y1 = centery - halfy;
+                double x2 = centerx + halfx, y2 = centery + halfy;
                 // color by state
                 Color c;
                 char st = states.get(i);
+                // set color based on state
                 if (st == 'r' || st == 'R') c = Color.RED;
                 else if (st == 'y' || st == 'Y') c = Color.YELLOW;
                 else if (st == 'g' || st == 'G') c = Color.LIMEGREEN;
                 else c = Color.GRAY;
-                g.setStroke(c);
-                g.setLineWidth(BAR_WIDTH);
-                g.setLineDashes();
-                g.strokeLine(x1, y1, x2, y2);
+                g.setStroke(c); // set stroke color
+                g.setLineWidth(BAR_WIDTH); // set bar width
+                g.setLineDashes(); // solid line
+                g.strokeLine(x1, y1, x2, y2); // draw the bar
             }
         }
     }
 
+    // Find lane by its ID in the network model
     private Networkpaser.Lane findLaneById(String laneId) {
         if (laneId == null || model == null) return null;
         for (Networkpaser.Edge e : model.edges) {
@@ -373,11 +345,15 @@ public class MapCanvas {
         return null;
     }
 
+
+    // Fit and center the view to the network model
     public void fitAndCenter() {
         if (model == null) return;
         viewManager.resetView();
     }
 
+
+    // Zoom at center of canvas
     public void zoomAtCenter(double factor) {
         viewManager.zoomcenter(factor);
         render();

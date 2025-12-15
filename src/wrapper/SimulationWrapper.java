@@ -86,11 +86,11 @@ public class SimulationWrapper implements Observer {
         catch(Exception e) {System.out.println("Failed to step.");}
     }
     // Close simulation
-    public void End() {
+    public void End() { // close the connection, reference: App.java line 97
         conn.close();
     }
     // Get simulation time
-    public double getTime(int po) {
+    public double getTime(int po) { 
         try {
             double time = (double)conn.do_job_get(Simulation.getTime());
             if (po == 1) {System.out.println("Current Time: " + time);}
@@ -162,14 +162,14 @@ public class SimulationWrapper implements Observer {
             }
         }
     }
-    // set delay
+    // set delay per millisecond
     public void setDelay(int input) {
         delay = input;
     }
 //===== TRAFFIC LIGHT STUFF ===============================
 //===== GETTER ============================================
     // get traffic light IDs
-    public List<String> getTLIDsList() {
+    public List<String> getTLIDsList() { //reference in App.java 
         List<String> returnTrafficLightList = new ArrayList<>(TrafficLightList.keySet());
         return returnTrafficLightList;
     }
@@ -253,7 +253,7 @@ public class SimulationWrapper implements Observer {
     public double getVehicleAverageSpeed(int po) {
         double result = 0;
         for (VehicleWrapper x : VehicleList.values()) {result += x.speed;}
-        result /= VehicleList.size();
+        result /= VehicleList.size(); //average speed
         if (po == 1) {System.out.println("Average speed is " + result);}
         return result;
     }
@@ -292,7 +292,7 @@ public class SimulationWrapper implements Observer {
         }
         catch (Exception e) {System.out.println("Error when adding vehicle normally");}
     }
-    public void addVehicleNormalx(String inputID, int inputRoute) {
+    public void addVehicleNormalx(String inputID, int inputRoute) { //testing
         try {
             RouteWrapper.updateRouteIDs(this);
             if (RouteList.size() == 0) {System.out.println("No available route");}
@@ -300,7 +300,7 @@ public class SimulationWrapper implements Observer {
         }
         catch (Exception e) {System.out.println("Error when adding vehicle normally");}
     }
-    public void testRoute() {
+    public void testRoute() { //testing
         try {
             RouteWrapper.updateRouteIDs(this);
             System.out.println(RouteList);

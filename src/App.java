@@ -83,7 +83,7 @@ public class App extends Application {
                         double tempR = ((double)(suColor.r & 0xFF))/255;
                         double tempG = ((double)(suColor.g & 0xFF))/255;
                         double tempB = ((double)(suColor.b & 0xFF))/255;
-                        double tempA = ((double)(sc.a & 0xFF))/255;
+                        double tempA = ((double)(suColor.a & 0xFF))/255;
                         Color vehicleColor = new Color(tempR, tempG, tempB, tempA);
                         vds.add(new MapCanvas.VehicleData(id, pos.x, pos.y, angle, vehicleColor));
                     }

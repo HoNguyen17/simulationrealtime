@@ -26,6 +26,7 @@ public class View {
     // Mouse drag state
     private double dragStartX, dragStartY, dragStartPanX, dragStartPanY;
 
+    // Constructor
     public View(Canvas canvas, Transform transform, Networkpaser.NetworkModel network) {
         this.canvas = canvas;
         this.transform = transform;
