@@ -27,8 +27,8 @@ public class App extends Application {
     private Thread simulationThread; // background simulation stepper
     private volatile boolean simRunning = false;
 
-    private static final String NET_FILE = "..\\resource\\Netedit_requirement.net.xml";
-    private static final String SUMOCFG_FILE = "..\\resource\\Netedit_testrun.sumocfg";
+    private static final String NET_FILE = "C:\\Users\\LENOVO\\IdeaProjects\\simulationrealtime\\resource\\Netedit_requirement.net.xml";
+    private static final String SUMOCFG_FILE = "C:\\Users\\LENOVO\\IdeaProjects\\simulationrealtime\\resource\\Netedit_testrun.sumocfg";
 
     private Networkpaser.NetworkModel model;
 
