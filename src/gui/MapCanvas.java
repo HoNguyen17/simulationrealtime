@@ -23,7 +23,7 @@ public class MapCanvas {
     private View viewManager; // view manager for zooming/panning
     private List<VehicleData> vehicleDataList = new ArrayList<>();
     //...
-    private final Map<String, TrafficLightSprite> trafficLightSprites = new HashMap<>();
+    // private final Map<String, TrafficLightSprite> trafficLightSprites = new HashMap<>();
     private List<TrafficLightData> trafficLightDataList = new ArrayList<>();
 
     protected  double lastDragX = 0, lastDragY = 0; // last mouse drag positions
@@ -104,24 +104,24 @@ public class MapCanvas {
     }
     //...
 
-    private static class TrafficLightSprite {
-        final String id;
-        double worldX, worldY;
-        List<Character> states; // r/y/g for each controlled link
+    // private static class TrafficLightSprite {
+    //     final String id;
+    //     double worldX, worldY;
+    //     List<Character> states; // r/y/g for each controlled link
 
-        TrafficLightSprite(String id, double x, double y, List<Character> states) {
-            this.id = id;
-            this.worldX = x;
-            this.worldY = y;
-            this.states = new ArrayList<>(states);
-        }
+    //     TrafficLightSprite(String id, double x, double y, List<Character> states) {
+    //         this.id = id;
+    //         this.worldX = x;
+    //         this.worldY = y;
+    //         this.states = new ArrayList<>(states);
+    //     }
 
-        void update(double x, double y, List<Character> states) {
-            this.worldX = x;
-            this.worldY = y;
-            this.states = new ArrayList<>(states);
-        }
-    }
+    //     void update(double x, double y, List<Character> states) {
+    //         this.worldX = x;
+    //         this.worldY = y;
+    //         this.states = new ArrayList<>(states);
+    //     }
+    // }
 
     // Set vehicle data for rendering
     public void setVehicleData(List<VehicleData> vehicleDataList) {
@@ -149,18 +149,18 @@ public class MapCanvas {
     // Set traffic light data for rendering (call from wrapper)
     public void setTrafficLightData(List<TrafficLightData> trafficLights) {
         this.trafficLightDataList = trafficLights != null ? trafficLights : List.of();
-        for (TrafficLightData tl : this.trafficLightDataList) {
-            TrafficLightSprite sprite = trafficLightSprites.get(tl.id());
-            if (sprite == null) {
-                sprite = new TrafficLightSprite(tl.id(), tl.x(), tl.y(), tl.states());
-                trafficLightSprites.put(tl.id(), sprite);
-            } else {
-                sprite.update(tl.x(), tl.y(), tl.states());
-            }
-        }
-        trafficLightSprites.keySet().removeIf(id ->
-            trafficLightDataList.stream().noneMatch(tl -> tl.id().equals(id))
-        );
+        // for (TrafficLightData tl : this.trafficLightDataList) {
+        //     TrafficLightSprite sprite = trafficLightSprites.get(tl.id());
+        //     if (sprite == null) {
+        //         sprite = new TrafficLightSprite(tl.id(), tl.x(), tl.y(), tl.states());
+        //         trafficLightSprites.put(tl.id(), sprite);
+        //     } else {
+        //         sprite.update(tl.x(), tl.y(), tl.states());
+        //     }
+        // }
+        // trafficLightSprites.keySet().removeIf(id ->
+        //     trafficLightDataList.stream().noneMatch(tl -> tl.id().equals(id))
+        // );
     }
 
 
@@ -205,7 +205,7 @@ public class MapCanvas {
         g.setFill(Color.WHITE);
         g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-        // Draw roads
+        // Draw junctions
         Color roadFill = Color.web("#210303ff");
         g.setFill(roadFill);
         for (Networkpaser.Junction j : model.junctions) {
@@ -227,6 +227,7 @@ public class MapCanvas {
         // Convert to pixels based on current transform (scale * zoom)
         double roadsizePx = transform.worldscreenSize(roadsize);
         double centermarksizePx = transform.worldscreenSize(centermarksize);
+        // Draw roads
         for (Networkpaser.Edge e : model.edges) { // skip internal edges
             if (e.id.startsWith(":")) continue;
             for (Networkpaser.Lane lane : e.lanes) {
@@ -251,26 +252,6 @@ public class MapCanvas {
                 drawPolyline(g, centerline);
             }
         }
-
-        // Draw junctions
-        Color junctionFill = Color.web("#210303ff");
-        g.setFill(junctionFill);
-        for (Networkpaser.Junction j : model.junctions) {
-            if (j.id != null && j.id.contains(":")) continue; // skip internal junctions
-            if (j.shapePoints == null || j.shapePoints.size() < 3) continue;
-
-            double[] xs = new double[j.shapePoints.size()];
-            double[] ys = new double[j.shapePoints.size()];
-            for (int i = 0; i < j.shapePoints.size(); i++) {
-                Point2D p = j.shapePoints.get(i);
-                xs[i] = transform.worldscreenX(p.getX());
-                ys[i] = transform.worldscreenY(p.getY());
-            }
-            g.fillPolygon(xs, ys, xs.length);
-        }
-
-
-
 
         // draw vehicles
         final double VEHICLE_LENGTH = 4.5;
