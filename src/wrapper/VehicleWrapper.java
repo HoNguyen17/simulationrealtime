@@ -9,12 +9,11 @@ import de.tudresden.sumo.objects.SumoColor;
 import java.util.List;
 import java.util.ArrayList;
 
-// This entire class acts as an intermediary, holding local data and providing simplified methods to interact with the vehicle in the running simulation
 class VehicleWrapper {
     String ID;
     SumoColor color;
     double speed;
-    SumoPosition2D position; // current 2D coordinates (X, Y) of the vehicle in the simulation world, updated via subscription
+    SumoPosition2D position; 
     double angle; // current angle (heading) of the vehicle in degrees, updated via subscription
     // constructor
     VehicleWrapper(String inputID, SumoColor inputColor){
@@ -34,7 +33,6 @@ class VehicleWrapper {
         if (po == 1 && position != null) {System.out.println("Position of "+ ID +" is " + position.x + " " + position.y);}
         return position;
     }
-
 
     // get Vehicle's current speed
     public double getSpeed(int po) {

@@ -17,30 +17,17 @@ import de.tudresden.sumo.subscription.ResponseType;
 import java.util.List;
 import java.util.ArrayList;
 
-// This entire class serves to encapsulate the complexities of TraCI commands and organize traffic light data for easy manipulation and monitoring from the main SimulationWrapper
-class TrafficLightWrapper { // helper class to simplify the interaction with single traffic light entity within a SUMO simulation
-    String ID;
+class TrafficLightWrapper extends TrafficLightData{ 
     String originProgramID;
-    String lightDef; // current state of the traffic light signals as a sequence of characters like "rGGryg"
-    // lists of the edge IDs that lead to (from) and lead away from (to) the traffic light, corresponding to the controlled links
-    List<String> from;
-    List<String> to;
     int controlledLinksNum;
     // constructor
     TrafficLightWrapper(String inputID, String startProgram, List<String> inputFrom, List<String> inputTo){
-        ID = inputID;
-        originProgramID = startProgram;
-        from = inputFrom;
-        to = inputTo;
-        controlledLinksNum = inputFrom.size(); // the number of controlled links by the traffic light, equal to the size of the (from) and (to) lists
+        super(inputID, inputFrom, inputTo);
+        this.originProgramID = startProgram;
+        this.controlledLinksNum = inputFrom.size(); // the number of controlled links by the traffic light, equal to the size of the (from) and (to) lists
         System.out.println("Added " + ID + " with program " + originProgramID);
     }
 //=================GETTER================================
-    // get the traffic light ID
-    public String getID(int po) {
-        if (po == 1) {System.out.print(" " + ID);}
-        return ID;
-    }
     // get the current phase index (number) of the traffic light's program from SUMO
     public int getPhaseNum(SimulationWrapper temp, int po) {
         try {
@@ -68,8 +55,8 @@ class TrafficLightWrapper { // helper class to simplify the interaction with sin
     public List<String> getDefFromTo(int index, int po) {
         List<String> result = new ArrayList<String>();
         result.add("" + lightDef.charAt(index));
-        result.add(from.get(index));
-        result.add(to.get(index));
+        result.add(fromLaneID.get(index));
+        result.add(toLaneID.get(index));
         if (po == 1) {System.out.println(result);}
         return result;
     }
@@ -79,8 +66,8 @@ class TrafficLightWrapper { // helper class to simplify the interaction with sin
         try {
             if (po == 1){
                 System.out.println("Number of links of " + ID + ":" + controlledLinksNum);
-                System.out.println("From of " + ID + ":" + to);
-                System.out.println("To of " + ID + ":" + from);
+                System.out.println("From of " + ID + ":" + toLaneID);
+                System.out.println("To of " + ID + ":" + fromLaneID);
                 System.out.println("Current light of " + ID + ":" + lightDef);
             }
         }   

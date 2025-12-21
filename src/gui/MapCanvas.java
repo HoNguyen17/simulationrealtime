@@ -104,25 +104,6 @@ public class MapCanvas {
     }
     //...
 
-    // private static class TrafficLightSprite {
-    //     final String id;
-    //     double worldX, worldY;
-    //     List<Character> states; // r/y/g for each controlled link
-
-    //     TrafficLightSprite(String id, double x, double y, List<Character> states) {
-    //         this.id = id;
-    //         this.worldX = x;
-    //         this.worldY = y;
-    //         this.states = new ArrayList<>(states);
-    //     }
-
-    //     void update(double x, double y, List<Character> states) {
-    //         this.worldX = x;
-    //         this.worldY = y;
-    //         this.states = new ArrayList<>(states);
-    //     }
-    // }
-
     // Set vehicle data for rendering
     public void setVehicleData(List<VehicleData> vehicleDataList) {
         this.vehicleDataList = vehicleDataList;
@@ -149,18 +130,6 @@ public class MapCanvas {
     // Set traffic light data for rendering (call from wrapper)
     public void setTrafficLightData(List<TrafficLightData> trafficLights) {
         this.trafficLightDataList = trafficLights != null ? trafficLights : List.of();
-        // for (TrafficLightData tl : this.trafficLightDataList) {
-        //     TrafficLightSprite sprite = trafficLightSprites.get(tl.id());
-        //     if (sprite == null) {
-        //         sprite = new TrafficLightSprite(tl.id(), tl.x(), tl.y(), tl.states());
-        //         trafficLightSprites.put(tl.id(), sprite);
-        //     } else {
-        //         sprite.update(tl.x(), tl.y(), tl.states());
-        //     }
-        // }
-        // trafficLightSprites.keySet().removeIf(id ->
-        //     trafficLightDataList.stream().noneMatch(tl -> tl.id().equals(id))
-        // );
     }
 
 
