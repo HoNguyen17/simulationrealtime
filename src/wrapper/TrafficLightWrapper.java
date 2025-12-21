@@ -17,14 +17,12 @@ import de.tudresden.sumo.subscription.ResponseType;
 import java.util.List;
 import java.util.ArrayList;
 
-class TrafficLightWrapper extends TrafficLightData{ 
+class TrafficLightWrapper extends DataType.TrafficLightData{ 
     String originProgramID;
-    int controlledLinksNum;
     // constructor
     TrafficLightWrapper(String inputID, String startProgram, List<String> inputFrom, List<String> inputTo){
         super(inputID, inputFrom, inputTo);
         this.originProgramID = startProgram;
-        this.controlledLinksNum = inputFrom.size(); // the number of controlled links by the traffic light, equal to the size of the (from) and (to) lists
         System.out.println("Added " + ID + " with program " + originProgramID);
     }
 //=================GETTER================================
@@ -45,22 +43,6 @@ class TrafficLightWrapper extends TrafficLightData{
         if (po == 1) {System.out.println(String.format("Current phase definition of %s: %s", ID, lightDef));}
         return lightDef;
     }
-    // get the number of controlled links
-    public int getControlledLinksNum(int po) {
-        if (po == 1) {System.out.println(controlledLinksNum);}
-        return controlledLinksNum;
-    }
-
-    // get a list containing the light state, the (from) edge ID, and the (to) edge ID for a specific controlled link index
-    public List<String> getDefFromTo(int index, int po) {
-        List<String> result = new ArrayList<String>();
-        result.add("" + lightDef.charAt(index));
-        result.add(fromLaneID.get(index));
-        result.add(toLaneID.get(index));
-        if (po == 1) {System.out.println(result);}
-        return result;
-    }
-
     // get a summary of the traffic light's controlled links and current light state
     public void getControlledLinks(SimulationWrapper temp, int po) {
         try {
@@ -74,6 +56,18 @@ class TrafficLightWrapper extends TrafficLightData{
         catch (Exception C) {
             System.out.println("Cannot get controlled links of traffic light");
         }
+    }
+//=================MAKE COPY=============================
+    public DataType.TrafficLightData makeCopy() {
+        List<String> fromLaneIDCopy = new ArrayList<>();
+        List<String> toLaneIDCopy = new ArrayList<>();
+        for (int i = 0; i < this.controlledLinksNum; i++) {
+            fromLaneIDCopy.add(fromLaneID.get(i));
+            toLaneIDCopy.add(toLaneID.get(i));
+        }
+        DataType.TrafficLightData copy = new DataType.TrafficLightData(ID, fromLaneIDCopy, toLaneIDCopy);
+        copy.lightDef = this.lightDef;
+        return copy;
     }
 //=================SETTER================================
     // set phase definition (Red-Green-Yellow)

@@ -2,6 +2,8 @@ package gui;
 
 import paser.Networkpaser;
 
+import wrapper.DataType.TrafficLightData;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +25,6 @@ public class MapCanvas {
     private View viewManager; // view manager for zooming/panning
     private List<VehicleData> vehicleDataList = new ArrayList<>();
     //...
-    // private final Map<String, TrafficLightSprite> trafficLightSprites = new HashMap<>();
     private List<TrafficLightData> trafficLightDataList = new ArrayList<>();
 
     protected  double lastDragX = 0, lastDragY = 0; // last mouse drag positions
@@ -31,10 +32,6 @@ public class MapCanvas {
     public static record VehicleData(String id, double x, double y, double angle, Color color) {}
     //...
     // states[i] applies to the controlled link from[i] -> to[i]
-    public static record TrafficLightData(String id, double x, double y, List<Character> states, List<String> fromLaneIds, List<String> toLaneIds) {}
-    
-
-
 
     // Constructor of MapCanvas
     public MapCanvas(double w, double h) {
@@ -129,7 +126,7 @@ public class MapCanvas {
 //...
     // Set traffic light data for rendering (call from wrapper)
     public void setTrafficLightData(List<TrafficLightData> trafficLights) {
-        this.trafficLightDataList = trafficLights != null ? trafficLights : List.of();
+        this.trafficLightDataList = (trafficLights != null) ? trafficLights : List.of();
     }
 
 
@@ -247,18 +244,14 @@ public class MapCanvas {
             g.restore();
         }
 
-        //...
-
         // draw traffic lights as lane-end bars similar to SUMO GUI
         final double BAR_LENGTH = transform.worldscreenSize(2.0);
         final double BAR_WIDTH = transform.worldscreenSize(0.6);
         for (TrafficLightData tlData : trafficLightDataList) {
-            List<Character> states = tlData.states();
-            List<String> fromIds = tlData.fromLaneIds();
-            if (states == null || fromIds == null) continue;
-            int n = Math.min(states.size(), fromIds.size());
+            int n = tlData.getControlledLinksNum();
             for (int i = 0; i < n; i++) {
-                Networkpaser.Lane lane = findLaneById(fromIds.get(i));
+                List<String> defFromTo = tlData.getDefFromTo(i);
+                Networkpaser.Lane lane = findLaneById(defFromTo.get(1));
                 if (lane == null || lane.shapePoints.size() < 2) continue;
                 // use the last segment of the lane polyline to place the bar
                 Point2D p2 = lane.shapePoints.get(lane.shapePoints.size()-1);
@@ -282,10 +275,11 @@ public class MapCanvas {
                 double x2 = cx + hx, y2 = cy + hy;
                 // color by state
                 Color c;
-                char st = states.get(i);
-                if (st == 'r' || st == 'R') c = Color.RED;
-                else if (st == 'y' || st == 'Y') c = Color.YELLOW;
-                else if (st == 'g' || st == 'G') c = Color.LIMEGREEN;
+                char st = defFromTo.get(0).charAt(0);
+                //System.out.println("=="+st+"==");
+                if (st == 'r') {c = Color.RED;}
+                else if (st == 'y') {c = Color.YELLOW;}
+                else if (st == 'g' || st == 'G') {c = Color.LIMEGREEN;}
                 else c = Color.GRAY;
                 g.setStroke(c);
                 g.setLineWidth(BAR_WIDTH);

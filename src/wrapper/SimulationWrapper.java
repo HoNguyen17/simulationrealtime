@@ -31,6 +31,7 @@ import java.util.HashMap;
 public class SimulationWrapper implements Observer {
     protected static SumoTraciConnection conn; //core connection object used to send commands to and receive data from the running SUMO simulation
     protected int delay = 200;
+    protected boolean isPaused = false;
 
     // HashMaps to store custom wrapper objects for easier management
     protected final HashMap<String, TrafficLightWrapper> TrafficLightList = new HashMap<>();
@@ -53,23 +54,19 @@ public class SimulationWrapper implements Observer {
         System.out.println("Simulation created");
     }
 //===== SIMULATION STUFF ==================================
-    //for testing
-    public void test() {
-        int a = VehicleList.size();
-        System.out.println("Size of hash map of vehicle is " + a);
-    }
+    // check if connection is closed
     public boolean isClosed() {
         return conn.isClosed();
-    } // check if the TraCI connection is closed
-    // Start simulation, update TrafficLightList, more will be implemented
+    } 
+    // start simulation, update TrafficLightList, more will be implemented
     public void Start(){
         try {
-            conn.runServer(); // run TraCI server
-            conn.setOrder(1); // set command order
+            conn.runServer(); 
+            conn.setOrder(1); 
             conn.addObserver(this);// add observer
             //start subscription to look out for departed (spawn in) and arrived (despawn) vehicle
-            VariableSubscription vs = new VariableSubscription(SubscribtionVariable.simulation, 0, 100000 * 60, "");//set up the variable subscription
-            vs.addCommand(Constants.VAR_DEPARTED_VEHICLES_IDS);//choose when
+            VariableSubscription vs = new VariableSubscription(SubscribtionVariable.simulation, 0, 100000 * 60, "");
+            vs.addCommand(Constants.VAR_DEPARTED_VEHICLES_IDS);
             vs.addCommand(Constants.VAR_ARRIVED_VEHICLES_IDS);
             conn.do_subscription(vs);//start the subscription
 
@@ -78,19 +75,21 @@ public class SimulationWrapper implements Observer {
         }
         catch(Exception e) {System.out.println("Failed to start.");}
     }
-    // Do a simulation's time step
+    // do a simulation's time step
     public void Step(){
-        try {
-            Thread.sleep(delay); // pause between steps
-            conn.do_timestep();
+        if(!isPaused) {
+            try {
+                Thread.sleep(delay);
+                conn.do_timestep();
+            }
+            catch(Exception e) {System.out.println("Failed to step.");}
         }
-        catch(Exception e) {System.out.println("Failed to step.");}
     }
-    // Close simulation
+    // close simulation
     public void End() {
         conn.close();
     }
-    // Get current simulation time
+    // get current simulation time
     public double getTime(int po) {
         try {
             double time = (double)conn.do_job_get(Simulation.getTime());
@@ -101,10 +100,10 @@ public class SimulationWrapper implements Observer {
         return -1;
     }
     //(new) update from subscription, abstract method of observer
-    public void update(Observable arg0, SubscriptionObject so) { // check the type of the received SubscriptionObject
-        if (so.response == ResponseType.SIM_VARIABLE) { // simulation variables
-            if (so.variable == Constants.VAR_DEPARTED_VEHICLES_IDS) {// when a new vehicle detected/ has spawned
-                SumoStringList ssl = (SumoStringList) so.object; // retrieve the list of new vehicle IDs
+    public void update(Observable arg0, SubscriptionObject so) { 
+        if (so.response == ResponseType.SIM_VARIABLE) { 
+            if (so.variable == Constants.VAR_DEPARTED_VEHICLES_IDS) {
+                SumoStringList ssl = (SumoStringList) so.object; 
                 if (ssl.size() > 0) {
                     for (String vehID : ssl) {
                         // for each new vehicle, starts a new subscription for that vehicle's position, speed, and angle
@@ -167,7 +166,7 @@ public class SimulationWrapper implements Observer {
     // set delay
     public void setDelay(int input) {
         delay = input;
-    } // set the delay time between each simulation step
+    } 
 //===== TRAFFIC LIGHT STUFF ===============================
 //===== GETTER ============================================
     // get a list of traffic light IDs
@@ -187,27 +186,30 @@ public class SimulationWrapper implements Observer {
         String phaseDef = x.getPhaseDef(0);
         return phaseDef;
     }
-
     // get the number of controlled links
     public int getTLControlledLinksNum(String inputID) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
-        int linkNum = x.getControlledLinksNum(0);
+        int linkNum = x.getControlledLinksNum();
         return linkNum;
     }
-
+    //get a traffic light definition and from, to lane ID of a link
     public List<String> getTLDefFromTo(String inputID, int index) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
         if (index < x.controlledLinksNum) {
-            List<String> defFromTo = x.getDefFromTo(index, 0);
+            List<String> defFromTo = x.getDefFromTo(index);
             return defFromTo;
         }
         else {return null;}
     }
-
     // get a list of current controlled links
     public void getTLControlledLinks(String inputID) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
         x.getControlledLinks(this, 0);
+    }
+//===== MAKE COPY =========================================
+    public DataType.TrafficLightData makeTLCopy(String inputID) {
+        TrafficLightWrapper x = TrafficLightList.get(inputID);
+        return x.makeCopy();
     }
 //===== SETTER ============================================
     // set the phase definition of a traffic light
@@ -215,7 +217,6 @@ public class SimulationWrapper implements Observer {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
         x.setPhaseDef(this, inputDef);
     }
-
     // set the phase definition of a traffic light in a range of time, then set back to previous phase definition
     public void setTLPhaseDefWithPhaseTime(String inputID, String inputDef, int inputTime) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
@@ -250,7 +251,6 @@ public class SimulationWrapper implements Observer {
         SumoColor vehicleColor = x.getColor(0);
         return vehicleColor;
     }
-
     // get Vehicle's angle
     public double getVehicleAngle(String inputID) {
         VehicleWrapper x = VehicleList.get(inputID);
