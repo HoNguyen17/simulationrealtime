@@ -2,8 +2,10 @@ import gui.MapCanvas;
 import gui.Dashboard;
 
 import paser.Networkpaser;
+
 import wrapper.SimulationWrapper;
 import wrapper.DataType.TrafficLightData;
+import wrapper.DataType.VehicleData;
 
 import javafx.animation.AnimationTimer;
 import java.util.List;
@@ -76,27 +78,15 @@ public class App extends Application {
         simulationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                List<String> ids = simulationWrapper.getVehicleIDsList();
-                List<MapCanvas.VehicleData> vds = new ArrayList<>();
-
-                if (ids != null) {
-                    for (String id : ids) {
-                        SumoPosition2D pos = simulationWrapper.getVehiclePosition(id);
-                        if (pos == null) continue;
-                        double angle = simulationWrapper.getVehicleAngle(id);
-                        SumoColor sc = simulationWrapper.getVehicleColor(id);
-
-                        //  add vehicke Color
-                        double tempR = ((double)(sc.r & 0xFF))/255;
-                        double tempG = ((double)(sc.g & 0xFF))/255;
-                        double tempB = ((double)(sc.b & 0xFF))/255;
-                        double tempA = ((double)(sc.a & 0xFF))/255;
-                        Color vehicleColor = new Color(tempR, tempG, tempB, tempA);
-                        vds.add(new MapCanvas.VehicleData(id, pos.x, pos.y, angle, vehicleColor));
+                List<VehicleData> vehDatas = new ArrayList<>();
+                List<String> vehIds = simulationWrapper.getVehicleIDsList();
+                // Vehicle data
+                if (vehIds != null) {
+                    for (String vehId : vehIds) {
+                        vehDatas.add(simulationWrapper.makeVehicleCopy(vehId));
                     }
                 }
-                mapCanvas.setVehicleData(vds);
-                mapCanvas.render();
+                mapCanvas.setVehicleData(vehDatas);
 
                 // Traffic lights: build lane-end bars data
                 List<TrafficLightData> tlDatas = new ArrayList<>();
@@ -107,7 +97,7 @@ public class App extends Application {
                     }
                 }
                 mapCanvas.setTrafficLightData(tlDatas);
-                
+                mapCanvas.render();
             }
         };
         simulationTimer.start();

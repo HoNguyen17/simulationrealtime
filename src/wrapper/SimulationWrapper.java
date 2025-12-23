@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javafx.scene.paint.Color;
+
 public class SimulationWrapper implements Observer {
     protected static SumoTraciConnection conn; //core connection object used to send commands to and receive data from the running SUMO simulation
     protected int delay = 200;
@@ -115,7 +117,7 @@ public class SimulationWrapper implements Observer {
                         try {
                             // create a vehicle wrapper object and add to the VehicleList hash map
                             SumoColor color = (SumoColor)conn.do_job_get(Vehicle.getColor(vehID));
-                            VehicleWrapper y = new VehicleWrapper(vehID, color);
+                            VehicleWrapper y = new VehicleWrapper(vehID, DataType.convertColor(color));
                             VehicleList.put(vehID, y);
                             // start subscription of the vehicle
                             conn.do_subscription(vs);
@@ -148,7 +150,8 @@ public class SimulationWrapper implements Observer {
             } 
             else if (so.variable == Constants.VAR_POSITION) {
                 SumoPosition2D sc = (SumoPosition2D) so.object;
-                x.position = sc;
+                x.pos_x = sc.x;
+                x.pos_y = sc.y;
             }
             else if (so.variable == Constants.VAR_ANGLE) {
                 SumoPrimitive sp = (SumoPrimitive) so.object;
@@ -233,29 +236,47 @@ public class SimulationWrapper implements Observer {
     }
 //===== VEHICLE STUFF =====================================
 //===== GETTER ============================================
-    // get position of the vehicle
-    public SumoPosition2D getVehiclePosition(String ID) {
-        VehicleWrapper x = VehicleList.get(ID);
-        SumoPosition2D VehiclePosition = x.getPosition(0);
-        return VehiclePosition;
+    // get position x of the vehicle
+    public double getVehiclePositionX(String inputID) {
+        if (VehicleList.containsKey(inputID)) {
+            VehicleWrapper x = VehicleList.get(inputID);
+            double VehiclePosX = x.getPositionX(1);
+            return VehiclePosX;
+        }
+        else {return 0;}
+    }
+    // get position y of the vehicle
+    public double getVehiclePositionY(String inputID) {
+        if (VehicleList.containsKey(inputID)) {
+            VehicleWrapper x = VehicleList.get(inputID);
+            double VehiclePosY = x.getPositionY(1);
+            return VehiclePosY;
+        }
+        else {return 0;}
     }
     // get Vehicle speed
     public double getVehicleSpeed(String inputID) {
-        VehicleWrapper x = VehicleList.get(inputID);
-        double vehicleSpeed = x.getSpeed(0);
-        return vehicleSpeed;
+        if (VehicleList.containsKey(inputID)) {
+            VehicleWrapper x = VehicleList.get(inputID);
+            double vehicleSpeed = x.getSpeed(0);
+            return vehicleSpeed;
+        }
+        else {return -1;}
     }
-    // get Vehicle's color
-    public SumoColor getVehicleColor(String inputID) {
-        VehicleWrapper x = VehicleList.get(inputID);
-        SumoColor vehicleColor = x.getColor(0);
-        return vehicleColor;
-    }
+    // get Vehicle's color NEED FIX
+    // public SumoColor getVehicleColor(String inputID) {
+    //     VehicleWrapper x = VehicleList.get(inputID);
+    //     SumoColor vehicleColor = x.getColor(0);
+    //     return vehicleColor;
+    // }
     // get Vehicle's angle
     public double getVehicleAngle(String inputID) {
-        VehicleWrapper x = VehicleList.get(inputID);
-        double vehicleAngle = x.getAngle(0);
-        return vehicleAngle;
+        if (VehicleList.containsKey(inputID)) {
+            VehicleWrapper x = VehicleList.get(inputID);
+            double vehicleAngle = x.getAngle(0);
+            return vehicleAngle;
+        }
+        return 0;
     }
     // get Vehicle's ID list
     public List<String> getVehicleIDsList() {
@@ -270,21 +291,27 @@ public class SimulationWrapper implements Observer {
         if (po == 1) {System.out.println("Average speed is " + result);}
         return result;
     }
-//     // get Vehicle's type ID
-//     public String getTypeID(String ID) {
-//         VehicleWrapper v = new wrapper.VehicleWrapper(ID);
-//         return v.getTypeID(this, 1);
-//     }
+//===== MAKE COPY =========================================
+    public DataType.VehicleData makeVehicleCopy(String inputID) {
+        VehicleWrapper x = VehicleList.get(inputID);
+        return x.makeCopy();
+    }
 //===== SETTER ============================================
     // set Vehicle's speed
     public void setVehicleSpeed(String inputID, double inputSpeed) {
-        VehicleWrapper x = VehicleList.get(inputID);
-        x.setSpeed(this, inputSpeed, 0);
+        if (VehicleList.containsKey(inputID)) {
+            VehicleWrapper x = VehicleList.get(inputID);
+            x.setSpeed(this, inputSpeed, 0);
+        }
+        else {System.out.println("Vehicle not exist");}
     }
     // set Vehicle's color
     public void setVehicleColor(String inputID, int r, int b, int g, int a) {
-        VehicleWrapper x = VehicleList.get(inputID);
-        x.setColor(this, r, g, b, a);
+        if (VehicleList.containsKey(inputID)) {  
+            VehicleWrapper x = VehicleList.get(inputID);
+            x.setColor(this, r, g, b, a);
+        }
+        else {System.out.println("Vehicle not exist");}
     }
 //===== ADDER =============================================
     // add a vehicle into the 1st route in RouteList

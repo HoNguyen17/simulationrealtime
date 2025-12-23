@@ -17,7 +17,7 @@ import de.tudresden.sumo.subscription.ResponseType;
 import java.util.List;
 import java.util.ArrayList;
 
-class TrafficLightWrapper extends DataType.TrafficLightData{ 
+class TrafficLightWrapper extends DataType.TrafficLightData { 
     String originProgramID;
     // constructor
     TrafficLightWrapper(String inputID, String startProgram, List<String> inputFrom, List<String> inputTo){

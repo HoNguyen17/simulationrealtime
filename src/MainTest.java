@@ -3,7 +3,7 @@ import wrapper.*;
 public class MainTest { 
 public static void main ( String [] args){ 
         // config_file path is based on this class path
-        String config_file = "../resource/test_5_wrapper.sumocfg"; 
+        String config_file = "../resource/test_7_huge.sumocfg"; 
         double step_length = 1;
         String sumo_bin = "sumo-gui";
         SimulationWrapper A = new SimulationWrapper(config_file, step_length, sumo_bin);
@@ -12,8 +12,8 @@ public static void main ( String [] args){
             for (int i = 0; i < 1000; i++) {
                 A.Step();
                 A.getTime(1);
-                A.testRoute();
-                A.getRouteNum(1);
+                // A.testRoute();
+                // A.getRouteNum(1);
                 // A.getTLPhaseNum("J1");
                 // A.getTLPhaseDef("J1");
                 // A.getTLControlledLinks("J1");
@@ -51,9 +51,18 @@ public static void main ( String [] args){
                 //     System.out.println("No vehicles found");
                 // }
                 // System.out.println("-----------------------------------------------");
-                if(i == 1) {
-                    A.test();
-                    A.addVehicleNormal("x0", 2);
+                if(i == 20) {
+                    System.out.println("should be adding x0 now");
+                    A.addVehicleBasic("x0");
+                    System.out.println("should change color of x0 now");
+                    // A.makeVehicleCopy("x0");
+                    //A.setVehicleColor("f_0.0",125,125,125,125);
+                    //System.out.println(A.getVehicleColor("x0"));
+                    // A.setVehicleSpeed("x0", 100);
+                }
+                if(i > 22) {
+                    A.getVehiclePositionX("x0");
+                    A.getVehiclePositionY("x0");
                 }
             }
             A.End();

@@ -3,6 +3,7 @@ package gui;
 import paser.Networkpaser;
 
 import wrapper.DataType.TrafficLightData;
+import wrapper.DataType.VehicleData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +30,7 @@ public class MapCanvas {
 
     protected  double lastDragX = 0, lastDragY = 0; // last mouse drag positions
 
-    public static record VehicleData(String id, double x, double y, double angle, Color color) {}
+    //public static record VehicleData(String id, double x, double y, double angle, Color color) {}
     //...
     // states[i] applies to the controlled link from[i] -> to[i]
 
@@ -102,24 +103,24 @@ public class MapCanvas {
     //...
 
     // Set vehicle data for rendering
-    public void setVehicleData(List<VehicleData> vehicleDataList) {
-        this.vehicleDataList = vehicleDataList;
+    public void setVehicleData(List<VehicleData> vehicles) {
+        this.vehicleDataList = (vehicles != null) ? vehicles : List.of();
 
         // update or create vehicle sprites
-        for (VehicleData vd : vehicleDataList) {
-            VehicleSprite sprite = vehicleSprites.get(vd.id());
-            if (sprite == null) {
-                sprite = new VehicleSprite(vd.id(), vd.x(), vd.y(), vd.angle(), vd.color());
-                vehicleSprites.put(vd.id(), sprite);
-            } else {
-                sprite.color = vd.color();
-                sprite.updatePosition(new double[]{vd.x(), vd.y(), vd.angle()});
-            }
-        }
-        //delete sprites for vehicles no longer present
-        vehicleSprites.keySet().removeIf(id ->
-            vehicleDataList.stream().noneMatch(vd -> vd.id().equals(id))
-        );
+        // for (VehicleData vd : vehicleDataList) {
+        //     VehicleSprite sprite = vehicleSprites.get(vd.id());
+        //     if (sprite == null) {
+        //         sprite = new VehicleSprite(vd.id(), vd.x(), vd.y(), vd.angle(), vd.color());
+        //         vehicleSprites.put(vd.id(), sprite);
+        //     } else {
+        //         sprite.color = vd.color();
+        //         sprite.updatePosition(new double[]{vd.x(), vd.y(), vd.angle()});
+        //     }
+        // }
+        // //delete sprites for vehicles no longer present
+        // vehicleSprites.keySet().removeIf(id ->
+        //     vehicleDataList.stream().noneMatch(vd -> vd.id().equals(id))
+        // );
     }
 
 
@@ -129,8 +130,6 @@ public class MapCanvas {
         this.trafficLightDataList = (trafficLights != null) ? trafficLights : List.of();
     }
 
-
-    
 
     // Offset polyline points by distance d
     private List<Point2D> offsetPolyline(List<Point2D> pts, double d) {
@@ -225,15 +224,18 @@ public class MapCanvas {
         final double VEHICLE_LENGTH_PX = transform.worldscreenSize(VEHICLE_LENGTH);
         final double VEHICLE_WIDTH_PX = transform.worldscreenSize(VEHICLE_WIDTH);
 
-        for (VehicleSprite sprite : vehicleSprites.values()) {
-            double screenX = transform.worldscreenX(sprite.worldX);
-            double screenY = transform.worldscreenY(sprite.worldY);
+        for (VehicleData vehData : vehicleDataList) {
+            if (Double.isNaN(vehData.getPositionX(0))) {continue;}
+            
+            double screenX = transform.worldscreenX(vehData.getPositionX(0));
+            double screenY = transform.worldscreenY(vehData.getPositionY(0));
+            double screenAngle = 90 - vehData.getAngle(0);
 
             g.save();
             g.translate(screenX, screenY);
-            g.rotate(sprite.angle);
+            g.rotate(screenAngle);
             
-            g.setFill(sprite.color);
+            g.setFill(vehData.getColor(0));//need fix
             // draw centered rectangle
             g.fillRect(
                 -VEHICLE_LENGTH_PX,
