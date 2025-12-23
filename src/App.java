@@ -1,5 +1,11 @@
 import gui.MapCanvas;
 import gui.Dashboard;
+import gui.CtrlDecApp; // kết nối với Controller
+
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+
+
 
 import paser.Networkpaser;
 import wrapper.SimulationWrapper;
@@ -25,10 +31,10 @@ public class App extends Application {
     private AnimationTimer simulationTimer;// Field to hold the timer instance
     private SimulationWrapper simulationWrapper; // Field to hold the simulation wrapper
     private Thread simulationThread; // background simulation stepper
-    private volatile boolean simRunning = false;
+    private volatile boolean simRunning = false; // lưu ý
 
-    private static final String NET_FILE = "..\\resource\\test_7_huge.net.xml";
-    private static final String SUMOCFG_FILE = "..\\resource\\test_7_huge.sumocfg";
+    private static final String NET_FILE = "../simulationrealtime/SumoConfig/test_7_huge.net.xml";
+    private static final String SUMOCFG_FILE = "../simulationrealtime/SumoConfig/test_7_huge.sumocfg";
 
     private Networkpaser.NetworkModel model;
 
@@ -37,13 +43,13 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws Exception{
-        // Tải model mạng lưới
+        //1. Tải model mạng lưới
         model = Networkpaser.parse(NET_FILE);
         // Canvas bản đồ chuyển thành MapCanvas để quản lý pan/zoom/vẽ
         mapCanvas = new MapCanvas(1000, 800);
         mapCanvas.setModel(model);
-        mapCanvas.fitAndCenter();
-        mapCanvas.render();
+//        mapCanvas.fitAndCenter();
+//        mapCanvas.render();
 
 
         // // Sidebar trái: dùng Dashboard trong package gui
@@ -57,12 +63,31 @@ public class App extends Application {
         // stage.setScene(new Scene(root));
         // stage.show();
 
-        //Start simulation
+        //2. Start simulation
         simulationWrapper = new SimulationWrapper(SUMOCFG_FILE); // initialize with SUMO config file
         simulationWrapper.setDelay(200); //  set step delay in ms
         simulationWrapper.Start();
 
-        // background thread to advance SUMO steps
+        // 3. CONNECT FXML
+        // Dùng dấu "/" để tìm đúng file trong thư mục src/gui
+        FXMLLoader load_fxml = new FXMLLoader(getClass().getResource("/gui/DecApp.fxml"));
+        Parent root;
+        try {
+            root = load_fxml.load();
+        } catch (Exception e) {
+            System.err.println("Lỗi load FXML: " + e.getMessage());
+            e.printStackTrace();
+            return;
+        }
+
+
+        //4. Đưa Map vào Controller
+        CtrlDecApp controller_fxml = load_fxml.getController();
+        if (controller_fxml != null) {
+            controller_fxml.setMapCanvas(mapCanvas, simulationWrapper);
+        }
+
+        //6. background thread to advance SUMO steps
         simRunning = true;
         simulationThread = new Thread(() -> {
             while (simRunning && !simulationWrapper.isClosed()) {
@@ -72,7 +97,7 @@ public class App extends Application {
         simulationThread.setDaemon(true);
         simulationThread.start();
 
-        // UI timer to fetch data and render vehicles
+        //7. UI timer to fetch data and render vehicles
         simulationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -125,24 +150,28 @@ public class App extends Application {
                 tlDatas.add(new MapCanvas.TrafficLightData(tlId, 0, 0, states, fromLaneIds, toLaneIds));
     }
 }
+
 mapCanvas.setTrafficLightData(tlDatas);
-                
+
+                mapCanvas.render();
+
             }
         };
         simulationTimer.start();
 
         // Sidebar trái: dùng Dashboard trong package gui
-        Dashboard dashboard = new Dashboard(mapCanvas, simulationWrapper);
+//        Dashboard dashboard = new Dashboard(mapCanvas, simulationWrapper);
+//
+//        BorderPane root = new BorderPane();
+//        root.setLeft(dashboard);
+//        root.setCenter(mapCanvas.getCanvas());
 
-        BorderPane root = new BorderPane();
-        root.setLeft(dashboard);
-        root.setCenter(mapCanvas.getCanvas());
-
+        //8. hiển thị
         stage.setTitle("SUMO Network Dashboard");
         stage.setScene(new Scene(root));
         stage.show();
 
-        // Ensure proper shutdown
+        //9. Ensure proper shutdown
         stage.setOnCloseRequest(e -> {
             simRunning = false;
             if (simulationTimer != null) simulationTimer.stop();
@@ -151,7 +180,8 @@ mapCanvas.setTrafficLightData(tlDatas);
             }
             simulationWrapper.End();
         });
-        
+        // Vẽ lần đầu
+        mapCanvas.fitAndCenter();
 
     }
     public static void main(String[] args) {launch(args);}
