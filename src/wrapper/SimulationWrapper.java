@@ -60,6 +60,10 @@ public class SimulationWrapper implements Observer {
     public boolean isClosed() {
         return conn.isClosed();
     } 
+    public void Pause() {
+        if (!isPaused) {isPaused = true;}
+        else {isPaused = false;}
+    }
     // start simulation, update TrafficLightList, more will be implemented
     public void Start(){
         try {

@@ -1,5 +1,7 @@
 import gui.MapCanvas;
 import gui.Dashboard;
+import gui.Transform;
+import gui.ControlPanel;
 
 import paser.Networkpaser;
 
@@ -7,19 +9,20 @@ import wrapper.SimulationWrapper;
 import wrapper.DataType.TrafficLightData;
 import wrapper.DataType.VehicleData;
 
-import javafx.animation.AnimationTimer;
 import java.util.List;
 import java.util.ArrayList;
-import gui.Transform;
-import javafx.scene.paint.Color;
+
 import de.tudresden.sumo.objects.SumoColor;
 import de.tudresden.sumo.objects.SumoPosition2D;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-
+import javafx.scene.Parent;
+import javafx.scene.paint.Color;
+import javafx.scene.layout.BorderPane;
+import javafx.fxml.FXMLLoader;
 
 public class App extends Application {
     private MapCanvas mapCanvas;
@@ -29,12 +32,10 @@ public class App extends Application {
     private Thread simulationThread; // background simulation stepper
     private volatile boolean simRunning = false;
 
-    private static final String NET_FILE = "..\\resource\\test_7_huge.net.xml";
-    private static final String SUMOCFG_FILE = "..\\resource\\test_7_huge.sumocfg";
+    private static final String NET_FILE = "../resource/test_7_huge.net.xml";
+    private static final String SUMOCFG_FILE = "../resource/test_7_huge.sumocfg";
 
     private Networkpaser.NetworkModel model;
-
-
 
 
     @Override
@@ -45,19 +46,7 @@ public class App extends Application {
         mapCanvas = new MapCanvas(1000, 800);
         mapCanvas.setModel(model);
         mapCanvas.fitAndCenter();
-        mapCanvas.render();
-
-
-        // // Sidebar trái: dùng Dashboard trong package gui
-        // Dashboard dashboard = new Dashboard(mapCanvas);
-
-        // BorderPane root = new BorderPane();
-        // root.setLeft(dashboard);
-        // root.setCenter(mapCanvas.getCanvas());
-
-        // stage.setTitle("SUMO Network Dashboard");
-        // stage.setScene(new Scene(root));
-        // stage.show();
+        //mapCanvas.render();
 
         //Start simulation
         simulationWrapper = new SimulationWrapper(SUMOCFG_FILE); // initialize with SUMO config file
@@ -74,21 +63,34 @@ public class App extends Application {
         simulationThread.setDaemon(true);
         simulationThread.start();
 
+//FXML thing
+        FXMLLoader load_fxml = new FXMLLoader(getClass().getResource("/gui/DecApp.fxml"));
+        Parent root;
+        try {root = load_fxml.load();} 
+        catch (Exception e) {
+            System.err.println("fail to load FXML: " + e.getMessage());
+            e.printStackTrace();
+            return;
+        }
+        
+        ControlPanel controller_fxml = load_fxml.getController();
+        if (controller_fxml != null) {controller_fxml.setMapCanvas(mapCanvas, simulationWrapper);}
+//FXML thing
+
         // UI timer to fetch data and render vehicles
         simulationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
+                // Create copy of current vehicle datas from wrapper
                 List<VehicleData> vehDatas = new ArrayList<>();
                 List<String> vehIds = simulationWrapper.getVehicleIDsList();
-                // Vehicle data
                 if (vehIds != null) {
                     for (String vehId : vehIds) {
                         vehDatas.add(simulationWrapper.makeVehicleCopy(vehId));
                     }
                 }
-                mapCanvas.setVehicleData(vehDatas);
 
-                // Traffic lights: build lane-end bars data
+                // Create copy of current traffic light datas from wrapper
                 List<TrafficLightData> tlDatas = new ArrayList<>();
                 List<String> tlIds = simulationWrapper.getTLIDsList();
                 if (tlIds != null) {
@@ -96,21 +98,18 @@ public class App extends Application {
                         tlDatas.add(simulationWrapper.makeTLCopy(tlId));
                     }
                 }
+
+                // Set the copied datas into mapCanvas and render
+                mapCanvas.setVehicleData(vehDatas);
                 mapCanvas.setTrafficLightData(tlDatas);
                 mapCanvas.render();
             }
         };
         simulationTimer.start();
 
-        // Sidebar trái: dùng Dashboard trong package gui
-        Dashboard dashboard = new Dashboard(mapCanvas, simulationWrapper);
-
-        BorderPane root = new BorderPane();
-        root.setLeft(dashboard);
-        root.setCenter(mapCanvas.getCanvas());
-
         stage.setTitle("SUMO Network Dashboard");
         stage.setScene(new Scene(root));
+        stage.setMaximized(true);
         stage.show();
 
         // Ensure proper shutdown
@@ -123,7 +122,6 @@ public class App extends Application {
             simulationWrapper.End();
         });
         
-
     }
     public static void main(String[] args) {launch(args);}
 }

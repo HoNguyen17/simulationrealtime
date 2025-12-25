@@ -15,22 +15,22 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.image.Image; 
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 
 public class MapCanvas {
     private final Canvas canvas; // the drawing surface
     private final GraphicsContext g; // for drawing
-    private final Map<String, VehicleSprite> vehicleSprites = new HashMap<>();
     private Networkpaser.NetworkModel model; // the network model to render
     private final Transform transform; // coordinate transformation manager
     private View viewManager; // view manager for zooming/panning
+
     private List<VehicleData> vehicleDataList = new ArrayList<>();
-    //...
     private List<TrafficLightData> trafficLightDataList = new ArrayList<>();
 
-    protected  double lastDragX = 0, lastDragY = 0; // last mouse drag positions
-
-    //public static record VehicleData(String id, double x, double y, double angle, Color color) {}
+    protected Image vehicleTexture = new Image("file:../texture/humveeV2.png");
+    protected double lastDragX = 0, lastDragY = 0; // last mouse drag positions
     //...
     // states[i] applies to the controlled link from[i] -> to[i]
 
@@ -72,55 +72,9 @@ public class MapCanvas {
         this.viewManager.resetView();
     }
 
-
-
-    private static class VehicleSprite {
-        final String id;
-        double worldX, worldY;
-        double angle; // in degrees
-        Color color;
-
-        VehicleSprite(String id, double x, double y, double sumoAngleDeg, Color color) {
-            this.id = id;
-            updatePosition(new double[]{x, y, sumoAngleDeg});
-            this.color = color;
-        }
-
-        public void updatePosition(double[] sumoData) {
-            this.worldX = sumoData[0];
-            this.worldY = sumoData[1];
-            if (sumoData.length > 2) {
-                // SUMO angle (deg) -> JavaFX screen angle (deg)
-                double screenAngle =  (90.0 - sumoData[2]);
-                this.angle = screenAngle;
-            }
-            updateBounds();
-        }
-
-        private void updateBounds() {
-        }
-    }
-    //...
-
     // Set vehicle data for rendering
     public void setVehicleData(List<VehicleData> vehicles) {
         this.vehicleDataList = (vehicles != null) ? vehicles : List.of();
-
-        // update or create vehicle sprites
-        // for (VehicleData vd : vehicleDataList) {
-        //     VehicleSprite sprite = vehicleSprites.get(vd.id());
-        //     if (sprite == null) {
-        //         sprite = new VehicleSprite(vd.id(), vd.x(), vd.y(), vd.angle(), vd.color());
-        //         vehicleSprites.put(vd.id(), sprite);
-        //     } else {
-        //         sprite.color = vd.color();
-        //         sprite.updatePosition(new double[]{vd.x(), vd.y(), vd.angle()});
-        //     }
-        // }
-        // //delete sprites for vehicles no longer present
-        // vehicleSprites.keySet().removeIf(id ->
-        //     vehicleDataList.stream().noneMatch(vd -> vd.id().equals(id))
-        // );
     }
 
 
@@ -171,7 +125,7 @@ public class MapCanvas {
         g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
         // Draw junctions
-        Color roadFill = Color.web("#210303ff");
+        Color roadFill = Color.web("#848484ff");
         g.setFill(roadFill);
         for (Networkpaser.Junction j : model.junctions) {
             if (j.shapePoints == null || j.shapePoints.size() < 3) continue;
@@ -186,7 +140,7 @@ public class MapCanvas {
         }
 
         // add sizes for roads
-        double roadsize = 2.6;     
+        double roadsize = 1.65;     
         double centermarksize = 0.5;  
 
         // Convert to pixels based on current transform (scale * zoom)
@@ -211,7 +165,7 @@ public class MapCanvas {
 
                 // Draw center line inside the road
                 List<Point2D> centerline = offsetPolyline(screenPts, 0.0);
-                g.setStroke(Color.web("#bb87a7ff"));
+                g.setStroke(Color.web("#ffffffff"));
                 g.setLineWidth(centermarksizePx);
                 g.setLineDashes(18, 12); // optionally scale dash lengths too
                 drawPolyline(g, centerline);
@@ -219,8 +173,8 @@ public class MapCanvas {
         }
 
         // draw vehicles
-        final double VEHICLE_LENGTH = 4.5;
-        final double VEHICLE_WIDTH = 1.5;
+        final double VEHICLE_LENGTH = 4;
+        final double VEHICLE_WIDTH = 2;
         final double VEHICLE_LENGTH_PX = transform.worldscreenSize(VEHICLE_LENGTH);
         final double VEHICLE_WIDTH_PX = transform.worldscreenSize(VEHICLE_WIDTH);
 
@@ -230,19 +184,16 @@ public class MapCanvas {
             double screenX = transform.worldscreenX(vehData.getPositionX(0));
             double screenY = transform.worldscreenY(vehData.getPositionY(0));
             double screenAngle = 90 - vehData.getAngle(0);
-
+            
             g.save();
             g.translate(screenX, screenY);
             g.rotate(screenAngle);
-            
+            // Image vehicleTexture = new Image("../texture/humveeV2.png");
+            // g.setFill(pattern);
             g.setFill(vehData.getColor(0));//need fix
             // draw centered rectangle
-            g.fillRect(
-                -VEHICLE_LENGTH_PX,
-                -VEHICLE_WIDTH_PX / 2.0,
-                VEHICLE_LENGTH_PX,
-                VEHICLE_WIDTH_PX
-            );
+            g.fillRect(-VEHICLE_LENGTH_PX, -VEHICLE_WIDTH_PX / 2.0, VEHICLE_LENGTH_PX, VEHICLE_WIDTH_PX);
+            g.drawImage(vehicleTexture, -VEHICLE_LENGTH_PX, -VEHICLE_WIDTH_PX / 2.0, VEHICLE_LENGTH_PX, VEHICLE_WIDTH_PX);
             g.restore();
         }
 
