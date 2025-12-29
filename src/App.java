@@ -1,5 +1,4 @@
 import gui.MapCanvas;
-import gui.Dashboard;
 import gui.Transform;
 import gui.ControlPanel;
 
@@ -8,6 +7,7 @@ import paser.Networkpaser;
 import wrapper.SimulationWrapper;
 import wrapper.DataType.TrafficLightData;
 import wrapper.DataType.VehicleData;
+import wrapper.DataType.RouteData;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -97,6 +97,17 @@ public class App extends Application {
                     for (String tlId : tlIds) {
                         tlDatas.add(simulationWrapper.makeTLCopy(tlId));
                     }
+                }
+                // Create copy of current route datas from wrapper
+                if(mapCanvas.getRenderMode() == 1 && mapCanvas.getUpdateRoute()) {
+                    List<RouteData> rouData = new ArrayList<>();
+                    List<String> routeIds = simulationWrapper.getRouteIDsList();
+                    if (routeIds != null) {
+                        for (String routeId : routeIds) {
+                            rouData.add(simulationWrapper.makeRouteCopy(routeId));
+                        }
+                    }
+                    mapCanvas.setRouteData(rouData);
                 }
 
                 // Set the copied datas into mapCanvas and render

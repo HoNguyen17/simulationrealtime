@@ -38,7 +38,7 @@ public class SimulationWrapper implements Observer {
     // HashMaps to store custom wrapper objects for easier management
     protected final HashMap<String, TrafficLightWrapper> TrafficLightList = new HashMap<>();
     protected final HashMap<String, VehicleWrapper> VehicleList = new HashMap<>();
-    protected List<String> RouteList = new ArrayList<String>(); // a list of available route IDs in the simulation
+    protected final HashMap<String, RouteWrapper> RouteList = new HashMap<>(); // a list of available route IDs in the simulation
     // Constructor 1
     public SimulationWrapper(String sumocfg, double step_length, String sumo_bin){
         conn = new SumoTraciConnection(sumo_bin, sumocfg);
@@ -77,6 +77,7 @@ public class SimulationWrapper implements Observer {
             conn.do_subscription(vs);//start the subscription
 
             TrafficLightWrapper.updateTrafficLightIDs(this);
+            RouteWrapper.updateRouteIDs(this);
             System.out.println("Started successfully.");
         }
         catch(Exception e) {System.out.println("Failed to start.");}
@@ -178,8 +179,8 @@ public class SimulationWrapper implements Observer {
 //===== GETTER ============================================
     // get a list of traffic light IDs
     public List<String> getTLIDsList() {
-        List<String> returnTrafficLightList = new ArrayList<>(TrafficLightList.keySet());
-        return returnTrafficLightList;
+        List<String> tlIDs = new ArrayList<>(TrafficLightList.keySet());
+        return tlIDs;
     }
     // get phase number of a traffic light
     public int getTLPhaseNum(String inputID) {
@@ -237,6 +238,12 @@ public class SimulationWrapper implements Observer {
     public void setTLPhaseNext(String inputID) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
         x.setPhaseNext(this);
+    }
+    public void setTLPhaseNextAll() {
+        List<String> tlIDs = new ArrayList<>(TrafficLightList.keySet());
+        for(String tlID : tlIDs) {
+            setTLPhaseNext(tlID);
+        }
     }
 //===== VEHICLE STUFF =====================================
 //===== GETTER ============================================
@@ -318,49 +325,65 @@ public class SimulationWrapper implements Observer {
         else {System.out.println("Vehicle not exist");}
     }
 //===== ADDER =============================================
-    // add a vehicle into the 1st route in RouteList
+    // add a vehicle into the 1st route in RouteList (might not work)
     public void addVehicleBasic(String inputID) {
         try {
             RouteWrapper.updateRouteIDs(this);
             if (RouteList.size() == 0) {System.out.println("No available route");}
-            else {VehicleWrapper.addVehicle(this, inputID, RouteList.get(0));}
+            else {VehicleWrapper.addVehicle(this, inputID, "r_0");}
         }
         catch (Exception e) {System.out.println("hmm");}
     }
     //add a vehicle into selected route
-    public void addVehicleNormal(String inputID, int inputRoute) {
+    public void addVehicleNormal(String inputID, String inputRouteID) {
         try {
             RouteWrapper.updateRouteIDs(this);
-            if (RouteList.size() == 0 || inputRoute >= RouteList.size()) {System.out.println("Invalid injection");}
-            else {VehicleWrapper.addVehicle(this, inputID, RouteList.get(inputRoute));}
+            if (1==0) {System.out.println("Invalid injection");}
+            else {VehicleWrapper.addVehicle(this, inputID, inputRouteID);}
         }
         catch (Exception e) {System.out.println("Error when adding vehicle normally");}
     }
-    public void addVehicleNormalx(String inputID, int inputRoute) {
-        try {
-            RouteWrapper.updateRouteIDs(this);
-            if (RouteList.size() == 0) {System.out.println("No available route");}
-            else {VehicleWrapper.addVehicle(this, inputID, "r_1");}
-        }
-        catch (Exception e) {System.out.println("Error when adding vehicle normally");}
-    }
-    public void testRoute() {
-        try {
-            RouteWrapper.updateRouteIDs(this);
-            System.out.println(RouteList);
-            List<String> temp1 = (List<String>)conn.do_job_get(Route.getEdges(RouteList.get(0)));
-            //List<String> temp2 = (List<String>)conn.do_job_get(Route.getEdges(RouteList.get(1)));
-            System.out.println(temp1);
-            //System.out.println(temp2);
-        }
-        catch (Exception e) {System.out.println("test_Route failed");}
-    }
+    // public void addVehicleNormalx(String inputID, int inputRoute) {
+    //     try {
+    //         RouteWrapper.updateRouteIDs(this);
+    //         if (RouteList.size() == 0) {System.out.println("No available route");}
+    //         else {VehicleWrapper.addVehicle(this, inputID, "r_1");}
+    //     }
+    //     catch (Exception e) {System.out.println("Error when adding vehicle normally");}
+    // }
+    // public void testRoute() {
+    //     try {
+    //         RouteWrapper.updateRouteIDs(this);
+    //         System.out.println(RouteList);
+    //         List<String> temp1 = (List<String>)conn.do_job_get(Route.getEdges(RouteList.get(0)));
+    //         //List<String> temp2 = (List<String>)conn.do_job_get(Route.getEdges(RouteList.get(1)));
+    //         System.out.println(temp1);
+    //         //System.out.println(temp2);
+    //     }
+    //     catch (Exception e) {System.out.println("test_Route failed");}
+    // }
 //===== ROUTE STUFF ========================================
+//===== GETTER =============================================
     //get number of available route
     public int getRouteNum(int po) {
         RouteWrapper.updateRouteIDs(this);
         int routeNum = RouteList.size();
         if (po == 1) {System.out.println(routeNum);}
         return routeNum;
+    }
+    //get first edge id of the route
+    public String getRouteFirstEdge(String inputID) {
+        RouteWrapper x = RouteList.get(inputID);
+        return x.getFirstEdgeID(1);
+    }
+    //get route id list
+    public List<String> getRouteIDsList() {
+        List<String> routeIDs = new ArrayList<>(RouteList.keySet());
+        return routeIDs;
+    }
+//===== MAKE COPY ==========================================
+    public DataType.RouteData makeRouteCopy(String inputID) {
+        RouteWrapper x = RouteList.get(inputID);
+        return x.makeCopy();
     }
 }

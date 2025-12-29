@@ -92,6 +92,24 @@ public class DataType {
             return color;
         }
     }
+    public static class RouteData implements Identifiable {
+        protected String ID;
+        protected String firstEdgeID;
+        RouteData(String inputID, String inputEdgeID) {
+            this.ID = inputID;
+            this.firstEdgeID = inputEdgeID;
+        } 
+        //
+        public String getID(int po) {
+            if(po == 1){System.out.println(ID);}
+            return ID;
+        }
+        // get first edge ID of the route
+        public String getFirstEdgeID(int po) {
+            if (po == 1) {System.out.println("First edge " + this.firstEdgeID);}
+            return firstEdgeID;
+        }
+    }
     // not yet implements
     public static Color convertColor(SumoColor inputColor) {
         double tempR = ((double)(inputColor.r & 0xFF))/255;

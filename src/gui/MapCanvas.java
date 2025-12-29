@@ -4,6 +4,7 @@ import paser.Networkpaser;
 
 import wrapper.DataType.TrafficLightData;
 import wrapper.DataType.VehicleData;
+import wrapper.DataType.RouteData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,8 +27,12 @@ public class MapCanvas {
     private final Transform transform; // coordinate transformation manager
     private View viewManager; // view manager for zooming/panning
 
+    private int renderMode = 0; // 0=default, 1=trafficlight, 2=vehicle
+    private boolean updateRoute = true;  // to prevent frequent update of route data
+
     private List<VehicleData> vehicleDataList = new ArrayList<>();
     private List<TrafficLightData> trafficLightDataList = new ArrayList<>();
+    private List<RouteData> routeDataList = new ArrayList<>();
 
     protected Image vehicleTexture = new Image("file:../texture/humveeV2.png");
     protected double lastDragX = 0, lastDragY = 0; // last mouse drag positions
@@ -63,7 +68,11 @@ public class MapCanvas {
         });
     }
 
-    public Canvas getCanvas() { return canvas; }
+    public Canvas getCanvas() {return this.canvas;}
+
+    public int getRenderMode() {return this.renderMode;} 
+
+    public boolean getUpdateRoute() {return this.updateRoute;}
 
     // Set the network model to be rendered
     public void setModel(Networkpaser.NetworkModel model) {
@@ -77,14 +86,29 @@ public class MapCanvas {
         this.vehicleDataList = (vehicles != null) ? vehicles : List.of();
     }
 
-
-//...
-    // Set traffic light data for rendering (call from wrapper)
+    // Set traffic light data for rendering 
     public void setTrafficLightData(List<TrafficLightData> trafficLights) {
         this.trafficLightDataList = (trafficLights != null) ? trafficLights : List.of();
     }
+    
+    // Set route data for rendering
+    public void setRouteData(List<RouteData> routes) {
+        this.routeDataList = (routes != null) ? routes : List.of();
+        this.updateRoute = false;
+    }
 
+    // Set render mode
+    public void setRenderMode(int inputMode) {
+        if(inputMode == 0 || inputMode == 1 || inputMode == 2) {
+            this.renderMode = inputMode;
+        }
+    }
 
+    // Set update route
+    public void setUpdateRoute(boolean input) {
+        this.updateRoute = input;
+    }
+    
     // Offset polyline points by distance d
     private List<Point2D> offsetPolyline(List<Point2D> pts, double d) {
         if (pts.size() < 2) return pts;
@@ -120,11 +144,15 @@ public class MapCanvas {
 
     public void render() {
         if (model == null) return;
+
+        //System.out.println("Current render mode " + renderMode);
+
         // Clear canvas
-        g.setFill(Color.WHITE);
+        g.setFill(Color.GREEN);
         g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
         // Draw junctions
+        Color highlightFill = Color.web("#e2fb00ff");
         Color roadFill = Color.web("#848484ff");
         g.setFill(roadFill);
         for (Networkpaser.Junction j : model.junctions) {
@@ -138,7 +166,6 @@ public class MapCanvas {
             }
             g.fillPolygon(xs, ys, xs.length);
         }
-
         // add sizes for roads
         double roadsize = 1.65;     
         double centermarksize = 0.5;  
@@ -188,9 +215,7 @@ public class MapCanvas {
             g.save();
             g.translate(screenX, screenY);
             g.rotate(screenAngle);
-            // Image vehicleTexture = new Image("../texture/humveeV2.png");
-            // g.setFill(pattern);
-            g.setFill(vehData.getColor(0));//need fix
+            g.setFill(vehData.getColor(0));
             // draw centered rectangle
             g.fillRect(-VEHICLE_LENGTH_PX, -VEHICLE_WIDTH_PX / 2.0, VEHICLE_LENGTH_PX, VEHICLE_WIDTH_PX);
             g.drawImage(vehicleTexture, -VEHICLE_LENGTH_PX, -VEHICLE_WIDTH_PX / 2.0, VEHICLE_LENGTH_PX, VEHICLE_WIDTH_PX);
@@ -240,6 +265,27 @@ public class MapCanvas {
                 g.strokeLine(x1, y1, x2, y2);
             }
         }
+        // render for vehicle mode
+        if (renderMode == 1) {
+            for(RouteData rouData : routeDataList) {
+                //System.out.println(rouData.getID(0) + " start at " + rouData.getFirstEdgeID(0));
+                Networkpaser.Edge e = findEdgeById(rouData.getFirstEdgeID(0));
+                for (Networkpaser.Lane lane : e.lanes) {
+                    if (lane.shapePoints.size() < 2) continue;
+                    List<Point2D> screenPts = new ArrayList<>(); // transformed points
+                    for (Point2D p : lane.shapePoints) {
+                        screenPts.add(new Point2D(
+                            transform.worldscreenX(p.getX()),
+                            transform.worldscreenY(p.getY())
+                        ));
+                    }
+                    g.setStroke(highlightFill); 
+                    g.setLineWidth(roadsizePx * 2); // full road width in px
+                    g.setLineDashes();
+                    drawPolyline(g, screenPts);
+                }
+            }
+        }
     }
 
     private Networkpaser.Lane findLaneById(String laneId) {
@@ -248,6 +294,14 @@ public class MapCanvas {
             for (Networkpaser.Lane l : e.lanes) {
                 if (laneId.equals(l.id)) return l;
             }
+        }
+        return null;
+    }
+
+    private Networkpaser.Edge findEdgeById(String edgeId) {
+        if (edgeId == null || model == null) return null;
+        for (Networkpaser.Edge e : model.edges) {
+            if (edgeId.equals(e.id)) return e;
         }
         return null;
     }
