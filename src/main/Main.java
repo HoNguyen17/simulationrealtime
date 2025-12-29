@@ -1,4 +1,3 @@
-
 import wrapper.SimulationWrapper;
 
 public class Main {
