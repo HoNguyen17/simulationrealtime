@@ -152,7 +152,7 @@ public class MapCanvas {
         g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
         // Draw junctions
-        Color highlightFill = Color.web("#e2fb00ff");
+        Color highlightFill = Color.web("#f7e300ff");
         Color roadFill = Color.web("#848484ff");
         g.setFill(roadFill);
         for (Networkpaser.Junction j : model.junctions) {
@@ -198,7 +198,27 @@ public class MapCanvas {
                 drawPolyline(g, centerline);
             }
         }
-
+        // hightlight start of route
+        if (renderMode == 1) {
+            for(RouteData rouData : routeDataList) {
+                //System.out.println(rouData.getID(0) + " start at " + rouData.getFirstEdgeID(0));
+                Networkpaser.Edge e = findEdgeById(rouData.getFirstEdgeID(0));
+                for (Networkpaser.Lane lane : e.lanes) {
+                    if (lane.shapePoints.size() < 2) continue;
+                    List<Point2D> screenPts = new ArrayList<>(); // transformed points
+                    for (Point2D p : lane.shapePoints) {
+                        screenPts.add(new Point2D(
+                            transform.worldscreenX(p.getX()),
+                            transform.worldscreenY(p.getY())
+                        ));
+                    }
+                    g.setStroke(highlightFill); 
+                    g.setLineWidth(roadsizePx * 2); // full road width in px
+                    g.setLineDashes();
+                    drawPolyline(g, screenPts);
+                }
+            }
+        }
         // draw vehicles
         final double VEHICLE_LENGTH = 4;
         final double VEHICLE_WIDTH = 2;
@@ -264,28 +284,7 @@ public class MapCanvas {
                 g.setLineDashes();
                 g.strokeLine(x1, y1, x2, y2);
             }
-        }
-        // render for vehicle mode
-        if (renderMode == 1) {
-            for(RouteData rouData : routeDataList) {
-                //System.out.println(rouData.getID(0) + " start at " + rouData.getFirstEdgeID(0));
-                Networkpaser.Edge e = findEdgeById(rouData.getFirstEdgeID(0));
-                for (Networkpaser.Lane lane : e.lanes) {
-                    if (lane.shapePoints.size() < 2) continue;
-                    List<Point2D> screenPts = new ArrayList<>(); // transformed points
-                    for (Point2D p : lane.shapePoints) {
-                        screenPts.add(new Point2D(
-                            transform.worldscreenX(p.getX()),
-                            transform.worldscreenY(p.getY())
-                        ));
-                    }
-                    g.setStroke(highlightFill); 
-                    g.setLineWidth(roadsizePx * 2); // full road width in px
-                    g.setLineDashes();
-                    drawPolyline(g, screenPts);
-                }
-            }
-        }
+        }   
     }
 
     private Networkpaser.Lane findLaneById(String laneId) {

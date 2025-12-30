@@ -43,20 +43,6 @@ class TrafficLightWrapper extends DataType.TrafficLightData {
         if (po == 1) {System.out.println(String.format("Current phase definition of %s: %s", ID, lightDef));}
         return lightDef;
     }
-    // get a summary of the traffic light's controlled links and current light state
-    public void getControlledLinks(SimulationWrapper temp, int po) {
-        try {
-            if (po == 1){
-                System.out.println("Number of links of " + ID + ":" + controlledLinksNum);
-                System.out.println("From of " + ID + ":" + toLaneID);
-                System.out.println("To of " + ID + ":" + fromLaneID);
-                System.out.println("Current light of " + ID + ":" + lightDef);
-            }
-        }   
-        catch (Exception C) {
-            System.out.println("Cannot get controlled links of traffic light");
-        }
-    }
 //=================MAKE COPY=============================
     public DataType.TrafficLightData makeCopy() {
         List<String> fromLaneIDCopy = new ArrayList<>();

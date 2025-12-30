@@ -6,8 +6,15 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import javafx.event.ActionEvent; 
 import javafx.event.Event; 
+
+import java.util.ArrayList;
+import java.util.List;
+
 import wrapper.SimulationWrapper;
 
 public class ControlPanel {
@@ -17,20 +24,24 @@ public class ControlPanel {
     @FXML private MenuButton expType;
     @FXML private MenuItem expTypeCSV;
     @FXML private MenuItem expTypePDF;
+
     @FXML private Button simPause;
     @FXML private Button simPlay;
     @FXML private Button simTest;//for testing
+
     @FXML private LineChart<?, ?> staSim;
     @FXML private TableView<?> staTLTable;
     @FXML private TableView<?> staVehTable;
+
     @FXML private TextField tlID;
     @FXML private Button tlNPhase;
     @FXML private Button tlNPhaseAll;
     @FXML private TextField tlPhase;
+
     @FXML private ColorPicker vehColor;
     @FXML private TextField injectVehNum;
-    @FXML private ChoiceBox<?> injectVehRoute;
-    @FXML private Button vehIn;
+    @FXML private ChoiceBox<String> injectVehRoute;
+    @FXML private Button vehInject;
 
     // --- BIẾN CỤC BỘ ---
     private MapCanvas mapCanvas;
@@ -64,9 +75,14 @@ public class ControlPanel {
     @FXML void tlNPhaseAllAct(ActionEvent event) {sim.setTLPhaseNextAll();}
     @FXML void tlPhaseAct(ActionEvent event) { }
     @FXML void vehColorAct(ActionEvent event) { }
-    @FXML void vehIDAct(ActionEvent event) {}
-    @FXML void vehInAct(ActionEvent event) {
-        this.VehicleInject(Integer.parseInt(injectVehNum.getText()));
+    @FXML void vehNumAct(ActionEvent event) {}
+
+    @FXML void vehInjectAct(ActionEvent event) {
+        String chosenRoute = injectVehRoute.getValue();
+        String inputNum = injectVehNum.getText();
+        int chosenNum = 1;
+        if (this.checkIntConvertable(inputNum)) {chosenNum = Integer.parseInt(inputNum);}
+        this.VehicleInject(chosenNum, chosenRoute);
     }
     
     @FXML void modeChangeAct(Event event) {
@@ -74,7 +90,7 @@ public class ControlPanel {
         if (selectedTab.isSelected()) {
             String tabName = selectedTab.getText();
             if (tabName.equals("Simulation")) {this.changeRenderMode(0);} 
-            else if (tabName.equals("Vehicle")) {this.changeRenderMode(1);}
+            else if (tabName.equals("Add Vehicle")) {this.changeRenderMode(1);}
             else if (tabName.equals("Traffic Light")) {this.changeRenderMode(2);}
         }
     }
@@ -84,8 +100,12 @@ public class ControlPanel {
         sim.Pause();
     }
     // inject vehicle
-    private void VehicleInject(int num) {
-        System.out.println("should inject "+ num);
+    private void VehicleInject(int num, String routeId) {
+        System.out.println("should inject "+ num + " at " + routeId);
+        for (int i = 0; i < num; i++) {
+            this.sim.addVehicleNormal(String.format("v_%d", this.idCounter), routeId);
+            this.idCounter++;
+        }
     }
     // test (easy to break)
     private void SimTest() {
@@ -98,6 +118,15 @@ public class ControlPanel {
         }
         if (input == 1) {
             this.mapCanvas.setUpdateRoute(true);
+            List<String> routeIds = this.sim.getRouteIDsList();
+            injectVehRoute.setItems(FXCollections.observableArrayList(routeIds));
+            if (!routeIds.isEmpty()) {injectVehRoute.setValue(routeIds.get(0));}
         }
+    }
+    private boolean checkIntConvertable(String input) {
+        try {
+            Integer.parseInt(input);
+            return true;
+        } catch (NumberFormatException e) {return false;}
     }
 }

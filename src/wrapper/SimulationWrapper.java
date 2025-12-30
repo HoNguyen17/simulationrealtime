@@ -194,12 +194,6 @@ public class SimulationWrapper implements Observer {
         String phaseDef = x.getPhaseDef(0);
         return phaseDef;
     }
-    // get the number of controlled links
-    public int getTLControlledLinksNum(String inputID) {
-        TrafficLightWrapper x = TrafficLightList.get(inputID);
-        int linkNum = x.getControlledLinksNum();
-        return linkNum;
-    }
     //get a traffic light definition and from, to lane ID of a link
     public List<String> getTLDefFromTo(String inputID, int index) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
@@ -208,11 +202,6 @@ public class SimulationWrapper implements Observer {
             return defFromTo;
         }
         else {return null;}
-    }
-    // get a list of current controlled links
-    public void getTLControlledLinks(String inputID) {
-        TrafficLightWrapper x = TrafficLightList.get(inputID);
-        x.getControlledLinks(this, 0);
     }
 //===== MAKE COPY =========================================
     public DataType.TrafficLightData makeTLCopy(String inputID) {
@@ -343,25 +332,6 @@ public class SimulationWrapper implements Observer {
         }
         catch (Exception e) {System.out.println("Error when adding vehicle normally");}
     }
-    // public void addVehicleNormalx(String inputID, int inputRoute) {
-    //     try {
-    //         RouteWrapper.updateRouteIDs(this);
-    //         if (RouteList.size() == 0) {System.out.println("No available route");}
-    //         else {VehicleWrapper.addVehicle(this, inputID, "r_1");}
-    //     }
-    //     catch (Exception e) {System.out.println("Error when adding vehicle normally");}
-    // }
-    // public void testRoute() {
-    //     try {
-    //         RouteWrapper.updateRouteIDs(this);
-    //         System.out.println(RouteList);
-    //         List<String> temp1 = (List<String>)conn.do_job_get(Route.getEdges(RouteList.get(0)));
-    //         //List<String> temp2 = (List<String>)conn.do_job_get(Route.getEdges(RouteList.get(1)));
-    //         System.out.println(temp1);
-    //         //System.out.println(temp2);
-    //     }
-    //     catch (Exception e) {System.out.println("test_Route failed");}
-    // }
 //===== ROUTE STUFF ========================================
 //===== GETTER =============================================
     //get number of available route

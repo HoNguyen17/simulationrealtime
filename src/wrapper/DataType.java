@@ -119,12 +119,4 @@ public class DataType {
         Color result =  new Color(tempR, tempG, tempB, tempA);
         return result;
     }
-    // should do polymorphism, convert to javafx equivalent
-    public static void convertColor(int inputColor) {
-        // double tempR = ((double)(inputColor.r & 0xFF))/255;
-        // double tempG = ((double)(inputColor.g & 0xFF))/255;
-        // double tempB = ((double)(inputColor.b & 0xFF))/255;
-        // double tempA = ((double)(inputColor.a & 0xFF))/255;
-        System.out.println("placeholder");
-    }
 }
