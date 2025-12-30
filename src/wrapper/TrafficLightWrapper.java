@@ -17,7 +17,7 @@ import de.tudresden.sumo.subscription.ResponseType;
 import java.util.List;
 import java.util.ArrayList;
 
-class TrafficLightWrapper extends DataType.TrafficLightData { 
+class TrafficLightWrapper extends DataType.TrafficLightData {
     String originProgramID;
     // constructor
     TrafficLightWrapper(String inputID, String startProgram, List<String> inputFrom, List<String> inputTo){
@@ -25,7 +25,7 @@ class TrafficLightWrapper extends DataType.TrafficLightData {
         this.originProgramID = startProgram;
         System.out.println("Added " + ID + " with program " + originProgramID);
     }
-//=================GETTER================================
+    //=================GETTER================================
     // get the current phase index (number) of the traffic light's program from SUMO
     public int getPhaseNum(SimulationWrapper temp, int po) {
         try {
@@ -48,16 +48,16 @@ class TrafficLightWrapper extends DataType.TrafficLightData {
         try {
             if (po == 1){
                 System.out.println("Number of links of " + ID + ":" + controlledLinksNum);
-                System.out.println("From of " + ID + ":" + toLaneID);
-                System.out.println("To of " + ID + ":" + fromLaneID);
+                System.out.println("From of " + ID + ":" + fromLaneID);
+                System.out.println("To of " + ID + ":" + toLaneID);
                 System.out.println("Current light of " + ID + ":" + lightDef);
             }
-        }   
+        }
         catch (Exception C) {
             System.out.println("Cannot get controlled links of traffic light");
         }
     }
-//=================MAKE COPY=============================
+    //=================MAKE COPY=============================
     public DataType.TrafficLightData makeCopy() {
         List<String> fromLaneIDCopy = new ArrayList<>();
         List<String> toLaneIDCopy = new ArrayList<>();
@@ -69,7 +69,7 @@ class TrafficLightWrapper extends DataType.TrafficLightData {
         copy.lightDef = this.lightDef;
         return copy;
     }
-//=================SETTER================================
+    //=================SETTER================================
     // set phase definition (Red-Green-Yellow)
     public boolean setPhaseDef(SimulationWrapper temp, String input) {
         try {               //maybe need check??
@@ -80,19 +80,19 @@ class TrafficLightWrapper extends DataType.TrafficLightData {
             System.out.println("Unable to set controlled links of traffic light");
         }
         return false;
-    // set phase definition within a specified time, then set back to the originProgramID  (Red-Green-Yellow with time)
+        // set phase definition within a specified time, then set back to the originProgramID  (Red-Green-Yellow with time)
     }
     public boolean setPhaseDefWithPhaseTime(SimulationWrapper temp, String inputDef, double inputTime) {
         try {               //maybe need check??
             long roundedTime = Math.round(inputTime * temp.delay);
             temp.conn.do_job_set(Trafficlight.setRedYellowGreenState(ID, inputDef));
-            Thread.sleep(roundedTime); 
+            Thread.sleep(roundedTime);
             temp.conn.do_job_set(Trafficlight.setProgram(ID, originProgramID));
         }
         catch (Exception D) {
             System.out.println("Unable to set phase with time");
         }
-    return false;
+        return false;
     }
     // set phase definition to origin (auto)
     public boolean setPhaseDefOrigin(SimulationWrapper temp) {
@@ -121,7 +121,7 @@ class TrafficLightWrapper extends DataType.TrafficLightData {
         }
         return false;
     }
-//=================STATIC================================
+    //=================STATIC================================
     // update all traffic light IDs of simulation
     protected static void updateTrafficLightIDs(SimulationWrapper temp) {
         try {

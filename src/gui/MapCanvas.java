@@ -315,9 +315,4 @@ public class MapCanvas {
         viewManager.zoomcenter(factor);
         render();
     }
-
-    // Getter for network model (needed for export)
-    public Networkpaser.NetworkModel getModel() {
-        return model;
-    }
 }

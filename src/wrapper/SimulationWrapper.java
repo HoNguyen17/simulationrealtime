@@ -55,11 +55,11 @@ public class SimulationWrapper implements Observer {
         conn.addOption("start", "true"); //start sumo immediately
         System.out.println("Simulation created");
     }
-//===== SIMULATION STUFF ==================================
+    //===== SIMULATION STUFF ==================================
     // check if connection is closed
     public boolean isClosed() {
         return conn.isClosed();
-    } 
+    }
     public void Pause() {
         if (!isPaused) {isPaused = true;}
         else {isPaused = false;}
@@ -67,8 +67,8 @@ public class SimulationWrapper implements Observer {
     // start simulation, update TrafficLightList, more will be implemented
     public void Start(){
         try {
-            conn.runServer(); 
-            conn.setOrder(1); 
+            conn.runServer();
+            conn.setOrder(1);
             conn.addObserver(this);// add observer
             //start subscription to look out for departed (spawn in) and arrived (despawn) vehicle
             VariableSubscription vs = new VariableSubscription(SubscribtionVariable.simulation, 0, 100000 * 60, "");
@@ -107,10 +107,10 @@ public class SimulationWrapper implements Observer {
         return -1;
     }
     //(new) update from subscription, abstract method of observer
-    public void update(Observable arg0, SubscriptionObject so) { 
-        if (so.response == ResponseType.SIM_VARIABLE) { 
+    public void update(Observable arg0, SubscriptionObject so) {
+        if (so.response == ResponseType.SIM_VARIABLE) {
             if (so.variable == Constants.VAR_DEPARTED_VEHICLES_IDS) {
-                SumoStringList ssl = (SumoStringList) so.object; 
+                SumoStringList ssl = (SumoStringList) so.object;
                 if (ssl.size() > 0) {
                     for (String vehID : ssl) {
                         // for each new vehicle, starts a new subscription for that vehicle's position, speed, and angle
@@ -118,15 +118,20 @@ public class SimulationWrapper implements Observer {
                         vs.addCommand(Constants.VAR_POSITION);
                         vs.addCommand(Constants.VAR_SPEED);
                         vs.addCommand(Constants.VAR_ANGLE);
-                        
+
                         try {
                             // create a vehicle wrapper object and add to the VehicleList hash map
                             SumoColor color = (SumoColor)conn.do_job_get(Vehicle.getColor(vehID));
                             VehicleWrapper y = new VehicleWrapper(vehID, DataType.convertColor(color));
+                            // set departure time
+                            double currentTime = getTime(0);
+                            if (currentTime >= 0) {
+                                y.setDepartureTime(currentTime);
+                            }
                             VehicleList.put(vehID, y);
                             // start subscription of the vehicle
                             conn.do_subscription(vs);
-                        } 
+                        }
                         catch (Exception ex) {System.err.println("subscription to " + vehID + " failed");}
                     }
                 }
@@ -145,14 +150,14 @@ public class SimulationWrapper implements Observer {
                     }
                 }
             }
-        } 
+        }
         else if (so.response == ResponseType.VEHICLE_VARIABLE) { // vehicle variables
             VehicleWrapper x = VehicleList.get(so.id);
             // update the speed, position, angle of a VehicleWrapper object in the VehicleList based on the received data
             if (so.variable == Constants.VAR_SPEED) {
                 SumoPrimitive sp = (SumoPrimitive) so.object;
                 x.speed = (double) sp.val;
-            } 
+            }
             else if (so.variable == Constants.VAR_POSITION) {
                 SumoPosition2D sc = (SumoPosition2D) so.object;
                 x.pos_x = sc.x;
@@ -174,8 +179,8 @@ public class SimulationWrapper implements Observer {
     // set delay
     public void setDelay(int input) {
         delay = input;
-    } 
-//===== TRAFFIC LIGHT STUFF ===============================
+    }
+    //===== TRAFFIC LIGHT STUFF ===============================
 //===== GETTER ============================================
     // get a list of traffic light IDs
     public List<String> getTLIDsList() {
@@ -194,12 +199,6 @@ public class SimulationWrapper implements Observer {
         String phaseDef = x.getPhaseDef(0);
         return phaseDef;
     }
-    // get the number of controlled links
-    public int getTLControlledLinksNum(String inputID) {
-        TrafficLightWrapper x = TrafficLightList.get(inputID);
-        int linkNum = x.getControlledLinksNum();
-        return linkNum;
-    }
     //get a traffic light definition and from, to lane ID of a link
     public List<String> getTLDefFromTo(String inputID, int index) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
@@ -212,14 +211,16 @@ public class SimulationWrapper implements Observer {
     // get a list of current controlled links
     public void getTLControlledLinks(String inputID) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
-        x.getControlledLinks(this, 0);
+        if (x != null) {
+            x.getControlledLinks(this, 0);
+        }
     }
-//===== MAKE COPY =========================================
+    //===== MAKE COPY =========================================
     public DataType.TrafficLightData makeTLCopy(String inputID) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
         return x.makeCopy();
     }
-//===== SETTER ============================================
+    //===== SETTER ============================================
     // set the phase definition of a traffic light
     public void setTLPhaseDef(String inputID, String inputDef) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
@@ -245,7 +246,7 @@ public class SimulationWrapper implements Observer {
             setTLPhaseNext(tlID);
         }
     }
-//===== VEHICLE STUFF =====================================
+    //===== VEHICLE STUFF =====================================
 //===== GETTER ============================================
     // get position x of the vehicle
     public double getVehiclePositionX(String inputID) {
@@ -302,76 +303,90 @@ public class SimulationWrapper implements Observer {
         if (po == 1) {System.out.println("Average speed is " + result);}
         return result;
     }
-    // get Vehicle's lane ID
-    public String getVehicleLaneID(String inputID) {
-        if (!VehicleList.containsKey(inputID)) {
-            return "";
-        }
-        try {
-            String laneID = (String) conn.do_job_get(Vehicle.getLaneID(inputID));
-            return laneID != null ? laneID : "";
-        } catch (Exception e) {
-            System.out.println("Cannot get lane ID of vehicle " + inputID + ": " + e.getMessage());
-            return "";
-        }
-    }
-    // get Vehicle's road ID (edge ID)
-    public String getVehicleRoadID(String inputID) {
-        if (!VehicleList.containsKey(inputID)) {
-            return "";
-        }
-        try {
-            String roadID = (String) conn.do_job_get(Vehicle.getRoadID(inputID));
-            return roadID != null ? roadID : "";
-        } catch (Exception e) {
-            System.out.println("Cannot get road ID of vehicle " + inputID + ": " + e.getMessage());
-            return "";
-        }
-    }
-    // get Vehicle's route ID
-    public String getVehicleRouteID(String inputID) {
-        if (!VehicleList.containsKey(inputID)) {
-            return "";
-        }
-        try {
-            String routeID = (String) conn.do_job_get(Vehicle.getRouteID(inputID));
-            return routeID != null ? routeID : "";
-        } catch (Exception e) {
-            System.out.println("Cannot get route ID of vehicle " + inputID + ": " + e.getMessage());
-            return "";
-        }
-    }
-    // get Vehicle's route edges (list of edge IDs from start to end)
-    public List<String> getVehicleRouteEdges(String inputID) {
-        if (!VehicleList.containsKey(inputID)) {
-            return new ArrayList<>();
-        }
-        try {
-            @SuppressWarnings("unchecked")
-            List<String> routeEdges = (List<String>) conn.do_job_get(Vehicle.getRoute(inputID));
-            return routeEdges != null ? routeEdges : new ArrayList<>();
-        } catch (Exception e) {
-            System.out.println("Cannot get route edges of vehicle " + inputID + ": " + e.getMessage());
-            return new ArrayList<>();
-        }
-    }
-//===== MAKE COPY =========================================
+    //===== MAKE COPY =========================================
     public DataType.VehicleData makeVehicleCopy(String inputID) {
         VehicleWrapper x = VehicleList.get(inputID);
         return x.makeCopy();
     }
-    // get all vehicle data list
-    public List<DataType.VehicleData> getVehicleDataList() {
-        List<DataType.VehicleData> vehDatas = new ArrayList<>();
-        List<String> vehIds = getVehicleIDsList();
-        if (vehIds != null) {
-            for (String vehId : vehIds) {
-                vehDatas.add(makeVehicleCopy(vehId));
+    //===== STATISTICS METHODS ===============================
+    // get average speed (for export)
+    public double getAverageSpeed() {
+        return VehicleWrapper.calculateAverageSpeed(this);
+    }
+    // get vehicle density per edge
+    public java.util.Map<String, Integer> getVehicleDensityPerEdge() {
+        return VehicleWrapper.calculateVehicleDensityPerEdge(this);
+    }
+    // get congestion hotspots
+    public java.util.List<String> getCongestionHotspots(int minDensity, double maxSpeed) {
+        return VehicleWrapper.identifyCongestionHotspots(this, minDensity, maxSpeed);
+    }
+    // get travel time distribution
+    public java.util.Map<String, Double> getTravelTimeDistribution() {
+        return VehicleWrapper.calculateTravelTimeDistribution(this);
+    }
+    // get vehicle edge ID
+    public String getVehicleEdgeID(String vehID) {
+        VehicleWrapper vehWrapper = VehicleList.get(vehID);
+        if (vehWrapper != null) {
+            return vehWrapper.getEdgeID(this);
+        }
+        return "";
+    }
+    // get vehicle color
+    public javafx.scene.paint.Color getVehicleColor(String vehID) {
+        VehicleWrapper vehWrapper = VehicleList.get(vehID);
+        if (vehWrapper != null) {
+            return vehWrapper.color;
+        }
+        return javafx.scene.paint.Color.BLACK;
+    }
+    // get vehicle departure time
+    public double getVehicleDepartureTime(String vehID) {
+        VehicleWrapper vehWrapper = VehicleList.get(vehID);
+        if (vehWrapper != null && vehWrapper.departureTime >= 0) {
+            return vehWrapper.departureTime;
+        }
+        return 0.0;
+    }
+    // get vehicle arrival time (current time if still traveling, or arrival time if arrived)
+    public double getVehicleArrivalTime(String vehID) {
+        VehicleWrapper vehWrapper = VehicleList.get(vehID);
+        if (vehWrapper == null) {
+            // Vehicle has arrived and was removed
+            // We can't get exact arrival time from removed vehicles, so return current time
+            return getTime(0);
+        }
+        // Vehicle is still traveling, arrival time is unknown
+        return 0.0; // 0 means not arrived yet
+    }
+    // get mean speed per edge
+    public java.util.Map<String, Double> getMeanSpeedPerEdge() {
+        java.util.Map<String, Double> avgSpeedPerEdge = new java.util.HashMap<>();
+        java.util.Map<String, Integer> speedCountPerEdge = new java.util.HashMap<>();
+        
+        // Calculate average speed per edge
+        for (VehicleWrapper veh : VehicleList.values()) {
+            String edgeID = veh.getEdgeID(this);
+            if (!edgeID.isEmpty()) {
+                double currentSpeed = avgSpeedPerEdge.getOrDefault(edgeID, 0.0);
+                int count = speedCountPerEdge.getOrDefault(edgeID, 0);
+                avgSpeedPerEdge.put(edgeID, currentSpeed + veh.speed);
+                speedCountPerEdge.put(edgeID, count + 1);
             }
         }
-        return vehDatas;
+        
+        // Calculate final average speeds
+        for (String edgeID : avgSpeedPerEdge.keySet()) {
+            int count = speedCountPerEdge.get(edgeID);
+            if (count > 0) {
+                avgSpeedPerEdge.put(edgeID, avgSpeedPerEdge.get(edgeID) / count);
+            }
+        }
+        
+        return avgSpeedPerEdge;
     }
-//===== SETTER ============================================
+    //===== SETTER ============================================
     // set Vehicle's speed
     public void setVehicleSpeed(String inputID, double inputSpeed) {
         if (VehicleList.containsKey(inputID)) {
@@ -382,13 +397,13 @@ public class SimulationWrapper implements Observer {
     }
     // set Vehicle's color
     public void setVehicleColor(String inputID, int r, int b, int g, int a) {
-        if (VehicleList.containsKey(inputID)) {  
+        if (VehicleList.containsKey(inputID)) {
             VehicleWrapper x = VehicleList.get(inputID);
             x.setColor(this, r, g, b, a);
         }
         else {System.out.println("Vehicle not exist");}
     }
-//===== ADDER =============================================
+    //===== ADDER =============================================
     // add a vehicle into the 1st route in RouteList (might not work)
     public void addVehicleBasic(String inputID) {
         try {
@@ -407,26 +422,7 @@ public class SimulationWrapper implements Observer {
         }
         catch (Exception e) {System.out.println("Error when adding vehicle normally");}
     }
-    // public void addVehicleNormalx(String inputID, int inputRoute) {
-    //     try {
-    //         RouteWrapper.updateRouteIDs(this);
-    //         if (RouteList.size() == 0) {System.out.println("No available route");}
-    //         else {VehicleWrapper.addVehicle(this, inputID, "r_1");}
-    //     }
-    //     catch (Exception e) {System.out.println("Error when adding vehicle normally");}
-    // }
-    // public void testRoute() {
-    //     try {
-    //         RouteWrapper.updateRouteIDs(this);
-    //         System.out.println(RouteList);
-    //         List<String> temp1 = (List<String>)conn.do_job_get(Route.getEdges(RouteList.get(0)));
-    //         //List<String> temp2 = (List<String>)conn.do_job_get(Route.getEdges(RouteList.get(1)));
-    //         System.out.println(temp1);
-    //         //System.out.println(temp2);
-    //     }
-    //     catch (Exception e) {System.out.println("test_Route failed");}
-    // }
-//===== ROUTE STUFF ========================================
+    //===== ROUTE STUFF ========================================
 //===== GETTER =============================================
     //get number of available route
     public int getRouteNum(int po) {
@@ -445,21 +441,9 @@ public class SimulationWrapper implements Observer {
         List<String> routeIDs = new ArrayList<>(RouteList.keySet());
         return routeIDs;
     }
-//===== MAKE COPY ==========================================
+    //===== MAKE COPY ==========================================
     public DataType.RouteData makeRouteCopy(String inputID) {
         RouteWrapper x = RouteList.get(inputID);
         return x.makeCopy();
-    }
-//===== GETTER FOR EXPORT ==================================
-    // get all traffic light data list
-    public List<DataType.TrafficLightData> getTrafficLightDataList() {
-        List<DataType.TrafficLightData> tlDatas = new ArrayList<>();
-        List<String> tlIds = getTLIDsList();
-        if (tlIds != null) {
-            for (String tlId : tlIds) {
-                tlDatas.add(makeTLCopy(tlId));
-            }
-        }
-        return tlDatas;
     }
 }

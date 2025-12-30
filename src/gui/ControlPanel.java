@@ -12,11 +12,6 @@ import javafx.event.Event;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import wrapper.SimulationWrapper;
-import paser.Networkpaser;
-import wrapper.DataType.TrafficLightData;
-import wrapper.DataType.VehicleData;
-import java.util.List;
-import java.util.ArrayList;
 
 public class ControlPanel {
     // --- CÁC BIẾN FXML (Giữ nguyên) ---
@@ -125,18 +120,13 @@ public class ControlPanel {
             return;
         }
 
-        // Get current vehicle and traffic light data from SimulationWrapper
-        List<VehicleData> vehicleDataList = sim.getVehicleDataList();
-        List<TrafficLightData> trafficLightDataList = sim.getTrafficLightDataList();
-        Networkpaser.NetworkModel networkModel = mapCanvas.getModel();
-
         // Show file chooser dialog
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Export Data to CSV");
+        fileChooser.setTitle("Export Statistics to CSV");
         fileChooser.getExtensionFilters().add(
             new FileChooser.ExtensionFilter("CSV Files", "*.csv")
         );
-        fileChooser.setInitialFileName("simulation_data_" + 
+        fileChooser.setInitialFileName("simulation_statistics_" + 
             System.currentTimeMillis() + ".csv");
 
         // Get the stage from any control
@@ -145,10 +135,7 @@ public class ControlPanel {
 
         if (file != null) {
             boolean success = CSVExporter.exportToCSV(
-                vehicleDataList,
-                trafficLightDataList,
                 sim,
-                networkModel,
                 file.getAbsolutePath()
             );
 

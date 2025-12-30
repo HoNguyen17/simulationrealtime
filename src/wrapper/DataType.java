@@ -35,11 +35,6 @@ public class DataType {
         public int getControlledLinksNum() {
             return controlledLinksNum;
         }
-        // get phase definition (light state string)
-        public String getPhaseDef(int po) {
-            if (po == 1) {System.out.println(String.format("Current phase definition of %s: %s", ID, lightDef));}
-            return lightDef;
-        }
         // get a list containing the light state, the (from) edge ID, and the (to) edge ID for a specific controlled link index
         public List<String> getDefFromTo(int index) {
             if (lightDef == null) {return null;}
@@ -103,7 +98,7 @@ public class DataType {
         RouteData(String inputID, String inputEdgeID) {
             this.ID = inputID;
             this.firstEdgeID = inputEdgeID;
-        } 
+        }
         //
         public String getID(int po) {
             if(po == 1){System.out.println(ID);}
@@ -123,13 +118,5 @@ public class DataType {
         double tempA = ((double)(inputColor.a & 0xFF))/255;
         Color result =  new Color(tempR, tempG, tempB, tempA);
         return result;
-    }
-    // should do polymorphism, convert to javafx equivalent
-    public static void convertColor(int inputColor) {
-        // double tempR = ((double)(inputColor.r & 0xFF))/255;
-        // double tempG = ((double)(inputColor.g & 0xFF))/255;
-        // double tempB = ((double)(inputColor.b & 0xFF))/255;
-        // double tempA = ((double)(inputColor.a & 0xFF))/255;
-        System.out.println("placeholder");
     }
 }
