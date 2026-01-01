@@ -1,92 +1,132 @@
 package gui;
 
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
-import javafx.scene.control.ScrollPane;
+import javafx.fxml.FXML;
+
+import javafx.scene.chart.LineChart;
+import javafx.scene.control.*;
+import javafx.scene.layout.StackPane;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+import javafx.event.ActionEvent; 
+import javafx.event.Event; 
+
+import java.util.ArrayList;
 import java.util.List;
 
 import wrapper.SimulationWrapper;
 
-
 public class ControlPanel {
-    private final MapCanvas mapCanvas;
-    private SimulationWrapper sim;
-    private long uniqueID = 0;
+    // --- CÁC BIẾN FXML (Giữ nguyên) ---
+    @FXML private StackPane mapContainer;
+    @FXML private Button expBtn;
+    @FXML private MenuButton expType;
+    @FXML private MenuItem expTypeCSV;
+    @FXML private MenuItem expTypePDF;
 
-    public ControlPanel(MapCanvas mapCanvas, SimulationWrapper inputSim) {
+    @FXML private Button simPause;
+    @FXML private Button simPlay;
+    @FXML private Button simTest;//for testing
+
+    @FXML private LineChart<?, ?> staSim;
+    @FXML private TableView<?> staTLTable;
+    @FXML private TableView<?> staVehTable;
+
+    @FXML private TextField tlID;
+    @FXML private Button tlNPhase;
+    @FXML private Button tlNPhaseAll;
+    @FXML private TextField tlPhase;
+
+    @FXML private ColorPicker vehColor;
+    @FXML private TextField injectVehNum;
+    @FXML private ChoiceBox<String> injectVehRoute;
+    @FXML private Button vehInject;
+
+    // --- BIẾN CỤC BỘ ---
+    private MapCanvas mapCanvas;
+    private SimulationWrapper sim;
+
+    private volatile boolean simRunning = false;
+    private long idCounter = 0;
+
+    // --- HÀM SET MAP (Kết nối với App.java) ---
+    // Chỉ cần nhận MapCanvas để hiển thị
+    public void setMapCanvas(MapCanvas mapCanvas, SimulationWrapper inputSim) {
         this.mapCanvas = mapCanvas;
         this.sim = inputSim;
-    }
 
-    public ScrollPane createTrafficLightControls() {
-        VBox box = new VBox(6);
-        Label tlLbl = new Label("Traffic light");
-        Button tlAutoBtn = new Button("Auto mode");
-        Button tlManualBtn = new Button("Manual mode");
-        Button tlNextPhaseBtn = new Button("Next phase");
-        tlAutoBtn.setOnAction(e -> System.out.println("TL: auto"));
-        tlManualBtn.setOnAction(e -> System.out.println("TL: manual"));
-        tlNextPhaseBtn.setOnAction(e -> setTLNextPhaseAll());
-        box.getChildren().addAll(tlLbl, tlAutoBtn, tlManualBtn, tlNextPhaseBtn);
-        ScrollPane sp = new ScrollPane(box);
-        sp.setFitToWidth(true);
-        return sp;
-    }
-
-    public ScrollPane createVehicleControls() {
-        //private static long idCounter = 0;
-        VBox box = new VBox(6);
-        Label vehicleLable = new Label("Vehicle");
-        Button addVehicle = new Button("Add 1 vehicle");
-        Button stressTest1 = new Button("Stress Test Max");
-        addVehicle.setOnAction(e -> addSingleVehicle1());
-        stressTest1.setOnAction(e -> StressTest1());
-        box.getChildren().addAll(vehicleLable, addVehicle, stressTest1);
-        ScrollPane sp = new ScrollPane(box);
-        sp.setFitToWidth(true);
-        return sp;
-    }
-
-    public ScrollPane createViewControls() {
-        VBox box = new VBox(6);
-        Label viewLbl = new Label("View");
-        Button zoomInBtn = new Button("Zoom in");
-        Button zoomOutBtn = new Button("Zoom out");
-        Button resetViewBtn = new Button("Reset view");
-        zoomInBtn.setOnAction(e 
-            -> mapCanvas.zoomAtCenter(1.1));
-        zoomOutBtn.setOnAction(e 
-            -> mapCanvas.zoomAtCenter(0.9));
-        resetViewBtn.setOnAction(e 
-            -> { mapCanvas.fitAndCenter(); mapCanvas.render(); });
-
-        box.getChildren().addAll(viewLbl, zoomInBtn, zoomOutBtn, resetViewBtn);
-        ScrollPane sp = new ScrollPane(box);
-        sp.setFitToWidth(true);
-        return sp;
-    }
-// control operations
-    public void setTLNextPhaseAll() {
-        List<String> TLIDList = sim.getTLIDsList();
-        for (String tlID : TLIDList) {
-            sim.setTLPhaseNext(tlID);
+        if (mapContainer != null) {
+            // Thêm Map vào giao diện
+            mapContainer.getChildren().add(mapCanvas.getCanvas());
+            // Căn chỉnh kích thước
+            mapCanvas.getCanvas().widthProperty().bind(mapContainer.widthProperty());
+            mapCanvas.getCanvas().heightProperty().bind(mapContainer.heightProperty());
         }
-    } 
-    public void addSingleVehicle1() {
-        String newID = String.valueOf(uniqueID);
-        uniqueID += 1;
-        sim.addVehicleBasic(newID);
     }
-    public void StressTest1() {
-        for(int x = 0; x < 5; x++) {
-            int temp = sim.getRouteNum(0);
-            for(int y = 0; y < temp; y++) {
-                String newID = String.valueOf(uniqueID);
-                uniqueID += 1;
-                sim.addVehicleNormal(newID, y);
-                System.out.println("add" + newID + " into "+ x);
-            }
+
+    @FXML void simPlayAct(ActionEvent event) {System.out.println("start");}
+    @FXML void simPauseAct(ActionEvent event) {this.PauseSim();}
+    @FXML void simTestAct(ActionEvent event) {this.SimTest();}
+    @FXML void expBtnAct(ActionEvent event) { }
+    @FXML void expTypeAct(ActionEvent event) { }
+    @FXML void tlIDAct(ActionEvent event) { }
+    @FXML void tlNPhaseAct(ActionEvent event) { }
+    @FXML void tlNPhaseAllAct(ActionEvent event) {sim.setTLPhaseNextAll();}
+    @FXML void tlPhaseAct(ActionEvent event) { }
+    @FXML void vehColorAct(ActionEvent event) { }
+    @FXML void vehNumAct(ActionEvent event) {}
+
+    @FXML void vehInjectAct(ActionEvent event) {
+        String chosenRoute = injectVehRoute.getValue();
+        String inputNum = injectVehNum.getText();
+        int chosenNum = 1;
+        if (this.checkIntConvertable(inputNum)) {chosenNum = Integer.parseInt(inputNum);}
+        this.VehicleInject(chosenNum, chosenRoute);
+    }
+    
+    @FXML void modeChangeAct(Event event) {
+        Tab selectedTab = (Tab) event.getTarget();
+        if (selectedTab.isSelected()) {
+            String tabName = selectedTab.getText();
+            if (tabName.equals("Simulation")) {this.changeRenderMode(0);} 
+            else if (tabName.equals("Add Vehicle")) {this.changeRenderMode(1);}
+            else if (tabName.equals("Traffic Light")) {this.changeRenderMode(2);}
         }
+    }
+    // interaction method
+    // pause simulation
+    private void PauseSim() {
+        sim.Pause();
+    }
+    // inject vehicle
+    private void VehicleInject(int num, String routeId) {
+        System.out.println("should inject "+ num + " at " + routeId);
+        for (int i = 0; i < num; i++) {
+            this.sim.addVehicleNormal(String.format("v_%d", this.idCounter), routeId);
+            this.idCounter++;
+        }
+    }
+    // test (easy to break)
+    private void SimTest() {
+        sim.getRouteFirstEdge("r_0");
+    }
+    // change mode
+    private void changeRenderMode(int input) {
+        if (this.mapCanvas != null) {
+            this.mapCanvas.setRenderMode(input);
+        }
+        if (input == 1) {
+            this.mapCanvas.setUpdateRoute(true);
+            List<String> routeIds = this.sim.getRouteIDsList();
+            injectVehRoute.setItems(FXCollections.observableArrayList(routeIds));
+            if (!routeIds.isEmpty()) {injectVehRoute.setValue(routeIds.get(0));}
+        }
+    }
+    private boolean checkIntConvertable(String input) {
+        try {
+            Integer.parseInt(input);
+            return true;
+        } catch (NumberFormatException e) {return false;}
     }
 }

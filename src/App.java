@@ -1,29 +1,28 @@
 import gui.MapCanvas;
-import gui.Dashboard;
-import gui.CtrlDecApp; // kết nối với Controller
-
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-
-
+import gui.Transform;
+import gui.ControlPanel;
 
 import paser.Networkpaser;
+
 import wrapper.SimulationWrapper;
+import wrapper.DataType.TrafficLightData;
+import wrapper.DataType.VehicleData;
+import wrapper.DataType.RouteData;
 
-
-import javafx.animation.AnimationTimer;
 import java.util.List;
 import java.util.ArrayList;
-import gui.Transform;
-import javafx.scene.paint.Color;
+
 import de.tudresden.sumo.objects.SumoColor;
 import de.tudresden.sumo.objects.SumoPosition2D;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-
+import javafx.scene.Parent;
+import javafx.scene.paint.Color;
+import javafx.scene.layout.BorderPane;
+import javafx.fxml.FXMLLoader;
 
 public class App extends Application {
     private MapCanvas mapCanvas;
@@ -31,63 +30,30 @@ public class App extends Application {
     private AnimationTimer simulationTimer;// Field to hold the timer instance
     private SimulationWrapper simulationWrapper; // Field to hold the simulation wrapper
     private Thread simulationThread; // background simulation stepper
-    private volatile boolean simRunning = false; // lưu ý
+    private volatile boolean simRunning = false;
 
-    private static final String NET_FILE = "../simulationrealtime/SumoConfig/test_7_huge.net.xml";
-    private static final String SUMOCFG_FILE = "../simulationrealtime/SumoConfig/test_7_huge.sumocfg";
+    private static final String NET_FILE = "../resource/test_7_huge.net.xml";
+    private static final String SUMOCFG_FILE = "../resource/test_7_huge.sumocfg";
 
     private Networkpaser.NetworkModel model;
 
 
-
-
     @Override
     public void start(Stage stage) throws Exception{
-        //1. Tải model mạng lưới
+        // Tải model mạng lưới
         model = Networkpaser.parse(NET_FILE);
         // Canvas bản đồ chuyển thành MapCanvas để quản lý pan/zoom/vẽ
         mapCanvas = new MapCanvas(1000, 800);
         mapCanvas.setModel(model);
-//        mapCanvas.fitAndCenter();
-//        mapCanvas.render();
+        mapCanvas.fitAndCenter();
+        //mapCanvas.render();
 
-
-        // // Sidebar trái: dùng Dashboard trong package gui
-        // Dashboard dashboard = new Dashboard(mapCanvas);
-
-        // BorderPane root = new BorderPane();
-        // root.setLeft(dashboard);
-        // root.setCenter(mapCanvas.getCanvas());
-
-        // stage.setTitle("SUMO Network Dashboard");
-        // stage.setScene(new Scene(root));
-        // stage.show();
-
-        //2. Start simulation
+        //Start simulation
         simulationWrapper = new SimulationWrapper(SUMOCFG_FILE); // initialize with SUMO config file
         simulationWrapper.setDelay(200); //  set step delay in ms
         simulationWrapper.Start();
 
-        // 3. CONNECT FXML
-        // Dùng dấu "/" để tìm đúng file trong thư mục src/gui
-        FXMLLoader load_fxml = new FXMLLoader(getClass().getResource("/gui/DecApp.fxml"));
-        Parent root;
-        try {
-            root = load_fxml.load();
-        } catch (Exception e) {
-            System.err.println("Lỗi load FXML: " + e.getMessage());
-            e.printStackTrace();
-            return;
-        }
-
-
-        //4. Đưa Map vào Controller
-        CtrlDecApp controller_fxml = load_fxml.getController();
-        if (controller_fxml != null) {
-            controller_fxml.setMapCanvas(mapCanvas, simulationWrapper);
-        }
-
-        //6. background thread to advance SUMO steps
+        // background thread to advance SUMO steps
         simRunning = true;
         simulationThread = new Thread(() -> {
             while (simRunning && !simulationWrapper.isClosed()) {
@@ -97,81 +63,67 @@ public class App extends Application {
         simulationThread.setDaemon(true);
         simulationThread.start();
 
-        //7. UI timer to fetch data and render vehicles
+//FXML thing
+        FXMLLoader load_fxml = new FXMLLoader(getClass().getResource("/gui/DecApp.fxml"));
+        Parent root;
+        try {root = load_fxml.load();} 
+        catch (Exception e) {
+            System.err.println("fail to load FXML: " + e.getMessage());
+            e.printStackTrace();
+            return;
+        }
+        
+        ControlPanel controller_fxml = load_fxml.getController();
+        if (controller_fxml != null) {controller_fxml.setMapCanvas(mapCanvas, simulationWrapper);}
+//FXML thing
+
+        // UI timer to fetch data and render vehicles
         simulationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                List<String> ids = simulationWrapper.getVehicleIDsList();
-                List<MapCanvas.VehicleData> vds = new ArrayList<>();
-
-                if (ids != null) {
-                    for (String id : ids) {
-                        SumoPosition2D pos = simulationWrapper.getVehiclePosition(id);
-                        if (pos == null) continue;
-                        double angle = simulationWrapper.getVehicleAngle(id);
-                        SumoColor sc = simulationWrapper.getVehicleColor(id);
-
-                        //  add vehicke Color
-                        double tempR = ((double)(sc.r & 0xFF))/255;
-                        double tempG = ((double)(sc.g & 0xFF))/255;
-                        double tempB = ((double)(sc.b & 0xFF))/255;
-                        double tempA = ((double)(sc.a & 0xFF))/255;
-                        Color vehicleColor = new Color(tempR, tempG, tempB, tempA);
-                        vds.add(new MapCanvas.VehicleData(id, pos.x, pos.y, angle, vehicleColor));
+                // Create copy of current vehicle datas from wrapper
+                List<VehicleData> vehDatas = new ArrayList<>();
+                List<String> vehIds = simulationWrapper.getVehicleIDsList();
+                if (vehIds != null) {
+                    for (String vehId : vehIds) {
+                        vehDatas.add(simulationWrapper.makeVehicleCopy(vehId));
                     }
                 }
-                mapCanvas.setVehicleData(vds);
-                mapCanvas.render();
 
-                // Traffic lights: build lane-end bars data
-                List<MapCanvas.TrafficLightData> tlDatas = new ArrayList<>();
+                // Create copy of current traffic light datas from wrapper
+                List<TrafficLightData> tlDatas = new ArrayList<>();
                 List<String> tlIds = simulationWrapper.getTLIDsList();
                 if (tlIds != null) {
                     for (String tlId : tlIds) {
-                    String def = simulationWrapper.getTLPhaseDef(tlId); // e.g., "rygR..."
-                    if (def == null) continue;
-
-                    List<Character> states = new ArrayList<>();
-                    for (int i = 0; i < def.length(); i++) states.add(def.charAt(i));
-
-                    // Collect from/to lane ids per controlled link
-                    List<String> fromLaneIds = new ArrayList<>();
-                    List<String> toLaneIds = new ArrayList<>();
-                    int links = simulationWrapper.getTLControlledLinksNum(tlId);
-                    for (int i = 0; i < links; i++) {
-                        List<String> defFromTo = simulationWrapper.getTLDefFromTo(tlId, i);
-                        if (defFromTo == null || defFromTo.size() < 3) continue;
-                        // format from wrapper: [stateChar, fromLaneId, toLaneId]
-                        fromLaneIds.add(defFromTo.get(1));
-                        toLaneIds.add(defFromTo.get(2));
+                        tlDatas.add(simulationWrapper.makeTLCopy(tlId));
+                    }
+                }
+                // Create copy of current route datas from wrapper
+                if(mapCanvas.getRenderMode() == 1 && mapCanvas.getUpdateRoute()) {
+                    List<RouteData> rouData = new ArrayList<>();
+                    List<String> routeIds = simulationWrapper.getRouteIDsList();
+                    if (routeIds != null) {
+                        for (String routeId : routeIds) {
+                            rouData.add(simulationWrapper.makeRouteCopy(routeId));
+                        }
+                    }
+                    mapCanvas.setRouteData(rouData);
                 }
 
-                // Position (x,y) not needed for bar rendering; pass 0,0
-                tlDatas.add(new MapCanvas.TrafficLightData(tlId, 0, 0, states, fromLaneIds, toLaneIds));
-    }
-}
-
-mapCanvas.setTrafficLightData(tlDatas);
-
+                // Set the copied datas into mapCanvas and render
+                mapCanvas.setVehicleData(vehDatas);
+                mapCanvas.setTrafficLightData(tlDatas);
                 mapCanvas.render();
-
             }
         };
         simulationTimer.start();
 
-        // Sidebar trái: dùng Dashboard trong package gui
-//        Dashboard dashboard = new Dashboard(mapCanvas, simulationWrapper);
-//
-//        BorderPane root = new BorderPane();
-//        root.setLeft(dashboard);
-//        root.setCenter(mapCanvas.getCanvas());
-
-        //8. hiển thị
         stage.setTitle("SUMO Network Dashboard");
         stage.setScene(new Scene(root));
+        stage.setMaximized(true);
         stage.show();
 
-        //9. Ensure proper shutdown
+        // Ensure proper shutdown
         stage.setOnCloseRequest(e -> {
             simRunning = false;
             if (simulationTimer != null) simulationTimer.stop();
@@ -180,9 +132,7 @@ mapCanvas.setTrafficLightData(tlDatas);
             }
             simulationWrapper.End();
         });
-        // Vẽ lần đầu
-        mapCanvas.fitAndCenter();
-
+        
     }
     public static void main(String[] args) {launch(args);}
 }

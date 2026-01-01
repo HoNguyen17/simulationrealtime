@@ -2,6 +2,10 @@ package gui;
 
 import paser.Networkpaser;
 
+import wrapper.DataType.TrafficLightData;
+import wrapper.DataType.VehicleData;
+import wrapper.DataType.RouteData;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,29 +16,28 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.image.Image; 
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 
 public class MapCanvas {
     private final Canvas canvas; // the drawing surface
     private final GraphicsContext g; // for drawing
-    private final Map<String, VehicleSprite> vehicleSprites = new HashMap<>();
     private Networkpaser.NetworkModel model; // the network model to render
     private final Transform transform; // coordinate transformation manager
     private View viewManager; // view manager for zooming/panning
+
+    private int renderMode = 0; // 0=default, 1=trafficlight, 2=vehicle
+    private boolean updateRoute = true;  // to prevent frequent update of route data
+
     private List<VehicleData> vehicleDataList = new ArrayList<>();
-    //...
-    private final Map<String, TrafficLightSprite> trafficLightSprites = new HashMap<>();
     private List<TrafficLightData> trafficLightDataList = new ArrayList<>();
+    private List<RouteData> routeDataList = new ArrayList<>();
 
-    protected  double lastDragX = 0, lastDragY = 0; // last mouse drag positions
-
-    public static record VehicleData(String id, double x, double y, double angle, Color color) {}
+    protected Image vehicleTexture = new Image("file:../texture/humveeV2.png");
+    protected double lastDragX = 0, lastDragY = 0; // last mouse drag positions
     //...
     // states[i] applies to the controlled link from[i] -> to[i]
-    public static record TrafficLightData(String id, double x, double y, List<Character> states, List<String> fromLaneIds, List<String> toLaneIds) {}
-    
-
-
 
     // Constructor of MapCanvas
     public MapCanvas(double w, double h) {
@@ -65,7 +68,11 @@ public class MapCanvas {
         });
     }
 
-    public Canvas getCanvas() { return canvas; }
+    public Canvas getCanvas() {return this.canvas;}
+
+    public int getRenderMode() {return this.renderMode;} 
+
+    public boolean getUpdateRoute() {return this.updateRoute;}
 
     // Set the network model to be rendered
     public void setModel(Networkpaser.NetworkModel model) {
@@ -74,98 +81,34 @@ public class MapCanvas {
         this.viewManager.resetView();
     }
 
-
-
-    private static class VehicleSprite {
-        final String id;
-        double worldX, worldY;
-        double angle; // in degrees
-        Color color;
-
-        VehicleSprite(String id, double x, double y, double sumoAngleDeg, Color color) {
-            this.id = id;
-            updatePosition(new double[]{x, y, sumoAngleDeg});
-            this.color = color;
-        }
-
-        public void updatePosition(double[] sumoData) {
-            this.worldX = sumoData[0];
-            this.worldY = sumoData[1];
-            if (sumoData.length > 2) {
-                // SUMO angle (deg) -> JavaFX screen angle (deg)
-                double screenAngle =  (90.0 - sumoData[2]);
-                this.angle = screenAngle;
-            }
-            updateBounds();
-        }
-
-        private void updateBounds() {
-        }
-    }
-    //...
-
-    private static class TrafficLightSprite {
-        final String id;
-        double worldX, worldY;
-        List<Character> states; // r/y/g for each controlled link
-
-        TrafficLightSprite(String id, double x, double y, List<Character> states) {
-            this.id = id;
-            this.worldX = x;
-            this.worldY = y;
-            this.states = new ArrayList<>(states);
-        }
-
-        void update(double x, double y, List<Character> states) {
-            this.worldX = x;
-            this.worldY = y;
-            this.states = new ArrayList<>(states);
-        }
-    }
-
     // Set vehicle data for rendering
-    public void setVehicleData(List<VehicleData> vehicleDataList) {
-        this.vehicleDataList = vehicleDataList;
-
-        // update or create vehicle sprites
-        for (VehicleData vd : vehicleDataList) {
-            VehicleSprite sprite = vehicleSprites.get(vd.id());
-            if (sprite == null) {
-                sprite = new VehicleSprite(vd.id(), vd.x(), vd.y(), vd.angle(), vd.color());
-                vehicleSprites.put(vd.id(), sprite);
-            } else {
-                sprite.color = vd.color();
-                sprite.updatePosition(new double[]{vd.x(), vd.y(), vd.angle()});
-            }
-        }
-        //delete sprites for vehicles no longer present
-        vehicleSprites.keySet().removeIf(id ->
-            vehicleDataList.stream().noneMatch(vd -> vd.id().equals(id))
-        );
+    public void setVehicleData(List<VehicleData> vehicles) {
+        this.vehicleDataList = (vehicles != null) ? vehicles : List.of();
     }
 
-
-//...
-    // Set traffic light data for rendering (call from wrapper)
+    // Set traffic light data for rendering 
     public void setTrafficLightData(List<TrafficLightData> trafficLights) {
-        this.trafficLightDataList = trafficLights != null ? trafficLights : List.of();
-        for (TrafficLightData tl : this.trafficLightDataList) {
-            TrafficLightSprite sprite = trafficLightSprites.get(tl.id());
-            if (sprite == null) {
-                sprite = new TrafficLightSprite(tl.id(), tl.x(), tl.y(), tl.states());
-                trafficLightSprites.put(tl.id(), sprite);
-            } else {
-                sprite.update(tl.x(), tl.y(), tl.states());
-            }
-        }
-        trafficLightSprites.keySet().removeIf(id ->
-            trafficLightDataList.stream().noneMatch(tl -> tl.id().equals(id))
-        );
+        this.trafficLightDataList = (trafficLights != null) ? trafficLights : List.of();
+    }
+    
+    // Set route data for rendering
+    public void setRouteData(List<RouteData> routes) {
+        this.routeDataList = (routes != null) ? routes : List.of();
+        this.updateRoute = false;
     }
 
+    // Set render mode
+    public void setRenderMode(int inputMode) {
+        if(inputMode == 0 || inputMode == 1 || inputMode == 2) {
+            this.renderMode = inputMode;
+        }
+    }
 
+    // Set update route
+    public void setUpdateRoute(boolean input) {
+        this.updateRoute = input;
+    }
     
-
     // Offset polyline points by distance d
     private List<Point2D> offsetPolyline(List<Point2D> pts, double d) {
         if (pts.size() < 2) return pts;
@@ -201,12 +144,16 @@ public class MapCanvas {
 
     public void render() {
         if (model == null) return;
+
+        //System.out.println("Current render mode " + renderMode);
+
         // Clear canvas
-        g.setFill(Color.WHITE);
+        g.setFill(Color.GREEN);
         g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-        // Draw roads
-        Color roadFill = Color.web("#210303ff");
+        // Draw junctions
+        Color highlightFill = Color.web("#f7e300ff");
+        Color roadFill = Color.web("#848484ff");
         g.setFill(roadFill);
         for (Networkpaser.Junction j : model.junctions) {
             if (j.shapePoints == null || j.shapePoints.size() < 3) continue;
@@ -219,14 +166,14 @@ public class MapCanvas {
             }
             g.fillPolygon(xs, ys, xs.length);
         }
-
         // add sizes for roads
-        double roadsize = 2.6;     
+        double roadsize = 1.65;     
         double centermarksize = 0.5;  
 
         // Convert to pixels based on current transform (scale * zoom)
         double roadsizePx = transform.worldscreenSize(roadsize);
         double centermarksizePx = transform.worldscreenSize(centermarksize);
+        // Draw roads
         for (Networkpaser.Edge e : model.edges) { // skip internal edges
             if (e.id.startsWith(":")) continue;
             for (Networkpaser.Lane lane : e.lanes) {
@@ -245,70 +192,64 @@ public class MapCanvas {
 
                 // Draw center line inside the road
                 List<Point2D> centerline = offsetPolyline(screenPts, 0.0);
-                g.setStroke(Color.web("#bb87a7ff"));
+                g.setStroke(Color.web("#ffffffff"));
                 g.setLineWidth(centermarksizePx);
                 g.setLineDashes(18, 12); // optionally scale dash lengths too
                 drawPolyline(g, centerline);
             }
         }
-
-        // Draw junctions
-        Color junctionFill = Color.web("#210303ff");
-        g.setFill(junctionFill);
-        for (Networkpaser.Junction j : model.junctions) {
-            if (j.id != null && j.id.contains(":")) continue; // skip internal junctions
-            if (j.shapePoints == null || j.shapePoints.size() < 3) continue;
-
-            double[] xs = new double[j.shapePoints.size()];
-            double[] ys = new double[j.shapePoints.size()];
-            for (int i = 0; i < j.shapePoints.size(); i++) {
-                Point2D p = j.shapePoints.get(i);
-                xs[i] = transform.worldscreenX(p.getX());
-                ys[i] = transform.worldscreenY(p.getY());
+        // hightlight start of route
+        if (renderMode == 1) {
+            for(RouteData rouData : routeDataList) {
+                //System.out.println(rouData.getID(0) + " start at " + rouData.getFirstEdgeID(0));
+                Networkpaser.Edge e = findEdgeById(rouData.getFirstEdgeID(0));
+                for (Networkpaser.Lane lane : e.lanes) {
+                    if (lane.shapePoints.size() < 2) continue;
+                    List<Point2D> screenPts = new ArrayList<>(); // transformed points
+                    for (Point2D p : lane.shapePoints) {
+                        screenPts.add(new Point2D(
+                            transform.worldscreenX(p.getX()),
+                            transform.worldscreenY(p.getY())
+                        ));
+                    }
+                    g.setStroke(highlightFill); 
+                    g.setLineWidth(roadsizePx * 2); // full road width in px
+                    g.setLineDashes();
+                    drawPolyline(g, screenPts);
+                }
             }
-            g.fillPolygon(xs, ys, xs.length);
         }
-
-
-
-
         // draw vehicles
-        final double VEHICLE_LENGTH = 4.5;
-        final double VEHICLE_WIDTH = 1.5;
+        final double VEHICLE_LENGTH = 4;
+        final double VEHICLE_WIDTH = 2;
         final double VEHICLE_LENGTH_PX = transform.worldscreenSize(VEHICLE_LENGTH);
         final double VEHICLE_WIDTH_PX = transform.worldscreenSize(VEHICLE_WIDTH);
 
-        for (VehicleSprite sprite : vehicleSprites.values()) {
-            double screenX = transform.worldscreenX(sprite.worldX);
-            double screenY = transform.worldscreenY(sprite.worldY);
-
+        for (VehicleData vehData : vehicleDataList) {
+            if (Double.isNaN(vehData.getPositionX(0))) {continue;}
+            
+            double screenX = transform.worldscreenX(vehData.getPositionX(0));
+            double screenY = transform.worldscreenY(vehData.getPositionY(0));
+            double screenAngle = 90 - vehData.getAngle(0);
+            
             g.save();
             g.translate(screenX, screenY);
-            g.rotate(sprite.angle);
-            
-            g.setFill(sprite.color);
+            g.rotate(screenAngle);
+            g.setFill(vehData.getColor(0));
             // draw centered rectangle
-            g.fillRect(
-                -VEHICLE_LENGTH_PX,
-                -VEHICLE_WIDTH_PX / 2.0,
-                VEHICLE_LENGTH_PX,
-                VEHICLE_WIDTH_PX
-            );
+            g.fillRect(-VEHICLE_LENGTH_PX, -VEHICLE_WIDTH_PX / 2.0, VEHICLE_LENGTH_PX, VEHICLE_WIDTH_PX);
+            g.drawImage(vehicleTexture, -VEHICLE_LENGTH_PX, -VEHICLE_WIDTH_PX / 2.0, VEHICLE_LENGTH_PX, VEHICLE_WIDTH_PX);
             g.restore();
         }
-
-        //...
 
         // draw traffic lights as lane-end bars similar to SUMO GUI
         final double BAR_LENGTH = transform.worldscreenSize(2.0);
         final double BAR_WIDTH = transform.worldscreenSize(0.6);
         for (TrafficLightData tlData : trafficLightDataList) {
-            List<Character> states = tlData.states();
-            List<String> fromIds = tlData.fromLaneIds();
-            if (states == null || fromIds == null) continue;
-            int n = Math.min(states.size(), fromIds.size());
+            int n = tlData.getControlledLinksNum();
             for (int i = 0; i < n; i++) {
-                Networkpaser.Lane lane = findLaneById(fromIds.get(i));
+                List<String> defFromTo = tlData.getDefFromTo(i);
+                Networkpaser.Lane lane = findLaneById(defFromTo.get(1));
                 if (lane == null || lane.shapePoints.size() < 2) continue;
                 // use the last segment of the lane polyline to place the bar
                 Point2D p2 = lane.shapePoints.get(lane.shapePoints.size()-1);
@@ -332,17 +273,18 @@ public class MapCanvas {
                 double x2 = cx + hx, y2 = cy + hy;
                 // color by state
                 Color c;
-                char st = states.get(i);
-                if (st == 'r' || st == 'R') c = Color.RED;
-                else if (st == 'y' || st == 'Y') c = Color.YELLOW;
-                else if (st == 'g' || st == 'G') c = Color.LIMEGREEN;
+                char st = defFromTo.get(0).charAt(0);
+                //System.out.println("=="+st+"==");
+                if (st == 'r') {c = Color.RED;}
+                else if (st == 'y') {c = Color.YELLOW;}
+                else if (st == 'g' || st == 'G') {c = Color.LIMEGREEN;}
                 else c = Color.GRAY;
                 g.setStroke(c);
                 g.setLineWidth(BAR_WIDTH);
                 g.setLineDashes();
                 g.strokeLine(x1, y1, x2, y2);
             }
-        }
+        }   
     }
 
     private Networkpaser.Lane findLaneById(String laneId) {
@@ -351,6 +293,14 @@ public class MapCanvas {
             for (Networkpaser.Lane l : e.lanes) {
                 if (laneId.equals(l.id)) return l;
             }
+        }
+        return null;
+    }
+
+    private Networkpaser.Edge findEdgeById(String edgeId) {
+        if (edgeId == null || model == null) return null;
+        for (Networkpaser.Edge e : model.edges) {
+            if (edgeId.equals(e.id)) return e;
         }
         return null;
     }
