@@ -39,6 +39,7 @@ public class SimulationWrapper implements Observer {
     protected final HashMap<String, TrafficLightWrapper> TrafficLightList = new HashMap<>();
     protected final HashMap<String, VehicleWrapper> VehicleList = new HashMap<>();
     protected final HashMap<String, RouteWrapper> RouteList = new HashMap<>(); // a list of available route IDs in the simulation
+    protected final HashMap<String, Color> ColorQueue = new HashMap<>();
     // Constructor 1
     public SimulationWrapper(String sumocfg, double step_length, String sumo_bin){
         conn = new SumoTraciConnection(sumo_bin, sumocfg);
@@ -126,6 +127,15 @@ public class SimulationWrapper implements Observer {
                             VehicleList.put(vehID, y);
                             // start subscription of the vehicle
                             conn.do_subscription(vs);
+                            if (ColorQueue.get(vehID) != null) {
+                                Color defaultColor = ColorQueue.get(vehID);
+                                double r = defaultColor.getRed();
+                                double g = defaultColor.getGreen();
+                                double b = defaultColor.getBlue();
+                                //System.out.println("color " + r + " " + g);
+                                this.setVehicleColor(vehID, r, g, b, 1);
+                                ColorQueue.remove(vehID);
+                            }
                         } 
                         catch (Exception ex) {System.err.println("subscription to " + vehID + " failed");}
                     }
@@ -287,7 +297,7 @@ public class SimulationWrapper implements Observer {
     public double getVehicleAverageSpeed(int po) {
         double result = 0;
         for (VehicleWrapper x : VehicleList.values()) {result += x.speed;}
-        result /= VehicleList.size();
+        result /= VehicleList.size(); //need fix
         if (po == 1) {System.out.println("Average speed is " + result);}
         return result;
     }
@@ -306,7 +316,7 @@ public class SimulationWrapper implements Observer {
         else {System.out.println("Vehicle not exist");}
     }
     // set Vehicle's color
-    public void setVehicleColor(String inputID, int r, int b, int g, int a) {
+    public void setVehicleColor(String inputID, double r, double b, double g, double a) {
         if (VehicleList.containsKey(inputID)) {  
             VehicleWrapper x = VehicleList.get(inputID);
             x.setColor(this, r, g, b, a);
@@ -329,6 +339,16 @@ public class SimulationWrapper implements Observer {
             RouteWrapper.updateRouteIDs(this);
             if (1==0) {System.out.println("Invalid injection");}
             else {VehicleWrapper.addVehicle(this, inputID, inputRouteID);}
+        }
+        catch (Exception e) {System.out.println("Error when adding vehicle normally");}
+    }
+    //add vehicle with color
+    public void addVehicleWithColor(String inputID, String inputRouteID, Color inputColor) {
+        try {
+            RouteWrapper.updateRouteIDs(this);
+            if (1==0) {System.out.println("Invalid injection");}
+            else {VehicleWrapper.addVehicle(this, inputID, inputRouteID);}
+            ColorQueue.put(inputID, inputColor);
         }
         catch (Exception e) {System.out.println("Error when adding vehicle normally");}
     }

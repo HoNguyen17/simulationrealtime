@@ -119,4 +119,12 @@ public class DataType {
         Color result =  new Color(tempR, tempG, tempB, tempA);
         return result;
     }
+    public static SumoColor convertColor(Color inputColor) {
+        int tempR = (int) (inputColor.getRed() * 255);
+        int tempG = (int) (inputColor.getGreen() * 255);
+        int tempB = (int) (inputColor.getBlue() * 255);
+        int tempA = (int) (inputColor.getOpacity() * 255);
+        SumoColor result =  new SumoColor(tempR, tempG, tempB, tempA);
+        return result;
+    }
 }

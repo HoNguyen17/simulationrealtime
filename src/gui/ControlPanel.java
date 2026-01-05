@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -109,7 +110,9 @@ public class ControlPanel {
     }
     // test (easy to break)
     private void SimTest() {
-        sim.getRouteFirstEdge("r_0");
+        Color colour = new Color(0.5,0.5,0.5,1);
+        sim.addVehicleWithColor("test", "r_1",colour);
+        sim.setVehicleColor("f_0.0",1,1,1,1);
     }
     // change mode
     private void changeRenderMode(int input) {
