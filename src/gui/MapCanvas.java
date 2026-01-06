@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import javafx.geometry.Point2D;
+import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
@@ -19,6 +20,7 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.image.Image; 
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.text.Text;
 
 public class MapCanvas {
     private final Canvas canvas; // the drawing surface
@@ -203,6 +205,7 @@ public class MapCanvas {
             for(RouteData rouData : routeDataList) {
                 //System.out.println(rouData.getID(0) + " start at " + rouData.getFirstEdgeID(0));
                 Networkpaser.Edge e = findEdgeById(rouData.getFirstEdgeID(0));
+                boolean flag = true;
                 for (Networkpaser.Lane lane : e.lanes) {
                     if (lane.shapePoints.size() < 2) continue;
                     List<Point2D> screenPts = new ArrayList<>(); // transformed points
@@ -216,6 +219,21 @@ public class MapCanvas {
                     g.setLineWidth(roadsizePx * 2); // full road width in px
                     g.setLineDashes();
                     drawPolyline(g, screenPts);
+                    // add label route name to the edge
+                    if (flag) {
+                        double labelX = screenPts.get(0).getX();
+                        double labelY = screenPts.get(0).getY();
+                        Text label = new Text(rouData.getID(0));
+                        double textWidth = label.getLayoutBounds().getWidth();
+                        double textHeight = label.getLayoutBounds().getHeight();
+                        g.save();
+                        g.setFill(Color.WHITE);
+                        g.fillRect(labelX - 5, labelY - textHeight + 5, textWidth + 10, textHeight);
+                        g.setFill(Color.BLACK);
+                        g.fillText(rouData.getID(0), labelX, labelY);
+                        g.restore();
+                        flag = false;
+                    }
                 }
             }
         }

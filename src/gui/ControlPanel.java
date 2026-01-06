@@ -39,9 +39,9 @@ public class ControlPanel {
     @FXML private Button tlNPhaseAll;
     @FXML private TextField tlPhase;
 
-    @FXML private ColorPicker vehColor;
+    @FXML private ComboBox<Color> vehColor;
     @FXML private TextField injectVehNum;
-    @FXML private ChoiceBox<String> injectVehRoute;
+    @FXML private ComboBox<String> injectVehRoute;
     @FXML private Button vehInject;
 
     // --- BIẾN CỤC BỘ ---
@@ -80,10 +80,11 @@ public class ControlPanel {
 
     @FXML void vehInjectAct(ActionEvent event) {
         String chosenRoute = injectVehRoute.getValue();
+        Color chosenColor = vehColor.getValue();
         String inputNum = injectVehNum.getText();
         int chosenNum = 1;
         if (this.checkIntConvertable(inputNum)) {chosenNum = Integer.parseInt(inputNum);}
-        this.VehicleInject(chosenNum, chosenRoute);
+        this.VehicleInject(chosenNum, chosenRoute, chosenColor);
     }
     
     @FXML void modeChangeAct(Event event) {
@@ -101,10 +102,10 @@ public class ControlPanel {
         sim.Pause();
     }
     // inject vehicle
-    private void VehicleInject(int num, String routeId) {
+    private void VehicleInject(int num, String routeId, Color color) {
         System.out.println("should inject "+ num + " at " + routeId);
         for (int i = 0; i < num; i++) {
-            this.sim.addVehicleNormal(String.format("v_%d", this.idCounter), routeId);
+            this.sim.addVehicleWithColor(String.format("v_%d", this.idCounter), routeId, color);
             this.idCounter++;
         }
     }
@@ -123,6 +124,7 @@ public class ControlPanel {
             this.mapCanvas.setUpdateRoute(true);
             List<String> routeIds = this.sim.getRouteIDsList();
             injectVehRoute.setItems(FXCollections.observableArrayList(routeIds));
+            vehColor.setItems(FXCollections.observableArrayList(Color.RED, Color.BLUE, Color.YELLOW));
             if (!routeIds.isEmpty()) {injectVehRoute.setValue(routeIds.get(0));}
         }
     }

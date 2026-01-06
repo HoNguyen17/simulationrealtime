@@ -316,7 +316,7 @@ public class SimulationWrapper implements Observer {
         else {System.out.println("Vehicle not exist");}
     }
     // set Vehicle's color
-    public void setVehicleColor(String inputID, double r, double b, double g, double a) {
+    public void setVehicleColor(String inputID, double r, double g, double b, double a) {
         if (VehicleList.containsKey(inputID)) {  
             VehicleWrapper x = VehicleList.get(inputID);
             x.setColor(this, r, g, b, a);
