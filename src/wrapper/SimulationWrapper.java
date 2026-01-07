@@ -219,25 +219,22 @@ public class SimulationWrapper implements Observer {
         return x.makeCopy();
     }
 //===== SETTER ============================================
-    // set the phase definition of a traffic light
-    public void setTLPhaseDef(String inputID, String inputDef) {
-        TrafficLightWrapper x = TrafficLightList.get(inputID);
-        x.setPhaseDef(this, inputDef);
-    }
-    // set the phase definition of a traffic light in a range of time, then set back to previous phase definition
-    public void setTLPhaseDefWithPhaseTime(String inputID, String inputDef, int inputTime) {
-        TrafficLightWrapper x = TrafficLightList.get(inputID);
-        x.setPhaseDefWithPhaseTime(this, inputDef, inputTime);
-    }
     // set phase definition of a traffic light to the origin
     public void setTLPhaseDefOrigin(String inputID) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
         x.setPhaseDefOrigin(this);
     }
+    // set to the next phase
     public void setTLPhaseNext(String inputID) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
         x.setPhaseNext(this);
     }
+    // set the duration for current phase
+    public void setTLPhaseDuration(String inputID, double inputTime) {
+        TrafficLightWrapper x = TrafficLightList.get(inputID);
+        x.setPhaseDuration(this, inputTime);
+    }
+    // set all traffic light to next phase
     public void setTLPhaseNextAll() {
         List<String> tlIDs = new ArrayList<>(TrafficLightList.keySet());
         for(String tlID : tlIDs) {

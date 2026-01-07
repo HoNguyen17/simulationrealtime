@@ -34,14 +34,15 @@ public class ControlPanel {
     @FXML private TableView<?> staTLTable;
     @FXML private TableView<?> staVehTable;
 
-    @FXML private TextField tlID;
+    @FXML private ComboBox<String> tlIDs;
+    @FXML private TextField tlPhaseTime;
+    @FXML private Button tlsetTime; 
     @FXML private Button tlNPhase;
     @FXML private Button tlNPhaseAll;
-    @FXML private TextField tlPhase;
 
     @FXML private ComboBox<Color> vehColor;
-    @FXML private TextField injectVehNum;
     @FXML private ComboBox<String> injectVehRoute;
+    @FXML private TextField injectVehNum;
     @FXML private Button vehInject;
 
     // --- BIẾN CỤC BỘ ---
@@ -71,13 +72,25 @@ public class ControlPanel {
     @FXML void simTestAct(ActionEvent event) {this.SimTest();}
     @FXML void expBtnAct(ActionEvent event) { }
     @FXML void expTypeAct(ActionEvent event) { }
-    @FXML void tlIDAct(ActionEvent event) { }
-    @FXML void tlNPhaseAct(ActionEvent event) { }
-    @FXML void tlNPhaseAllAct(ActionEvent event) {sim.setTLPhaseNextAll();}
-    @FXML void tlPhaseAct(ActionEvent event) { }
-    @FXML void vehColorAct(ActionEvent event) { }
-    @FXML void vehNumAct(ActionEvent event) {}
 
+    @FXML void tlNPhaseAct(ActionEvent event) {
+        String chosenTL = tlIDs.getValue();
+        this.sim.setTLPhaseNext(chosenTL);
+    }
+    
+    // set tl phase event
+    @FXML void tlSetTimeAct(ActionEvent event) {
+        String chosenTL = tlIDs.getValue();
+        String inputTime = tlPhaseTime.getText();
+        int chosenTime = 0; 
+        if (this.checkIntConvertable(inputTime)) {
+            chosenTime = Integer.parseInt(inputTime);
+            this.sim.setTLPhaseDuration(chosenTL, chosenTime);
+        }
+    }
+    // tl next phase all event
+    @FXML void tlNPhaseAllAct(ActionEvent event) {sim.setTLPhaseNextAll();}
+    // inhect vehicle event
     @FXML void vehInjectAct(ActionEvent event) {
         String chosenRoute = injectVehRoute.getValue();
         Color chosenColor = vehColor.getValue();
@@ -104,10 +117,12 @@ public class ControlPanel {
     // inject vehicle
     private void VehicleInject(int num, String routeId, Color color) {
         System.out.println("should inject "+ num + " at " + routeId);
-        for (int i = 0; i < num; i++) {
-            this.sim.addVehicleWithColor(String.format("v_%d", this.idCounter), routeId, color);
-            this.idCounter++;
-        }
+        if (1 <= num && num <= 300) {
+            for (int i = 0; i < num; i++) {
+                this.sim.addVehicleWithColor(String.format("v_%d", this.idCounter), routeId, color);
+                this.idCounter++;
+            }
+        }   
     }
     // test (easy to break)
     private void SimTest() {
@@ -124,8 +139,14 @@ public class ControlPanel {
             this.mapCanvas.setUpdateRoute(true);
             List<String> routeIds = this.sim.getRouteIDsList();
             injectVehRoute.setItems(FXCollections.observableArrayList(routeIds));
-            vehColor.setItems(FXCollections.observableArrayList(Color.RED, Color.BLUE, Color.YELLOW));
             if (!routeIds.isEmpty()) {injectVehRoute.setValue(routeIds.get(0));}
+            vehColor.setItems(FXCollections.observableArrayList(Color.RED, Color.BLUE, Color.YELLOW));
+            vehColor.setValue(Color.RED);
+        }
+        if (input == 2) {
+            List<String> tlIds = this.sim.getTLIDsList();
+            tlIDs.setItems(FXCollections.observableArrayList(tlIds));
+            if (!tlIds.isEmpty()) {tlIDs.setValue(tlIds.get(0));}
         }
     }
     private boolean checkIntConvertable(String input) {

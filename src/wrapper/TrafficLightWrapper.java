@@ -56,30 +56,6 @@ class TrafficLightWrapper extends DataType.TrafficLightData {
         return copy;
     }
 //=================SETTER================================
-    // set phase definition (Red-Green-Yellow)
-    public boolean setPhaseDef(SimulationWrapper temp, String input) {
-        try {               //maybe need check??
-            temp.conn.do_job_set(Trafficlight.setRedYellowGreenState(ID, input));
-            return true;
-        }
-        catch (Exception D) {
-            System.out.println("Unable to set controlled links of traffic light");
-        }
-        return false;
-    // set phase definition within a specified time, then set back to the originProgramID  (Red-Green-Yellow with time)
-    }
-    public boolean setPhaseDefWithPhaseTime(SimulationWrapper temp, String inputDef, double inputTime) {
-        try {               //maybe need check??
-            long roundedTime = Math.round(inputTime * temp.delay);
-            temp.conn.do_job_set(Trafficlight.setRedYellowGreenState(ID, inputDef));
-            Thread.sleep(roundedTime); 
-            temp.conn.do_job_set(Trafficlight.setProgram(ID, originProgramID));
-        }
-        catch (Exception D) {
-            System.out.println("Unable to set phase with time");
-        }
-    return false;
-    }
     // set phase definition to origin (auto)
     public boolean setPhaseDefOrigin(SimulationWrapper temp) {
         try {
@@ -106,6 +82,17 @@ class TrafficLightWrapper extends DataType.TrafficLightData {
             System.out.println("Unable to set to next phase");
         }
         return false;
+    }
+    // set current phase duration
+    public boolean setPhaseDuration(SimulationWrapper temp, double inputTime) {
+        try {
+            temp.conn.do_job_set(Trafficlight.setPhaseDuration(ID, inputTime));
+            return true;
+        }
+        catch (Exception E) {
+            System.out.println("Unable to set phase duration for " + ID);
+            return false;
+        }
     }
 //=================STATIC================================
     // update all traffic light IDs of simulation

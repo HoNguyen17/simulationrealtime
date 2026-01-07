@@ -85,13 +85,13 @@
                                         <VBox prefWidth="250.0">
                                             <children>
                                                 <Label text="Number of Vehicle" />
-                                                <TextField fx:id="injectVehNum" onAction="#vehNumAct" promptText="Enter number of vehicles">
+                                                <TextField fx:id="injectVehNum" promptText="Enter number of vehicles (1-300)">
                                                     <VBox.margin>
                                                         <Insets />
                                                     </VBox.margin>
                                                 </TextField>
                                                 <Label text="Color" />
-                                                <ComboBox fx:id="vehColor" onAction="#vehColorAct" />
+                                                <ComboBox fx:id="vehColor" prefWidth="150.0" />
                                                 <Label text="Route" />
                                                 <ComboBox fx:id="injectVehRoute" prefWidth="150.0" />
                                                 <Button fx:id="vehInject" mnemonicParsing="false" onAction="#vehInjectAct" text="Inject Vehicle" />
@@ -111,9 +111,9 @@
                                         <VBox prefWidth="250.0">
                                             <children>
                                                 <Label text="Traffic Light ID" />
-                                                <TextField fx:id="tlID" onAction="#tlIDAct" promptText="Traffic Light ID" />
-                                                <Label text="Phase" />
-                                                <TextField fx:id="tlPhase" onAction="#tlPhaseAct" promptText="ex: RRggYY" />
+                                                <ComboBox fx:id="tlIDs" prefWidth="150.0" />
+                                                <TextField fx:id="tlPhaseTime" promptText="Enter seconds" prefWidth="120.0" />
+                                                <Button fx:id="tlSetTime" mnemonicParsing="false" onAction="#tlSetTimeAct" text="Set time" />
                                                 <Button fx:id="tlNPhase" mnemonicParsing="false" onAction="#tlNPhaseAct" text="Next Phase" />
                                                 <Button fx:id="tlNPhaseAll" mnemonicParsing="false" onAction="#tlNPhaseAllAct" text="Next Phase All" />
                                             </children>

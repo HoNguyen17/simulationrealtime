@@ -30,8 +30,10 @@ public class MapCanvas {
     private final Transform transform; // coordinate transformation manager
     private View viewManager; // view manager for zooming/panning
 
-    private int renderMode = 0; // 0=default, 1=trafficlight, 2=vehicle
+    // render hightlight and stuff when control
+    private int renderMode = 0; // 0=default, 1=vehicle, 2=trafficlight
     private boolean updateRoute = true;  // to prevent frequent update of route data
+    private String hightlightJunction = null;
 
     private List<VehicleData> vehicleDataList = new ArrayList<>();
     private List<TrafficLightData> trafficLightDataList = new ArrayList<>();
