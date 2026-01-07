@@ -107,6 +107,18 @@ class TrafficLightWrapper extends DataType.TrafficLightData {
         }
         return false;
     }
+    // set phase duration of a traffic light
+    public boolean setPhaseDuration(SimulationWrapper temp, double inputTime) {
+        try {
+            temp.conn.do_job_set(Trafficlight.setPhaseDuration(ID, inputTime));
+            System.out.println("Set phase duration for " + ID + " to " + inputTime + "s");
+            return true;
+        }
+        catch (Exception E) {
+            System.out.println("Unable to set phase duration for " + ID);
+            return false;
+        }
+    }
 //=================STATIC================================
     // update all traffic light IDs of simulation
     protected static void updateTrafficLightIDs(SimulationWrapper temp) {

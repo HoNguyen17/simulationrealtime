@@ -37,6 +37,7 @@ public class ControlPanel {
     @FXML private Button tlNPhase;
     @FXML private Button tlNPhaseAll;
     @FXML private TextField tlPhase;
+    @FXML private TextField tlPhaseTime;
 
     @FXML private ColorPicker vehColor;
     @FXML private TextField injectVehNum;
@@ -92,6 +93,27 @@ public class ControlPanel {
             if (tabName.equals("Simulation")) {this.changeRenderMode(0);} 
             else if (tabName.equals("Add Vehicle")) {this.changeRenderMode(1);}
             else if (tabName.equals("Traffic Light")) {this.changeRenderMode(2);}
+        }
+    }
+
+    @FXML void tlSetTimeAct(ActionEvent event) {
+        String id = tlID.getText();
+        String phaseDef = tlPhase.getText();
+        String timeInput = tlPhaseTime.getText();
+
+        if (id.isEmpty() || timeInput.isEmpty()) {
+            System.out.println("Error: Please fill in ID/Time.");
+            return;
+        }
+
+        if (checkIntConvertable(timeInput)) {
+            int seconds = Integer.parseInt(timeInput);
+
+            sim.setTLDuration(id, seconds);
+
+            System.out.println("Updated TL " + id + " for " + seconds + "s");
+        } else {
+            System.out.println("Error: Time must be a valid number.");
         }
     }
     // interaction method

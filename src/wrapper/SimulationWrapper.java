@@ -224,6 +224,15 @@ public class SimulationWrapper implements Observer {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
         x.setPhaseDefOrigin(this);
     }
+    // set the phase duration of a specific traffic light
+    public void setTLDuration(String inputID, double inputTime) {
+        TrafficLightWrapper x = TrafficLightList.get(inputID);
+        if (x != null) {
+            x.setPhaseDuration(this, inputTime);
+        } else {
+            System.out.println("Error: Traffic Light ID " + inputID + " not found.");
+        }
+    }
     public void setTLPhaseNext(String inputID) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
         x.setPhaseNext(this);

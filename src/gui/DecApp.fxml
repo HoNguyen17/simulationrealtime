@@ -117,6 +117,13 @@
                                                 <Button fx:id="tlNPhase" mnemonicParsing="false" onAction="#tlNPhaseAct" text="Next Phase" />
                                                 <Button fx:id="tlNPhaseAll" mnemonicParsing="false" onAction="#tlNPhaseAllAct" text="Next Phase All" />
                                             </children>
+                                            <Label text="Phase Time (seconds)" />
+                                            <HBox spacing="10.0">
+                                                <children>
+                                                    <TextField fx:id="tlPhaseTime" promptText="Enter seconds" prefWidth="120.0" />
+                                                    <Button fx:id="tlSetTimeBtn" mnemonicParsing="false" onAction="#tlSetTimeAct" text="Set time" />
+                                                </children>
+                                            </HBox>
                                             <padding>
                                                 <Insets left="10.0" right="10.0" top="10.0" />
                                             </padding>
