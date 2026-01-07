@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.AreaChart?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
@@ -148,17 +150,18 @@
                             <content>
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                     <children>
-                                        <LineChart fx:id="staSim" prefHeight="150.0" prefWidth="250.0" style="-fx-background-color: rgba(20,11,50,0.5);">
+                                        <!-- change -->
+                                        <AreaChart fx:id="staSim"
+                                                   layoutX="0.0" layoutY="0.0"
+                                                   prefWidth="250.0" prefHeight="180.0"
+                                                   animated="false">
                                             <xAxis>
-                                                <CategoryAxis side="BOTTOM" />
+                                                <NumberAxis side="BOTTOM" label="t(s)" />
                                             </xAxis>
                                             <yAxis>
-                                                <NumberAxis side="LEFT" />
+                                                <NumberAxis side="LEFT" label="Avg speed (m/s)" />
                                             </yAxis>
-                                            <padding>
-                                                <Insets right="5.0" top="10.0" />
-                                            </padding>
-                                        </LineChart>
+                                        </AreaChart>
                                     </children>
                                 </AnchorPane>
                             </content>
@@ -186,6 +189,20 @@
                                             <columns>
                                                 <TableColumn fx:id="staTLID" prefWidth="100.0" text="ID" />
                                                 <TableColumn fx:id="staTLPhase" prefWidth="150.0" text="Phase" />
+                                            </columns>
+                                        </TableView>
+                                    </children>
+                                </AnchorPane>
+                            </content>
+                        </Tab>
+                        <Tab style="-fx-background-color: #ff4d4d63;" text="Hotspots">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                    <children>
+                                        <TableView fx:id="staHotspotTable" prefHeight="150.0" prefWidth="250.0">
+                                            <columns>
+                                                <TableColumn fx:id="colHotspotID" prefWidth="125.0" text="Edge ID" />
+                                                <TableColumn fx:id="colHotspotSpeed" prefWidth="125.0" text="Speed (m/s)" />
                                             </columns>
                                         </TableView>
                                     </children>

@@ -2,8 +2,10 @@ package gui;
 
 import javafx.fxml.FXML;
 
+import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.LineChart;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.StackPane;
 
 import javafx.collections.FXCollections;
@@ -29,9 +31,13 @@ public class ControlPanel {
     @FXML private Button simPlay;
     @FXML private Button simTest;//for testing
 
-    @FXML private LineChart<?, ?> staSim;
+    @FXML private AreaChart<?, ?> staSim;
     @FXML private TableView<?> staTLTable;
     @FXML private TableView<?> staVehTable;
+
+    @FXML private TableView<HotspotData> staHotspotTable;
+    @FXML private TableColumn<HotspotData, String> colHotspotID;
+    @FXML private TableColumn<HotspotData, Double> colHotspotSpeed;
 
     @FXML private TextField tlID;
     @FXML private Button tlNPhase;
@@ -48,16 +54,32 @@ public class ControlPanel {
     private MapCanvas mapCanvas;
     private SimulationWrapper sim;
 
+    // Statistic
+    private final Stats stats = new Stats();
+
     private volatile boolean simRunning = false;
     private long idCounter = 0;
+
+    @FXML private void initialize() {
+        // Wire chart early (SimulationWrapper comes later via setMapCanvas)
+        stats.setStaSimChart(staSim);
+
+        // Set up the columns for the hotspot table
+        colHotspotID.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colHotspotSpeed.setCellValueFactory(new PropertyValueFactory<>("speed"));
+    }
 
     // --- HÀM SET MAP (Kết nối với App.java) ---
     // Chỉ cần nhận MapCanvas để hiển thị
     public void setMapCanvas(MapCanvas mapCanvas, SimulationWrapper inputSim) {
         this.mapCanvas = mapCanvas;
         this.sim = inputSim;
+        this.stats.setSimulation(inputSim);
+        this.stats.setStaSimChart((javafx.scene.chart.AreaChart<Number, Number>) staSim);
+        this.stats.setHotspotTable(staHotspotTable);
 
         if (mapContainer != null) {
+            mapContainer.getChildren().clear();
             // Thêm Map vào giao diện
             mapContainer.getChildren().add(mapCanvas.getCanvas());
             // Căn chỉnh kích thước
@@ -145,10 +167,31 @@ public class ControlPanel {
             if (!routeIds.isEmpty()) {injectVehRoute.setValue(routeIds.get(0));}
         }
     }
+
+    public void updateHotspotTable() {
+        if (sim == null || staHotspotTable == null) return;
+
+        List<String> hotIds = sim.getTopCongestedEdges();
+        ObservableList<HotspotData> dataList = FXCollections.observableArrayList();
+
+        for (String id : hotIds) {
+            // You can get the speed from the sim for each edge
+            // For now, we'll pass the ID and a placeholder or actual speed logic
+            dataList.add(new HotspotData(id, 0.0));
+        }
+
+        staHotspotTable.setItems(dataList);
+    }
+
     private boolean checkIntConvertable(String input) {
         try {
             Integer.parseInt(input);
             return true;
         } catch (NumberFormatException e) {return false;}
+    }
+
+
+    public Stats getStats() {
+        return this.stats;
     }
 }

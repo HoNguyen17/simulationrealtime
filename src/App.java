@@ -81,7 +81,7 @@ public class App extends Application {
         simulationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                // Create copy of current vehicle datas from wrapper
+                // 1. Get Vehicle Data
                 List<VehicleData> vehDatas = new ArrayList<>();
                 List<String> vehIds = simulationWrapper.getVehicleIDsList();
                 if (vehIds != null) {
@@ -90,7 +90,14 @@ public class App extends Application {
                     }
                 }
 
-                // Create copy of current traffic light datas from wrapper
+                // 2. NEW: Update Stats and Hotspots
+                // We call the controller's stats object to refresh charts and the hotspot table
+                if (controller_fxml != null) {
+                    // This calls the method in Stats.java we fixed earlier
+                    controller_fxml.getStats().updateCharts(vehDatas, now);
+                }
+
+                // 3. Traffic Light Data
                 List<TrafficLightData> tlDatas = new ArrayList<>();
                 List<String> tlIds = simulationWrapper.getTLIDsList();
                 if (tlIds != null) {
@@ -98,7 +105,8 @@ public class App extends Application {
                         tlDatas.add(simulationWrapper.makeTLCopy(tlId));
                     }
                 }
-                // Create copy of current route datas from wrapper
+
+                // 4. Route Data (for vehicle injection mode)
                 if(mapCanvas.getRenderMode() == 1 && mapCanvas.getUpdateRoute()) {
                     List<RouteData> rouData = new ArrayList<>();
                     List<String> routeIds = simulationWrapper.getRouteIDsList();
@@ -110,7 +118,7 @@ public class App extends Application {
                     mapCanvas.setRouteData(rouData);
                 }
 
-                // Set the copied datas into mapCanvas and render
+                // 5. Render to Canvas
                 mapCanvas.setVehicleData(vehDatas);
                 mapCanvas.setTrafficLightData(tlDatas);
                 mapCanvas.render();

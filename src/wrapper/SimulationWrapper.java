@@ -360,6 +360,29 @@ public class SimulationWrapper implements Observer {
         List<String> routeIDs = new ArrayList<>(RouteList.keySet());
         return routeIDs;
     }
+    //get the most congested edges
+    public List<String> getTopCongestedEdges() {
+        List<String> hotspots = new ArrayList<>();
+        try {
+            List<String> edges = (List<String>) conn.do_job_get(de.tudresden.sumo.cmd.Edge.getIDList());
+
+            // sort edges by speed ratio (current speed / max speed)
+            // lower ratio = more congested
+            edges.sort((a, b) -> {
+                try {
+                    double speedA = (double) conn.do_job_get(de.tudresden.sumo.cmd.Edge.getLastStepMeanSpeed(a));
+                    double speedB = (double) conn.do_job_get(de.tudresden.sumo.cmd.Edge.getLastStepMeanSpeed(b));
+                    return Double.compare(speedA, speedB);
+                } catch (Exception e) { return 0; }
+            });
+
+            // take the bottom 5 (the slowest ones)
+            for (int i = 0; i < Math.min(5, edges.size()); i++) {
+                hotspots.add(edges.get(i));
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return hotspots;
+    }
 //===== MAKE COPY ==========================================
     public DataType.RouteData makeRouteCopy(String inputID) {
         RouteWrapper x = RouteList.get(inputID);
