@@ -73,6 +73,11 @@ public class ControlPanel {
     @FXML void expBtnAct(ActionEvent event) { }
     @FXML void expTypeAct(ActionEvent event) { }
 
+    @FXML void chosenTLAct(ActionEvent event) {
+        String chosenTL = tlIDs.getValue();
+        mapCanvas.setHightLightJunctions(this.sim.getTLControlledJunctions(chosenTL));
+    }
+
     @FXML void tlNPhaseAct(ActionEvent event) {
         String chosenTL = tlIDs.getValue();
         this.sim.setTLPhaseNext(chosenTL);

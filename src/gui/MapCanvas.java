@@ -33,7 +33,7 @@ public class MapCanvas {
     // render hightlight and stuff when control
     private int renderMode = 0; // 0=default, 1=vehicle, 2=trafficlight
     private boolean updateRoute = true;  // to prevent frequent update of route data
-    private String hightlightJunction = null;
+    private List<String> hightlightJunctions = new ArrayList<>();
 
     private List<VehicleData> vehicleDataList = new ArrayList<>();
     private List<TrafficLightData> trafficLightDataList = new ArrayList<>();
@@ -113,6 +113,11 @@ public class MapCanvas {
     public void setUpdateRoute(boolean input) {
         this.updateRoute = input;
     }
+
+    // Set highlight junctions
+    public void setHightLightJunctions(List<String> input) {
+        this.hightlightJunctions = input;
+    }
     
     // Offset polyline points by distance d
     private List<Point2D> offsetPolyline(List<Point2D> pts, double d) {
@@ -157,7 +162,7 @@ public class MapCanvas {
         g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
         // Draw junctions
-        Color highlightFill = Color.web("#f7e300ff");
+        Color highlightFill = Color.web("#07adf4ff", 0.75);
         Color roadFill = Color.web("#848484ff");
         g.setFill(roadFill);
         for (Networkpaser.Junction j : model.junctions) {
@@ -201,6 +206,22 @@ public class MapCanvas {
                 g.setLineWidth(centermarksizePx);
                 g.setLineDashes(18, 12); // optionally scale dash lengths too
                 drawPolyline(g, centerline);
+            }
+        }
+        // hight light controlled junction for traffic light control
+        if (renderMode == 2 && hightlightJunctions != null) {
+            for (String junctionId : hightlightJunctions) {
+                g.setFill(highlightFill);
+                Networkpaser.Junction j = findJunctionById(junctionId);
+                if (j.shapePoints == null || j.shapePoints.size() < 3) continue;
+                double[] xs = new double[j.shapePoints.size()];
+                double[] ys = new double[j.shapePoints.size()];
+                for (int i = 0; i < j.shapePoints.size(); i++) {
+                    Point2D p = j.shapePoints.get(i);
+                    xs[i] = transform.worldscreenX(p.getX());
+                    ys[i] = transform.worldscreenY(p.getY());
+                }
+                g.fillPolygon(xs, ys, xs.length);
             }
         }
         // hightlight and label start of route
@@ -322,6 +343,14 @@ public class MapCanvas {
         if (edgeId == null || model == null) return null;
         for (Networkpaser.Edge e : model.edges) {
             if (edgeId.equals(e.id)) return e;
+        }
+        return null;
+    }
+
+    private Networkpaser.Junction findJunctionById(String junctionId) {
+        if (junctionId == null || model == null) return null;
+        for (Networkpaser.Junction j : model.junctions) {
+            if (junctionId.equals(j.id)) return j;
         }
         return null;
     }

@@ -40,8 +40,8 @@ String sumo_bin = "sumo";
                 conn.do_timestep();
                 List<String> temp = (List<String>)conn.do_job_get(Trafficlight.getIDList());
                 //System.out.println(temp);
-                double time = (double)conn.do_job_get(Trafficlight.getPhaseDuration("J2"));
-                if(i == 2) conn.do_job_set(Trafficlight.setPhaseDuration("J2", 7));
+                List<String> time = (List<String>)conn.do_job_get(Trafficlight.getControlledJunctions("J28"));
+                if(i == 2) conn.do_job_set(Trafficlight.setPhaseDuration("J28", 7));
                 System.out.println(time);
                 if(0 == 1){
                     conn.do_job_set(Vehicle.add("x_0", "DEFAULT_VEHTYPE", "r_0", 0, 0, 0, (byte)0));

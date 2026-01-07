@@ -43,6 +43,17 @@ class TrafficLightWrapper extends DataType.TrafficLightData {
         if (po == 1) {System.out.println(String.format("Current phase definition of %s: %s", ID, lightDef));}
         return lightDef;
     }
+    // get controlled junctions of traffic light (usually 1)
+    public List<String> getControlledJunctions(SimulationWrapper temp, int po) {
+        try {
+            List<String> junctions = (List<String>)temp.conn.do_job_get(Trafficlight.getControlledJunctions(ID));
+            return junctions;
+        }   
+        catch (Exception e) {
+            System.out.println("fail to get junctions");
+        }
+        return null;
+    }
 //=================MAKE COPY=============================
     public DataType.TrafficLightData makeCopy() {
         List<String> fromLaneIDCopy = new ArrayList<>();

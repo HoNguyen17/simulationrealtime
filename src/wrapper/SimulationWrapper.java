@@ -213,6 +213,11 @@ public class SimulationWrapper implements Observer {
         }
         else {return null;}
     }
+    public List<String> getTLControlledJunctions(String inputID) {
+        TrafficLightWrapper x = TrafficLightList.get(inputID);
+        List<String> controlledJunctions = x.getControlledJunctions(this, 0);
+        return controlledJunctions;
+    }
 //===== MAKE COPY =========================================
     public DataType.TrafficLightData makeTLCopy(String inputID) {
         TrafficLightWrapper x = TrafficLightList.get(inputID);
