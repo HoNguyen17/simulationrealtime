@@ -11,8 +11,8 @@ import java.util.List;
 
 public class TestTraaS {
 public static void main ( String [] args){ 
-String sumo_bin = "sumo-gui";
-        String config_file = "../resource/test_5_wrapper.sumocfg";
+String sumo_bin = "sumo";
+        String config_file = "../resource/test_7_huge.sumocfg";
         double step_length = 1;
 
         if (args.length > 0) {
@@ -40,7 +40,10 @@ String sumo_bin = "sumo-gui";
                 conn.do_timestep();
                 List<String> temp = (List<String>)conn.do_job_get(Trafficlight.getIDList());
                 //System.out.println(temp);
-                if(i == 1){
+                double time = (double)conn.do_job_get(Trafficlight.getPhaseDuration("J2"));
+                if(i == 2) conn.do_job_set(Trafficlight.setPhaseDuration("J2", 7));
+                System.out.println(time);
+                if(0 == 1){
                     conn.do_job_set(Vehicle.add("x_0", "DEFAULT_VEHTYPE", "r_0", 0, 0, 0, (byte)0));
                     conn.do_job_set(Vehicle.changeTarget("x_0", "E0"));
                     conn.do_job_set(Vehicle.rerouteEffort("f_0.0"));
@@ -60,7 +63,7 @@ String sumo_bin = "sumo-gui";
                     //String test = conn.do_job_get(Vehicle.getRoutingMode("x_0"));
                     //System.out.println(test);
                 }
-                if(i == 60){
+                if(0 == 60){
                     conn.do_job_set(Vehicle.add("id", "DEFAULT_VEHTYPE", "r_0", 0, 0, 0, (byte)0));
                     conn.do_job_set(Vehicle.changeTarget("id", "E0"));
                     }

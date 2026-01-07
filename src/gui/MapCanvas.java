@@ -8,6 +8,7 @@ import wrapper.DataType.RouteData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -200,13 +201,21 @@ public class MapCanvas {
                 drawPolyline(g, centerline);
             }
         }
-        // hightlight start of route
+        // hightlight and label start of route
         if (renderMode == 1) {
+            HashSet<String> labeledEdge = new HashSet<>();
+            double labelX = 0;
+            double labelY = 0;
             for(RouteData rouData : routeDataList) {
-                //System.out.println(rouData.getID(0) + " start at " + rouData.getFirstEdgeID(0));
                 Networkpaser.Edge e = findEdgeById(rouData.getFirstEdgeID(0));
-                boolean flag = true;
-                for (Networkpaser.Lane lane : e.lanes) {
+                double offSet = 0;
+                double offSet2 = 0;
+                Text label = new Text(rouData.getID(0));
+                double textWidth = label.getLayoutBounds().getWidth();
+                double textHeight = label.getLayoutBounds().getHeight();
+                if (!labeledEdge.add(e.id)) offSet = 20; 
+                else {
+                    for (Networkpaser.Lane lane : e.lanes) {
                     if (lane.shapePoints.size() < 2) continue;
                     List<Point2D> screenPts = new ArrayList<>(); // transformed points
                     for (Point2D p : lane.shapePoints) {
@@ -215,26 +224,18 @@ public class MapCanvas {
                             transform.worldscreenY(p.getY())
                         ));
                     }
+                    labelX = screenPts.get(0).getX();
+                    labelY = screenPts.get(0).getY();
                     g.setStroke(highlightFill); 
                     g.setLineWidth(roadsizePx * 2); // full road width in px
                     g.setLineDashes();
                     drawPolyline(g, screenPts);
-                    // add label route name to the edge
-                    if (flag) {
-                        double labelX = screenPts.get(0).getX();
-                        double labelY = screenPts.get(0).getY();
-                        Text label = new Text(rouData.getID(0));
-                        double textWidth = label.getLayoutBounds().getWidth();
-                        double textHeight = label.getLayoutBounds().getHeight();
-                        g.save();
-                        g.setFill(Color.WHITE);
-                        g.fillRect(labelX - 5, labelY - textHeight + 5, textWidth + 10, textHeight);
-                        g.setFill(Color.BLACK);
-                        g.fillText(rouData.getID(0), labelX, labelY);
-                        g.restore();
-                        flag = false;
                     }
                 }
+                g.setFill(Color.WHITE);
+                g.fillRect(labelX - 5, labelY - textHeight - offSet + 5, textWidth + 10, textHeight);
+                g.setFill(Color.BLACK);
+                g.fillText(rouData.getID(0), labelX, labelY - offSet);
             }
         }
         // draw vehicles
