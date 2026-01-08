@@ -110,7 +110,9 @@ public class DataType {
             return firstEdgeID;
         }
     }
-    // not yet implements
+    // color converts
+    public static String[] colorOptions = {"Default", "Red", "Orange",  "Yellow", "Green", "Blue", "Indigo", "Violet", "Pink"};
+
     public static Color convertColor(SumoColor inputColor) {
         double tempR = ((double)(inputColor.r & 0xFF))/255;
         double tempG = ((double)(inputColor.g & 0xFF))/255;
@@ -126,5 +128,26 @@ public class DataType {
         int tempA = (int) (inputColor.getOpacity() * 255);
         SumoColor result =  new SumoColor(tempR, tempG, tempB, tempA);
         return result;
+    }
+    public static Color convertColor(String inputColor) {
+        switch (inputColor) {
+            case "Red":
+                return Color.RED;
+            case "Orange":
+                return Color.ORANGE;
+            case "Yellow":
+                return Color.YELLOW;
+            case "Green":
+                return Color.GREEN;
+            case "Blue":
+                return Color.BLUE;
+            case "Indigo":
+                return Color.INDIGO;
+            case "Violet":
+                return Color.VIOLET;
+            case "Pink":
+                return Color.PINK;
+        }
+        return Color.RED;
     }
 }

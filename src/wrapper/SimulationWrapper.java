@@ -366,7 +366,7 @@ public class SimulationWrapper implements Observer {
     //get first edge id of the route
     public String getRouteFirstEdge(String inputID) {
         RouteWrapper x = RouteList.get(inputID);
-        return x.getFirstEdgeID(1);
+        return x.getFirstEdgeID(0);
     }
     //get route id list
     public List<String> getRouteIDsList() {

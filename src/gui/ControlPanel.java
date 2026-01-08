@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import wrapper.SimulationWrapper;
+import wrapper.DataType;
 
 public class ControlPanel {
     // --- CÁC BIẾN FXML (Giữ nguyên) ---
@@ -29,6 +30,9 @@ public class ControlPanel {
     @FXML private Button simPause;
     @FXML private Button simPlay;
     @FXML private Button simTest;//for testing
+    @FXML private ComboBox<String> filterOnOff;
+    @FXML private ComboBox<String> filterColor;
+    @FXML private TextField filterSpeed;
 
     @FXML private LineChart<?, ?> staSim;
     @FXML private TableView<?> staTLTable;
@@ -40,7 +44,7 @@ public class ControlPanel {
     @FXML private Button tlNPhase;
     @FXML private Button tlNPhaseAll;
 
-    @FXML private ComboBox<Color> vehColor;
+    @FXML private ComboBox<String> vehColor;
     @FXML private ComboBox<String> injectVehRoute;
     @FXML private TextField injectVehNum;
     @FXML private Button vehInject;
@@ -54,6 +58,17 @@ public class ControlPanel {
 
     // --- HÀM SET MAP (Kết nối với App.java) ---
     // Chỉ cần nhận MapCanvas để hiển thị
+    public void initialize() {
+        //simulation
+        filterOnOff.setItems(FXCollections.observableArrayList("Off", "On"));
+        filterOnOff.setValue("Off");
+        filterColor.setItems(FXCollections.observableArrayList(DataType.colorOptions));
+        filterColor.setValue("Default");
+        //add vehicle
+        vehColor.setItems(FXCollections.observableArrayList(DataType.colorOptions));
+        vehColor.setValue("Default");
+        //traffic light
+    }
     public void setMapCanvas(MapCanvas mapCanvas, SimulationWrapper inputSim) {
         this.mapCanvas = mapCanvas;
         this.sim = inputSim;
@@ -70,12 +85,32 @@ public class ControlPanel {
     @FXML void simPlayAct(ActionEvent event) {System.out.println("start");}
     @FXML void simPauseAct(ActionEvent event) {this.PauseSim();}
     @FXML void simTestAct(ActionEvent event) {this.SimTest();}
+
+    @FXML void switchFilterAct(ActionEvent event) {
+        String chosenFilter = filterOnOff.getValue();
+        String inputSpeed = filterSpeed.getText();
+        double chosenSpeed = 1000;
+        if (this.checkIntConvertable(inputSpeed)) {chosenSpeed = Integer.parseInt(inputSpeed);}
+        if (chosenFilter == "On") {
+            this.mapCanvas.setFilter(true);
+            this.mapCanvas.setSpeedFilter(chosenSpeed);
+        }
+        else this.mapCanvas.setFilter(false);
+    }
+
+    @FXML void speedFilterAct(ActionEvent event) {
+        String inputSpeed = filterSpeed.getText();
+        double chosenSpeed = 1000;
+        if (this.checkIntConvertable(inputSpeed)) {chosenSpeed = Integer.parseInt(inputSpeed);}
+        this.mapCanvas.setSpeedFilter(chosenSpeed);
+    }
+
     @FXML void expBtnAct(ActionEvent event) { }
     @FXML void expTypeAct(ActionEvent event) { }
 
     @FXML void chosenTLAct(ActionEvent event) {
         String chosenTL = tlIDs.getValue();
-        mapCanvas.setHightLightJunctions(this.sim.getTLControlledJunctions(chosenTL));
+        if(chosenTL != null) mapCanvas.setHightLightJunctions(this.sim.getTLControlledJunctions(chosenTL));
     }
 
     @FXML void tlNPhaseAct(ActionEvent event) {
@@ -96,12 +131,21 @@ public class ControlPanel {
     // tl next phase all event
     @FXML void tlNPhaseAllAct(ActionEvent event) {sim.setTLPhaseNextAll();}
     // inhect vehicle event
+    @FXML void chosenRouteAct(ActionEvent event) {
+        String chosenRoute = injectVehRoute.getValue();
+        String startEdge = null;
+        if (chosenRoute != null) startEdge = sim.getRouteFirstEdge(chosenRoute);
+        this.mapCanvas.setHightLightEdge(startEdge);
+    }
+    //inject button clicked
     @FXML void vehInjectAct(ActionEvent event) {
         String chosenRoute = injectVehRoute.getValue();
-        Color chosenColor = vehColor.getValue();
+        String inputColor = vehColor.getValue();
+        Color chosenColor = Color.RED;
+        if (inputColor != null) chosenColor = DataType.convertColor(inputColor);
         String inputNum = injectVehNum.getText();
         int chosenNum = 1;
-        if (this.checkIntConvertable(inputNum)) {chosenNum = Integer.parseInt(inputNum);}
+        if (this.checkIntConvertable(inputNum)) chosenNum = Integer.parseInt(inputNum);
         this.VehicleInject(chosenNum, chosenRoute, chosenColor);
     }
     
@@ -121,7 +165,6 @@ public class ControlPanel {
     }
     // inject vehicle
     private void VehicleInject(int num, String routeId, Color color) {
-        System.out.println("should inject "+ num + " at " + routeId);
         if (1 <= num && num <= 300) {
             for (int i = 0; i < num; i++) {
                 this.sim.addVehicleWithColor(String.format("v_%d", this.idCounter), routeId, color);
@@ -140,18 +183,21 @@ public class ControlPanel {
         if (this.mapCanvas != null) {
             this.mapCanvas.setRenderMode(input);
         }
+        if (input == 0) {
+            System.out.println("Switch to normal mode");
+        }
         if (input == 1) {
             this.mapCanvas.setUpdateRoute(true);
             List<String> routeIds = this.sim.getRouteIDsList();
             injectVehRoute.setItems(FXCollections.observableArrayList(routeIds));
             if (!routeIds.isEmpty()) {injectVehRoute.setValue(routeIds.get(0));}
-            vehColor.setItems(FXCollections.observableArrayList(Color.RED, Color.BLUE, Color.YELLOW));
-            vehColor.setValue(Color.RED);
         }
         if (input == 2) {
             List<String> tlIds = this.sim.getTLIDsList();
             tlIDs.setItems(FXCollections.observableArrayList(tlIds));
             if (!tlIds.isEmpty()) {tlIDs.setValue(tlIds.get(0));}
+            String chosenTL = tlIDs.getValue();
+            mapCanvas.setHightLightJunctions(this.sim.getTLControlledJunctions(chosenTL));
         }
     }
     private boolean checkIntConvertable(String input) {
