@@ -115,6 +115,7 @@ public class DataType {
         protected int density;
         protected double travelTime;
         protected double waitingTime;
+        protected boolean congested = false;
         EdgeData(String inputID) {
             this.ID = inputID;
         }

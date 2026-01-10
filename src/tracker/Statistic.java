@@ -20,7 +20,7 @@ public class Statistic {
     public static boolean initialize(SimulationWrapper input) {
         sim = input;
         try (FileWriter writer = new FileWriter("tracker/data.csv")) {
-            writer.write("Simulation Time, Edge, Density, Travel Time\n");
+            writer.write("Simulation Time, Edge, Density, Travel Time, Congested\n");
             return true;
         } catch (Exception e) {
             System.out.println("An error occurred while opening the file.");
@@ -34,12 +34,14 @@ public class Statistic {
             List<String> edges = sim.getEdgeIDsList();
             for (String e : edges) {
                 int density = sim.getEdgeDensity(e);
-                double travelTime = sim.getEdgeTravelTime(e);
                 if(density > 0) {
+                    double travelTime = sim.getEdgeTravelTime(e);
+                    boolean congested = sim.getEdgeCongested(e);
                     writer.write(currentTime + ",");
                     writer.write(" " + e + ",");
                     writer.write(density + ",");
-                    writer.write(travelTime + "\n");
+                    writer.write(travelTime + ",");
+                    writer.write(congested + "\n");
                 }
             }
             return true;

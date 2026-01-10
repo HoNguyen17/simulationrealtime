@@ -195,6 +195,8 @@ public class SimulationWrapper implements Observer {
             if (so.variable == Constants.VAR_WAITING_TIME) {
                 SumoPrimitive sp = (SumoPrimitive) so.object;
                 x.waitingTime = (double) sp.val;
+                if (x.waitingTime > 130) x.congested = true;
+                else x.congested = false;
             }
         }
     }
@@ -407,7 +409,11 @@ public class SimulationWrapper implements Observer {
     }
     public double getEdgeWaitingTime(String inputID) {
         EdgeWrapper x = EdgeList.get(inputID);
-        return x.travelTime;
+        return x.waitingTime;
+    }
+    public boolean getEdgeCongested(String inputID) {
+        EdgeWrapper x = EdgeList.get(inputID);
+        return x.congested;
     }
     public List<String> getEdgeIDsList() {
         List<String> edgeIDs = new ArrayList<>(EdgeList.keySet());

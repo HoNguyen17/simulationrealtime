@@ -66,7 +66,7 @@ String sumo_bin = "sumo-gui";
                     //System.out.println(test);
                 }
                 if(i > 0){
-                        double testTime = (double)conn.do_job_get(Edge.getTraveltime("-E15"));
+                        double testTime = (double)conn.do_job_get(Edge.getTraveltime("-E18"));
                         System.out.println(testTime);
                     }
             }
