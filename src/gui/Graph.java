@@ -106,9 +106,10 @@ public class Graph {
         // Get completed travel times from simulation
         List<Double> travelTimes = sim.getCompletedTravelTimes();
         
-        // Count vehicles in each bucket
+        // Count vehicles 
         int count0 = 0, count1 = 0, count2 = 0, count3 = 0, count4 = 0, count5 = 0;
         
+        // Categorize travel times 
         for (int i = 0; i < travelTimes.size(); i++) {
             double time = travelTimes.get(i);
             if (time < 60){ 
