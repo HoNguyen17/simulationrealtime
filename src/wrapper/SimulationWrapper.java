@@ -318,7 +318,7 @@ public class SimulationWrapper implements Observer {
     public double getVehicleAverageSpeed(int po) {
         double result = 0;
         for (VehicleWrapper x : VehicleList.values()) {result += x.speed;}
-        result /= VehicleList.size(); //need fix
+        if (VehicleList.size() != 0) result /= VehicleList.size();
         if (po == 1) {System.out.println("Average speed is " + result);}
         return result;
     }

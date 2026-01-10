@@ -2,7 +2,7 @@ package gui;
 
 import javafx.fxml.FXML;
 
-import javafx.scene.chart.LineChart;
+import javafx.scene.chart.AreaChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import wrapper.SimulationWrapper;
+import wrapper.DataType.VehicleData;
 import wrapper.DataType;
 
 public class ControlPanel {
@@ -37,7 +38,7 @@ public class ControlPanel {
     @FXML private ComboBox<String> filterColor;
     @FXML private TextField filterSpeed;
 
-    @FXML private LineChart<?, ?> staSim;
+    @FXML private AreaChart<?, ?> avgSpeed;
     @FXML private TableView<?> staTLTable;
     @FXML private TableView<?> staVehTable;
 
@@ -55,6 +56,7 @@ public class ControlPanel {
     // --- BIẾN CỤC BỘ ---
     private MapCanvas mapCanvas;
     private SimulationWrapper sim;
+    private final Graph stats = new Graph();
 
     private volatile boolean simRunning = false;
     private long idCounter = 0;
@@ -62,17 +64,7 @@ public class ControlPanel {
     // --- HÀM SET MAP (Kết nối với App.java) ---
     // Chỉ cần nhận MapCanvas để hiển thị
     public void initialize() {
-            AnimationTimer liveCounter = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                // Get the current size of your vehicle list/array
-                double count = sim.getTime(0);
-                
-                // Push it to the UI
-                simTime.setText("" + count);
-            }
-        };
-        liveCounter.start();
+        stats.setStaSimChart(avgSpeed);
         //simulation
         filterOnOff.setItems(FXCollections.observableArrayList("Off", "On"));
         filterOnOff.setValue("Off");
@@ -86,6 +78,7 @@ public class ControlPanel {
     public void setMapCanvas(MapCanvas mapCanvas, SimulationWrapper inputSim) {
         this.mapCanvas = mapCanvas;
         this.sim = inputSim;
+        this.stats.setSimulation(inputSim);
 
         if (mapContainer != null) {
             // Thêm Map vào giao diện
@@ -171,6 +164,11 @@ public class ControlPanel {
             else if (tabName.equals("Add Vehicle")) {this.changeRenderMode(1);}
             else if (tabName.equals("Traffic Light")) {this.changeRenderMode(2);}
         }
+    }
+
+    public void updateUI(long nowNanos) {
+        stats.updateCharts(nowNanos);
+        simTime.setText("" + sim.getTime(0));
     }
     // interaction method
     // pause simulation

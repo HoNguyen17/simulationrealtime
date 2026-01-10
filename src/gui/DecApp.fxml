@@ -2,7 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.AreaChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
@@ -144,17 +144,17 @@
                             <content>
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                     <children>
-                                        <LineChart fx:id="staSim" prefHeight="150.0" prefWidth="250.0" style="-fx-background-color: rgba(20,11,50,0.5);">
+                                        <AreaChart fx:id="avgSpeed"
+                                                   layoutX="0.0" layoutY="0.0"
+                                                   prefWidth="250.0" prefHeight="180.0"
+                                                   animated="false">
                                             <xAxis>
-                                                <CategoryAxis side="BOTTOM" />
+                                                <NumberAxis side="BOTTOM" label="t(s)" />
                                             </xAxis>
                                             <yAxis>
-                                                <NumberAxis side="LEFT" />
+                                                <NumberAxis side="LEFT" label="Avg speed (m/s)" />
                                             </yAxis>
-                                            <padding>
-                                                <Insets right="5.0" top="10.0" />
-                                            </padding>
-                                        </LineChart>
+                                        </AreaChart>
                                     </children>
                                 </AnchorPane>
                             </content>

@@ -120,6 +120,10 @@ public class App extends Application {
                 mapCanvas.setVehicleData(vehDatas);
                 mapCanvas.setTrafficLightData(tlDatas);
                 mapCanvas.render();
+
+                if (controller_fxml != null) {
+                controller_fxml.updateUI(now);
+                }
             }
         };
         simulationTimer.start();
