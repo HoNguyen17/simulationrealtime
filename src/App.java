@@ -9,6 +9,8 @@ import wrapper.DataType.TrafficLightData;
 import wrapper.DataType.VehicleData;
 import wrapper.DataType.RouteData;
 
+import tracker.Statistic;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -52,16 +54,20 @@ public class App extends Application {
         simulationWrapper = new SimulationWrapper(SUMOCFG_FILE); // initialize with SUMO config file
         simulationWrapper.setDelay(200); //  set step delay in ms
         simulationWrapper.Start();
+        Statistic.initialize(simulationWrapper);
+
 
         // background thread to advance SUMO steps
         simRunning = true;
         simulationThread = new Thread(() -> {
             while (simRunning && !simulationWrapper.isClosed()) {
                 simulationWrapper.Step();
+                Statistic.addNewData();
             }
         }, "Sumo-Stepper");
         simulationThread.setDaemon(true);
         simulationThread.start();
+        
 
 //FXML thing
         FXMLLoader load_fxml = new FXMLLoader(getClass().getResource("/gui/DecApp.fxml"));

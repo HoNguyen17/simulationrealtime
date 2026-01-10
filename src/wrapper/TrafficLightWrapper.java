@@ -109,14 +109,13 @@ class TrafficLightWrapper extends DataType.TrafficLightData {
     // update all traffic light IDs of simulation
     protected static void updateTrafficLightIDs(SimulationWrapper temp) {
         try {
-            @SuppressWarnings("unchecked")
-            List<String> IDsList = (List<String>)temp.conn.do_job_get(Trafficlight.getIDList()); // fetch a list of all traffic light IDs in the network
-            for (String x : IDsList) { // for each ID (x)
+            List<String> IDsList = (List<String>)temp.conn.do_job_get(Trafficlight.getIDList()); 
+            for (String x : IDsList) { 
                 // set up base variable
-                String program = (String)temp.conn.do_job_get(Trafficlight.getProgram(x)); // retrieve the current program ID
+                String program = (String)temp.conn.do_job_get(Trafficlight.getProgram(x)); 
                 List<String> inputFrom = new ArrayList<String>();
                 List<String> inputTo = new ArrayList<String>();
-                List<SumoLink> controlledLinks = (List<SumoLink>)temp.conn.do_job_get(Trafficlight.getControlledLinks(x)); // retrieve the list of controlled links, which are then parsed to populate the (inputFrom) and (inputTo) lists
+                List<SumoLink> controlledLinks = (List<SumoLink>)temp.conn.do_job_get(Trafficlight.getControlledLinks(x)); 
                 for (int i = 0; i < controlledLinks.size(); i++) {
                     SumoLink link = controlledLinks.get(i);
                     inputFrom.add(link.from);
@@ -130,7 +129,6 @@ class TrafficLightWrapper extends DataType.TrafficLightData {
                 VariableSubscription vs = new VariableSubscription(SubscribtionVariable.trafficlight, 0, 100000 * 60, x); // initiates a variable subscription for each traffic light ID
                 vs.addCommand(Constants.TL_RED_YELLOW_GREEN_STATE);
                 temp.conn.do_subscription(vs);
-                System.out.println("subscribe " + x);
             }
         }
         catch (Exception A) {

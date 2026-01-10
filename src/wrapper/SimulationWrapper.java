@@ -38,7 +38,8 @@ public class SimulationWrapper implements Observer {
     // HashMaps to store custom wrapper objects for easier management
     protected final HashMap<String, TrafficLightWrapper> TrafficLightList = new HashMap<>();
     protected final HashMap<String, VehicleWrapper> VehicleList = new HashMap<>();
-    protected final HashMap<String, RouteWrapper> RouteList = new HashMap<>(); // a list of available route IDs in the simulation
+    protected final HashMap<String, RouteWrapper> RouteList = new HashMap<>(); 
+    protected final HashMap<String, EdgeWrapper> EdgeList = new HashMap<>();
     protected final HashMap<String, Color> ColorQueue = new HashMap<>();
     // Constructor 1
     public SimulationWrapper(String sumocfg, double step_length, String sumo_bin){
@@ -78,6 +79,7 @@ public class SimulationWrapper implements Observer {
             conn.do_subscription(vs);//start the subscription
 
             TrafficLightWrapper.updateTrafficLightIDs(this);
+            EdgeWrapper.updateEdgeIDs(this);
             RouteWrapper.updateRouteIDs(this);
             System.out.println("Started successfully.");
         }
@@ -178,6 +180,21 @@ public class SimulationWrapper implements Observer {
                 SumoPrimitive sp = (SumoPrimitive) so.object;
                 TrafficLightWrapper x = TrafficLightList.get(so.id);
                 x.lightDef = (String) sp.val;
+            }
+        }
+        else if (so.response == ResponseType.EDGE_VARIABLE) {
+            EdgeWrapper x = EdgeList.get(so.id);
+            if (so.variable == Constants.LAST_STEP_VEHICLE_NUMBER) {
+                SumoPrimitive sp = (SumoPrimitive) so.object;
+                x.density = (int) sp.val;
+            }
+            if (so.variable == Constants.VAR_CURRENT_TRAVELTIME) {
+                SumoPrimitive sp = (SumoPrimitive) so.object;
+                x.travelTime = (double) sp.val;
+            }
+            if (so.variable == Constants.VAR_WAITING_TIME) {
+                SumoPrimitive sp = (SumoPrimitive) so.object;
+                x.waitingTime = (double) sp.val;
             }
         }
     }
@@ -377,5 +394,23 @@ public class SimulationWrapper implements Observer {
     public DataType.RouteData makeRouteCopy(String inputID) {
         RouteWrapper x = RouteList.get(inputID);
         return x.makeCopy();
+    }
+//===== EDGE STUFF =========================================
+//===== GETTER =============================================
+    public int getEdgeDensity(String inputID) {
+        EdgeWrapper x = EdgeList.get(inputID);
+        return x.density;
+    }
+    public double getEdgeTravelTime(String inputID) {
+        EdgeWrapper x = EdgeList.get(inputID);
+        return x.travelTime;
+    }
+    public double getEdgeWaitingTime(String inputID) {
+        EdgeWrapper x = EdgeList.get(inputID);
+        return x.travelTime;
+    }
+    public List<String> getEdgeIDsList() {
+        List<String> edgeIDs = new ArrayList<>(EdgeList.keySet());
+        return edgeIDs;
     }
 }

@@ -110,6 +110,31 @@ public class DataType {
             return firstEdgeID;
         }
     }
+    public static class EdgeData implements Identifiable {
+        protected String ID; 
+        protected int density;
+        protected double travelTime;
+        protected double waitingTime;
+        EdgeData(String inputID) {
+            this.ID = inputID;
+        }
+        public String getID(int po) {
+            if (po == 1) {System.out.println(ID);}
+            return ID;
+        }
+        public int getDensity(int po) {
+            if (po == 1) {System.out.println(ID);}
+            return density;
+        }
+        public double getTravelTime(int po) {
+            if (po == 1) {System.out.println(ID);}
+            return travelTime;
+        }
+        public double getwaitingTime(int po) {
+            if (po == 1) {System.out.println(ID);}
+            return waitingTime;
+        }
+    }
     // color converts
     public static String[] colorOptions = {"Default", "Red", "Orange",  "Yellow", "Green", "Blue", "Indigo", "Violet", "Pink"};
 

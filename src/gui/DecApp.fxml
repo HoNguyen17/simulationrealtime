@@ -42,6 +42,8 @@
                                     <children>
                                         <VBox prefHeight="250.0" prefWidth="250.0" style="-fx-background-color: rgba(8, 136, 227, 0.3);">
                                             <children>
+                                                <Label text="Simulation Time:" />
+                                                <Label fx:id="simTime" text="0" style="-fx-font-size: 20px;" />
                                                 <HBox>
                                                     <children>
                                                         <Button fx:id="simPlay" mnemonicParsing="false" onAction="#simPlayAct" prefWidth="110.0" text="Start">

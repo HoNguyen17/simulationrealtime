@@ -4,14 +4,15 @@ import de.tudresden.sumo.cmd.Simulation;
 import de.tudresden.sumo.cmd.Vehicle;
 import de.tudresden.sumo.cmd.Inductionloop;
 import de.tudresden.sumo.cmd.Trafficlight;
+import de.tudresden.sumo.cmd.Edge;
 import de.tudresden.sumo.objects.SumoVehicleData;
 import de.tudresden.sumo.cmd.Vehicletype;
-
+import de.tudresden.sumo.util.SumoCommand;
 import java.util.List;
 
 public class TestTraaS {
 public static void main ( String [] args){ 
-String sumo_bin = "sumo";
+String sumo_bin = "sumo-gui";
         String config_file = "../resource/test_7_huge.sumocfg";
         double step_length = 1;
 
@@ -39,7 +40,8 @@ String sumo_bin = "sumo";
                 Thread.sleep(200);
                 conn.do_timestep();
                 List<String> temp = (List<String>)conn.do_job_get(Trafficlight.getIDList());
-                //System.out.println(temp);
+                double tempTime = (double)conn.do_job_get(Simulation.getTime());
+                System.out.println(tempTime);
                 List<String> time = (List<String>)conn.do_job_get(Trafficlight.getControlledJunctions("J28"));
                 if(i == 2) conn.do_job_set(Trafficlight.setPhaseDuration("J28", 7));
                 System.out.println(time);
@@ -63,9 +65,9 @@ String sumo_bin = "sumo";
                     //String test = conn.do_job_get(Vehicle.getRoutingMode("x_0"));
                     //System.out.println(test);
                 }
-                if(0 == 60){
-                    conn.do_job_set(Vehicle.add("id", "DEFAULT_VEHTYPE", "r_0", 0, 0, 0, (byte)0));
-                    conn.do_job_set(Vehicle.changeTarget("id", "E0"));
+                if(i > 0){
+                        double testTime = (double)conn.do_job_get(Edge.getTraveltime("-E15"));
+                        System.out.println(testTime);
                     }
             }
 

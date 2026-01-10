@@ -10,6 +10,8 @@ import javafx.scene.paint.Color;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import javafx.animation.AnimationTimer;
+
 import javafx.event.ActionEvent; 
 import javafx.event.Event; 
 
@@ -27,6 +29,7 @@ public class ControlPanel {
     @FXML private MenuItem expTypeCSV;
     @FXML private MenuItem expTypePDF;
 
+    @FXML private Label simTime;
     @FXML private Button simPause;
     @FXML private Button simPlay;
     @FXML private Button simTest;//for testing
@@ -59,6 +62,17 @@ public class ControlPanel {
     // --- HÀM SET MAP (Kết nối với App.java) ---
     // Chỉ cần nhận MapCanvas để hiển thị
     public void initialize() {
+            AnimationTimer liveCounter = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                // Get the current size of your vehicle list/array
+                double count = sim.getTime(0);
+                
+                // Push it to the UI
+                simTime.setText("" + count);
+            }
+        };
+        liveCounter.start();
         //simulation
         filterOnOff.setItems(FXCollections.observableArrayList("Off", "On"));
         filterOnOff.setValue("Off");
@@ -171,6 +185,12 @@ public class ControlPanel {
                 this.idCounter++;
             }
         }   
+    //     new Thread(() -> {
+        //     for (int i = 0; i < 10000; i++) {
+        //         // Do heavy math here...
+        //     }
+    //     });
+    // }).start();
     }
     // test (easy to break)
     private void SimTest() {
