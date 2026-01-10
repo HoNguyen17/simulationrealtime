@@ -3,6 +3,7 @@ package gui;
 import javafx.fxml.FXML;
 
 import javafx.scene.chart.AreaChart;
+import javafx.scene.chart.BarChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -38,7 +39,9 @@ public class ControlPanel {
     @FXML private ComboBox<String> filterColor;
     @FXML private TextField filterSpeed;
 
-    @FXML private AreaChart<?, ?> avgSpeed;
+    @FXML private AreaChart<Number, Number> avgSpeed;
+    @FXML private BarChart<String, Number> travelTime;
+    @FXML private BarChart<String, Number> density;
     @FXML private TableView<?> staTLTable;
     @FXML private TableView<?> staVehTable;
 
@@ -64,7 +67,11 @@ public class ControlPanel {
     // --- HÀM SET MAP (Kết nối với App.java) ---
     // Chỉ cần nhận MapCanvas để hiển thị
     public void initialize() {
-        stats.setStaSimChart(avgSpeed);
+        stats.SpeedChart(avgSpeed);
+        stats.TravelTimeChart(travelTime);
+        stats.DensityChart(density);
+    
+
         //simulation
         filterOnOff.setItems(FXCollections.observableArrayList("Off", "On"));
         filterOnOff.setValue("Off");
@@ -167,7 +174,9 @@ public class ControlPanel {
     }
 
     public void updateUI(long nowNanos) {
-        stats.updateCharts(nowNanos);
+        stats.updateSpeedCharts(avgSpeed);
+        stats.updateTravelTimeChart(travelTime);
+        stats.updateDensityChart(density);
         simTime.setText("" + sim.getTime(0));
     }
     // interaction method

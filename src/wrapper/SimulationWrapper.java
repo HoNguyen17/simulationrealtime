@@ -41,6 +41,9 @@ public class SimulationWrapper implements Observer {
     protected final HashMap<String, RouteWrapper> RouteList = new HashMap<>(); 
     protected final HashMap<String, EdgeWrapper> EdgeList = new HashMap<>();
     protected final HashMap<String, Color> ColorQueue = new HashMap<>();
+    // Track vehicle travel times
+    protected final HashMap<String, Double> VehicleDepartTime = new HashMap<>();
+    protected final ArrayList<Double> CompletedTravelTimes = new ArrayList<>();
     // Constructor 1
     public SimulationWrapper(String sumocfg, double step_length, String sumo_bin){
         conn = new SumoTraciConnection(sumo_bin, sumocfg);
@@ -127,6 +130,7 @@ public class SimulationWrapper implements Observer {
                             SumoColor color = (SumoColor)conn.do_job_get(Vehicle.getColor(vehID));
                             VehicleWrapper y = new VehicleWrapper(vehID, DataType.convertColor(color));
                             VehicleList.put(vehID, y);
+                            VehicleDepartTime.put(vehID, getTime(0)); // track depart time
                             // start subscription of the vehicle
                             conn.do_subscription(vs);
                             if (ColorQueue.get(vehID) != null) {
@@ -148,6 +152,12 @@ public class SimulationWrapper implements Observer {
                 if (ssl.size() > 0) {
                     for (String vehID : ssl) {
                         try {
+                            // calculate travel time Nguyen
+                            if (VehicleDepartTime.containsKey(vehID)) {
+                                double travelTime = getTime(0) - VehicleDepartTime.get(vehID);
+                                CompletedTravelTimes.add(travelTime);
+                                VehicleDepartTime.remove(vehID);
+                            }
                             VehicleList.remove(vehID);
                             System.out.println("Delete " + vehID + " from the hashmap");
                         }
@@ -313,6 +323,10 @@ public class SimulationWrapper implements Observer {
     public List<String> getVehicleIDsList() {
         List<String> returnVehicleList = new ArrayList<>(VehicleList.keySet());
         return returnVehicleList;
+    }
+    // get completed travel times list Nguyen
+    public List<Double> getCompletedTravelTimes() {
+        return new ArrayList<>(CompletedTravelTimes);
     }
     // get average speed of all vehicle
     public double getVehicleAverageSpeed(int po) {
