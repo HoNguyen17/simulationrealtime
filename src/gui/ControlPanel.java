@@ -104,12 +104,17 @@ public class ControlPanel {
         String chosenFilter = filterOnOff.getValue();
         String inputSpeed = filterSpeed.getText();
         double chosenSpeed = 1000;
+        String chosenColor = filterColor.getValue();
         if (this.checkIntConvertable(inputSpeed)) {chosenSpeed = Integer.parseInt(inputSpeed);}
         if (chosenFilter == "On") {
             this.mapCanvas.setFilter(true);
-            this.mapCanvas.setSpeedFilter(chosenSpeed);
         }
         else this.mapCanvas.setFilter(false);
+    }
+    
+    @FXML void colorFilterAct(ActionEvent event) {
+        String chosenColor = filterColor.getValue();
+        this.mapCanvas.setColorFilter(chosenColor);
     }
 
     @FXML void speedFilterAct(ActionEvent event) {
@@ -192,12 +197,13 @@ public class ControlPanel {
                 this.idCounter++;
             }
         }   
-    //     new Thread(() -> {
-        //     for (int i = 0; i < 10000; i++) {
-        //         // Do heavy math here...
-        //     }
-    //     });
-    // }).start();
+        // injectionThread = new Thread(() -> {
+        //         for (int i = 0; i < num; i++) {
+        //             this.sim.addVehicleWithColor(String.format("v_%d", this.idCounter), routeId, color);
+        //             this.idCounter++;
+        //         }
+        // });
+        // injectionThread.start();
     }
     // test (easy to break)
     private void SimTest() {

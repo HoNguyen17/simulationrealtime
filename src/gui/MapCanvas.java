@@ -35,7 +35,7 @@ public class MapCanvas {
     private int renderMode = 0; // 0=default, 1=vehicle, 2=trafficlight
     private boolean filter = false;
     private String filterColor = "Default";
-    private double filterSpeed = 0;
+    private double filterSpeed = 1000;
     private boolean updateRoute = true;  // to prevent frequent update of route data
     private String hightlightEdge = null;
     private HashSet<String> hightlightJunctions = new HashSet<>();
@@ -120,6 +120,7 @@ public class MapCanvas {
     // set color for filter
     public void setColorFilter(String input) {
         this.filterColor = input;
+        System.out.println(filterColor);
     }
     // set speed limit for filter
     public void setSpeedFilter(double input) {

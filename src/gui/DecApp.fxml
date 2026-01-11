@@ -74,7 +74,7 @@
                                                 <Label text="Filter Option" />
                                                 <ComboBox fx:id="filterOnOff" onAction="#switchFilterAct" prefWidth="150.0" />
                                                 <Label text="Color" />
-                                                <ComboBox fx:id="filterColor" prefWidth="150.0" />
+                                                <ComboBox fx:id="filterColor" onAction="#colorFilterAct" prefWidth="150.0" />
                                                 <Label text="Speed Limit" />
                                                 <TextField fx:id="filterSpeed" promptText="Enter speed" onAction="#speedFilterAct" prefWidth="150.0"/>
                                         </VBox>

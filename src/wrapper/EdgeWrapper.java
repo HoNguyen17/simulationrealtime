@@ -29,7 +29,6 @@ class EdgeWrapper extends DataType.EdgeData {
                 vs.addCommand(Constants.VAR_CURRENT_TRAVELTIME);
                 vs.addCommand(Constants.VAR_WAITING_TIME);
                 temp.conn.do_subscription(vs);
-                System.out.println("subscribe " + x);
             }
         }
         catch (Exception A) {
