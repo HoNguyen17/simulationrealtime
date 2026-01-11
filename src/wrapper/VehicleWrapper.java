@@ -78,14 +78,16 @@ class VehicleWrapper extends DataType.VehicleData {
     }
 
     // set Vehicle's color, also update the local (color) variable in the wrapper object
-    public void setColor(SimulationWrapper temp, int r, int g, int b, int a) {
-        System.out.println("vehiclewrapper0");
+    public void setColor(SimulationWrapper temp, double r, double g, double b, double a) {
         try {
             System.out.println("vehiclewrapper1");
-            SumoColor inputColor = new SumoColor(r, g, b, a);
+            Color dataColor = new Color(r, g, b, a);
+            this.color = dataColor;
+            SumoColor inputColor = DataType.convertColor(dataColor);
             temp.conn.do_job_set(Vehicle.setColor(ID, inputColor));
             System.out.println("vehiclewrapper2");
-            color = new Color(r, g, b, a);
+            
+            
         }
         catch(Exception e) {
             System.out.println("Cannot set the color of the vehicle that has the ID " + ID + e.getMessage());

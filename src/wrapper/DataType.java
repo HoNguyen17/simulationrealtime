@@ -110,7 +110,35 @@ public class DataType {
             return firstEdgeID;
         }
     }
-    // not yet implements
+    public static class EdgeData implements Identifiable {
+        protected String ID; 
+        protected int density;
+        protected double travelTime;
+        protected double waitingTime;
+        protected boolean congested = false;
+        EdgeData(String inputID) {
+            this.ID = inputID;
+        }
+        public String getID(int po) {
+            if (po == 1) {System.out.println(ID);}
+            return ID;
+        }
+        public int getDensity(int po) {
+            if (po == 1) {System.out.println(ID);}
+            return density;
+        }
+        public double getTravelTime(int po) {
+            if (po == 1) {System.out.println(ID);}
+            return travelTime;
+        }
+        public double getwaitingTime(int po) {
+            if (po == 1) {System.out.println(ID);}
+            return waitingTime;
+        }
+    }
+    // color converts
+    public static String[] colorOptions = {"Default", "Red", "Orange",  "Yellow", "Green", "Blue", "Indigo", "Violet", "Pink"};
+
     public static Color convertColor(SumoColor inputColor) {
         double tempR = ((double)(inputColor.r & 0xFF))/255;
         double tempG = ((double)(inputColor.g & 0xFF))/255;
@@ -118,5 +146,34 @@ public class DataType {
         double tempA = ((double)(inputColor.a & 0xFF))/255;
         Color result =  new Color(tempR, tempG, tempB, tempA);
         return result;
+    }
+    public static SumoColor convertColor(Color inputColor) {
+        int tempR = (int) (inputColor.getRed() * 255);
+        int tempG = (int) (inputColor.getGreen() * 255);
+        int tempB = (int) (inputColor.getBlue() * 255);
+        int tempA = (int) (inputColor.getOpacity() * 255);
+        SumoColor result =  new SumoColor(tempR, tempG, tempB, tempA);
+        return result;
+    }
+    public static Color convertColor(String inputColor) {
+        switch (inputColor) {
+            case "Red":
+                return Color.RED;
+            case "Orange":
+                return Color.ORANGE;
+            case "Yellow":
+                return Color.YELLOW;
+            case "Green":
+                return Color.GREEN;
+            case "Blue":
+                return Color.BLUE;
+            case "Indigo":
+                return Color.INDIGO;
+            case "Violet":
+                return Color.VIOLET;
+            case "Pink":
+                return Color.PINK;
+        }
+        return Color.RED;
     }
 }

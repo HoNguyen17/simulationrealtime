@@ -5,13 +5,16 @@ import paser.Networkpaser;
 import wrapper.DataType.TrafficLightData;
 import wrapper.DataType.VehicleData;
 import wrapper.DataType.RouteData;
+import wrapper.DataType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import javafx.geometry.Point2D;
+import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
@@ -19,6 +22,7 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.image.Image; 
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.text.Text;
 
 public class MapCanvas {
     private final Canvas canvas; // the drawing surface
@@ -27,8 +31,14 @@ public class MapCanvas {
     private final Transform transform; // coordinate transformation manager
     private View viewManager; // view manager for zooming/panning
 
-    private int renderMode = 0; // 0=default, 1=trafficlight, 2=vehicle
+    // render hightlight and stuff when control
+    private int renderMode = 0; // 0=default, 1=vehicle, 2=trafficlight
+    private boolean filter = false;
+    private String filterColor = "Default";
+    private double filterSpeed = 1000;
     private boolean updateRoute = true;  // to prevent frequent update of route data
+    private String hightlightEdge = null;
+    private HashSet<String> hightlightJunctions = new HashSet<>();
 
     private List<VehicleData> vehicleDataList = new ArrayList<>();
     private List<TrafficLightData> trafficLightDataList = new ArrayList<>();
@@ -103,10 +113,31 @@ public class MapCanvas {
             this.renderMode = inputMode;
         }
     }
-
+    // set filter on or off
+    public void setFilter(boolean input) {
+        this.filter = input;
+    }
+    // set color for filter
+    public void setColorFilter(String input) {
+        this.filterColor = input;
+        System.out.println(filterColor);
+    }
+    // set speed limit for filter
+    public void setSpeedFilter(double input) {
+        this.filterSpeed = input;
+    }
     // Set update route
     public void setUpdateRoute(boolean input) {
         this.updateRoute = input;
+    }
+    // set highlight route
+    public void setHightLightEdge(String input) {
+        this.hightlightEdge = input;
+    }
+
+    // Set highlight junctions
+    public void setHightLightJunctions(List<String> input) {
+        this.hightlightJunctions = new HashSet<String>(input);
     }
     
     // Offset polyline points by distance d
@@ -141,31 +172,30 @@ public class MapCanvas {
             g.strokeLine(a.getX(), a.getY(), b.getX(), b.getY());
         }
     }
+    // Draw a text box
+    private void drawTextBox(GraphicsContext g, String input, double x, double y, double offSet) {
+        Text label = new Text(input);
+        double textWidth = label.getLayoutBounds().getWidth();
+        double textHeight = label.getLayoutBounds().getHeight();
+        g.save();
+        g.setFill(Color.WHITE);
+        g.fillRect(x - 5, y - textHeight - offSet + 5, textWidth + 10, textHeight);
+        g.setFill(Color.BLACK);
+        g.fillText(input, x, y - offSet);
+        g.restore();
+    }
 
     public void render() {
         if (model == null) return;
-
-        //System.out.println("Current render mode " + renderMode);
-
         // Clear canvas
         g.setFill(Color.GREEN);
         g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
         // Draw junctions
-        Color highlightFill = Color.web("#f7e300ff");
+        Color highlightFill = Color.web("#07adf4ff", 0.55);
         Color roadFill = Color.web("#848484ff");
         g.setFill(roadFill);
-        for (Networkpaser.Junction j : model.junctions) {
-            if (j.shapePoints == null || j.shapePoints.size() < 3) continue;
-            double[] xs = new double[j.shapePoints.size()];
-            double[] ys = new double[j.shapePoints.size()];
-            for (int i = 0; i < j.shapePoints.size(); i++) {
-                Point2D p = j.shapePoints.get(i);
-                xs[i] = transform.worldscreenX(p.getX());
-                ys[i] = transform.worldscreenY(p.getY());
-            }
-            g.fillPolygon(xs, ys, xs.length);
-        }
+
         // add sizes for roads
         double roadsize = 1.65;     
         double centermarksize = 0.5;  
@@ -198,25 +228,62 @@ public class MapCanvas {
                 drawPolyline(g, centerline);
             }
         }
-        // hightlight start of route
+        // draw junctions
+        for (Networkpaser.Junction j : model.junctions) {
+            if (j.shapePoints == null || j.shapePoints.size() < 3) continue;
+            double[] xs = new double[j.shapePoints.size()];
+            double[] ys = new double[j.shapePoints.size()];
+            double x = 0;
+            double y = 0;
+            for (int i = 0; i < j.shapePoints.size(); i++) {
+                Point2D p = j.shapePoints.get(i);
+                xs[i] = transform.worldscreenX(p.getX());
+                ys[i] = transform.worldscreenY(p.getY());
+                x = x + xs[i];
+                y = y + ys[i];
+            }
+            g.fillPolygon(xs, ys, xs.length);
+            if (renderMode == 2 && hightlightJunctions != null && hightlightJunctions.contains(j.id)) {
+                g.setFill(highlightFill);
+                g.fillPolygon(xs, ys, xs.length);
+                g.setFill(roadFill);
+            }
+            x /= (j.shapePoints.size());
+            y /= (j.shapePoints.size());
+            if (renderMode == 2 && j.type.equals("traffic_light")) this.drawTextBox(g, j.id, x, y, 0);
+
+        }
+        // hightlight and label start of route
         if (renderMode == 1) {
+            HashSet<String> labeledEdge = new HashSet<>();
+            double labelX = 0;
+            double labelY = 0;
             for(RouteData rouData : routeDataList) {
-                //System.out.println(rouData.getID(0) + " start at " + rouData.getFirstEdgeID(0));
                 Networkpaser.Edge e = findEdgeById(rouData.getFirstEdgeID(0));
-                for (Networkpaser.Lane lane : e.lanes) {
-                    if (lane.shapePoints.size() < 2) continue;
-                    List<Point2D> screenPts = new ArrayList<>(); // transformed points
-                    for (Point2D p : lane.shapePoints) {
-                        screenPts.add(new Point2D(
-                            transform.worldscreenX(p.getX()),
-                            transform.worldscreenY(p.getY())
-                        ));
+                double offSet = 0;
+                double offSet2 = 0;
+                if (!labeledEdge.add(e.id)) offSet = 20; 
+                else {
+                    for (Networkpaser.Lane lane : e.lanes) {
+                        if (lane.shapePoints.size() < 2) continue;
+                        List<Point2D> screenPts = new ArrayList<>(); // transformed points
+                        for (Point2D p : lane.shapePoints) {
+                            screenPts.add(new Point2D(
+                                transform.worldscreenX(p.getX()),
+                                transform.worldscreenY(p.getY())
+                            ));
+                        }
+                        labelX = screenPts.get(0).getX();
+                        labelY = screenPts.get(0).getY();
+                        if (hightlightEdge.equals(e.id)) {
+                            g.setStroke(highlightFill); 
+                            g.setLineWidth(roadsizePx * 2); // full road width in px
+                            g.setLineDashes();
+                            drawPolyline(g, screenPts);
+                        }
                     }
-                    g.setStroke(highlightFill); 
-                    g.setLineWidth(roadsizePx * 2); // full road width in px
-                    g.setLineDashes();
-                    drawPolyline(g, screenPts);
                 }
+                this.drawTextBox(g, rouData.getID(0), labelX, labelY, offSet);
             }
         }
         // draw vehicles
@@ -235,7 +302,9 @@ public class MapCanvas {
             g.save();
             g.translate(screenX, screenY);
             g.rotate(screenAngle);
-            g.setFill(vehData.getColor(0));
+            Color fColor = DataType.convertColor(filterColor);
+            if (filter && vehData.getSpeed(0) <= filterSpeed && (fColor.equals(vehData.getColor(0)) || filterColor.equals("Default"))) g.setFill(highlightFill);
+            else g.setFill(vehData.getColor(0));
             // draw centered rectangle
             g.fillRect(-VEHICLE_LENGTH_PX, -VEHICLE_WIDTH_PX / 2.0, VEHICLE_LENGTH_PX, VEHICLE_WIDTH_PX);
             g.drawImage(vehicleTexture, -VEHICLE_LENGTH_PX, -VEHICLE_WIDTH_PX / 2.0, VEHICLE_LENGTH_PX, VEHICLE_WIDTH_PX);
