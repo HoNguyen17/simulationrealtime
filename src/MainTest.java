@@ -1,64 +1,37 @@
 import wrapper.*;
 
-import java.util.List;
-
 public class MainTest {
     public static void main ( String [] args){
         // config_file path is based on this class path
-        String config_file = "../resource/test_6_lane.sumocfg";
+        String config_file = "../resource/test_7_huge.sumocfg";
         double step_length = 1;
-        String sumo_bin = "sumo";
+        String sumo_bin = "sumo-gui";
         SimulationWrapper A = new SimulationWrapper(config_file, step_length, sumo_bin);
         try {
             A.Start();
-            for (int i = 1; i < 1000; i++) {
+            for (int i = 0; i < 1000; i++) {
                 A.Step();
                 A.getTime(1);
-                A.getVehicleAverageSpeed(1);
-                // System.out.println("list: " +A.getVehicleIDsList());
-                System.out.println("listTL: " +A.getTLIDsList());
-                // A.getTLPhaseNum("J5");
-                //A.getTLPhaseDef("J0");
-                //A.getTLPhaseDef("J2");
-                //A.getTLPhaseDef("J3");
-                //A.getTLPhaseDef("J6");
-                A.getTLControlledLinks("J1");
-                A.getTLDefFromTo("J1", 0);
-                A.getTLDefFromTo("J1", 1);
-                A.getTLDefFromTo("J1", 2);
-                A.getTLDefFromTo("J1", 3);
-                A.getTLDefFromTo("J1", 4);
-                A.getTLDefFromTo("J1", 7);
-                //String[][] ab = testxyz.get(0);
-                //System.out.println(testxyz.get(0));
-                //A.getTLControlledLinks("J1");
-                if(i == 11 && 1==0){
-                    class Test2 extends Thread {
-                        public void run() {
-                            try {
-                                A.setTLPhaseDef("J5","rrrrrrrrrrrr");
-                                A.setTLPhaseDef("J1","rrrrrr");
-                                A.setTLPhaseDef("J0","rrrrrr");
-                                A.setTLPhaseDef("J2","rrrrrrrrrrrr");
-                                A.setTLPhaseDef("J3","rrrrrrrrrrrr");
-                                A.setTLPhaseDef("J6","rrrrrr");
-                                //A.setTLPhaseDefWithPhaseTime("J3","gggggg", 5);
-                                //Thread.sleep(200);
-                                A.setTLPhaseDefOrigin("J1");
-                                //A.setTLPhaseNext("J5");
-                            }
-                            catch(Exception a) {System.out.println(" not work");}
-                        }
-                    }
-                    Test2 hmm = new Test2();
-                    hmm.start();
-                    A.addVehicleBasic("x0");
-                }
-                // if (i > 10 && i < 30){
-                //     System.out.println("test" + i);
-                //     A.getVehicleSpeed("f_0.1");
-                //     A.getVehiclePosition("f_0.1");
-                //     A.getVehicleAngle("f_0.1");
+                // A.testRoute();
+                // A.getRouteNum(1);
+                // A.getTLPhaseNum("J1");
+                // A.getTLPhaseDef("J1");
+                // A.getTLControlledLinks("J1");
+                // if(i == 10){
+                //     //A.setTLPhaseDef2(0,"rrrrrrrrrrrr");
+                //     class Test2 extends Thread {
+                //         public void run() {
+                //             A.setTLPhaseDef("J1","GGGGGGGGGGGG");
+                //             A.setTLPhaseDefWithPhaseTime("J3","gggggg", 30);
+                //         }
+                //     }
+                //     Test2 hmm = new Test2();
+                //     hmm.start();
+                // //     A.setDelay(50);
+                // }
+                // if (i > 10 && i < 45){
+                //     A.getVehicleSpeed("f_0.0");
+                //     A.getVehiclePosition("f_0.0");
                 // }
                 // Test Vehicle Stuff
                 // List<String> vehID = A.getIDList(); // Get IDs list of all current vehicles in the current simulation
@@ -78,22 +51,18 @@ public class MainTest {
                 //     System.out.println("No vehicles found");
                 // }
                 // System.out.println("-----------------------------------------------");
-                // if(i >= 10 && i <= 40 && 1 == 1) {
-                //     A.getVehicleColor("f_0.1");
-                //     A.getVehicleColor("f_0.0");
-                //     A.getVehiclePosition("f_0.1");
-                //     A.getVehicleSpeed("f_0.1");
-                //     A.getVehicleSpeed("f_0.0");
-                // }
-
-                // if(i == 10) {
-                //     A.setVehicleColor("f_0.1",255,255,255,255);
-                //     A.setVehicleColor("f_0.0",0,255,255,255);
-                //     A.setSpeed("f_0.0", 40);
-                // }
-                if(i == 99) {
-                    //A.test();
-                    // A.addVehicleBasic("x0");
+                if(i == 20) {
+                    System.out.println("should be adding x0 now");
+                    A.addVehicleBasic("x0");
+                    System.out.println("should change color of x0 now");
+                    // A.makeVehicleCopy("x0");
+                    //A.setVehicleColor("f_0.0",125,125,125,125);
+                    //System.out.println(A.getVehicleColor("x0"));
+                    // A.setVehicleSpeed("x0", 100);
+                }
+                if(i > 22) {
+                    A.getVehiclePositionX("x0");
+                    A.getVehiclePositionY("x0");
                 }
             }
             A.End();

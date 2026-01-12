@@ -9,6 +9,8 @@ import wrapper.DataType.TrafficLightData;
 import wrapper.DataType.VehicleData;
 import wrapper.DataType.RouteData;
 
+import tracker.Statistic;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -23,7 +25,6 @@ import javafx.scene.Parent;
 import javafx.scene.paint.Color;
 import javafx.scene.layout.BorderPane;
 import javafx.fxml.FXMLLoader;
-import java.io.File;
 
 public class App extends Application {
     private MapCanvas mapCanvas;
@@ -33,39 +34,16 @@ public class App extends Application {
     private Thread simulationThread; // background simulation stepper
     private volatile boolean simRunning = false;
 
-    // File names (will search in multiple locations)
-    private static final String NET_FILE_NAME = "test_2_traffic.net.xml";
-    private static final String SUMOCFG_FILE_NAME = "test_2_traffic.sumocfg";
+    private static final String NET_FILE = "simulationrealtime/resource/test_7_huge.net.xml";
+    private static final String SUMOCFG_FILE = "simulationrealtime/resource/test_7_huge.sumocfg";
 
     private Networkpaser.NetworkModel model;
 
-    // Helper method to find file in multiple possible locations
-    private static String findFile(String fileName) {
-        // Try different possible paths
-        String[] possiblePaths = {
-            "simulationrealtime/resource/" + fileName,
-            "../resource/" + fileName,
-            "resource/" + fileName,
-            "../simulationrealtime/resource/" + fileName,
-            System.getProperty("user.dir") + "/simulationrealtime/resource/" + fileName
-        };
-        
-        for (String path : possiblePaths) {
-            File file = new File(path);
-            if (file.exists()) {
-                return path;
-            }
-        }
-        
-        // If not found, return the first path (will throw error with clear message)
-        return possiblePaths[0];
-    }
 
     @Override
     public void start(Stage stage) throws Exception{
         // Tải model mạng lưới
-        String netFile = findFile(NET_FILE_NAME);
-        model = Networkpaser.parse(netFile);
+        model = Networkpaser.parse(NET_FILE);
         // Canvas bản đồ chuyển thành MapCanvas để quản lý pan/zoom/vẽ
         mapCanvas = new MapCanvas(1000, 800);
         mapCanvas.setModel(model);
@@ -73,20 +51,23 @@ public class App extends Application {
         //mapCanvas.render();
 
         //Start simulation
-        String sumoCfgFile = findFile(SUMOCFG_FILE_NAME);
-        simulationWrapper = new SimulationWrapper(sumoCfgFile); // initialize with SUMO config file
+        simulationWrapper = new SimulationWrapper(SUMOCFG_FILE); // initialize with SUMO config file
         simulationWrapper.setDelay(200); //  set step delay in ms
         simulationWrapper.Start();
+        Statistic.initialize(simulationWrapper);
+
 
         // background thread to advance SUMO steps
         simRunning = true;
         simulationThread = new Thread(() -> {
             while (simRunning && !simulationWrapper.isClosed()) {
                 simulationWrapper.Step();
+                Statistic.addNewData();
             }
         }, "Sumo-Stepper");
         simulationThread.setDaemon(true);
         simulationThread.start();
+
 
 //FXML thing
         FXMLLoader load_fxml = new FXMLLoader(getClass().getResource("/gui/DecApp.fxml"));
@@ -139,6 +120,10 @@ public class App extends Application {
                 mapCanvas.setVehicleData(vehDatas);
                 mapCanvas.setTrafficLightData(tlDatas);
                 mapCanvas.render();
+
+                if (controller_fxml != null) {
+                    controller_fxml.updateUI(now);
+                }
             }
         };
         simulationTimer.start();
@@ -155,6 +140,8 @@ public class App extends Application {
             if (simulationThread != null) {
                 try { simulationThread.join(500); } catch (InterruptedException ex) { /* ignore */ }
             }
+            // Export statistics before closing
+            Statistic.export();
             simulationWrapper.End();
         });
 

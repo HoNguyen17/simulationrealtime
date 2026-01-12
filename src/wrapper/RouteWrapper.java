@@ -1,3 +1,4 @@
+
 package wrapper;
 
 import it.polito.appeal.traci.SumoTraciConnection;
@@ -24,7 +25,7 @@ class RouteWrapper extends DataType.RouteData {
                     String firstEdge = ((List<String>) temp.conn.do_job_get(Route.getEdges(x))).get(0);
                     RouteWrapper y = new RouteWrapper(x, firstEdge);
                     temp.RouteList.put(x, y);
-                }  
+                }
             }
         }
         catch(Exception e) {System.out.println("Unable to update route list");}
