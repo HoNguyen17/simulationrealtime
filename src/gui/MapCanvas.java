@@ -46,8 +46,6 @@ public class MapCanvas {
 
     protected Image vehicleTexture = new Image("file:../texture/humveeV2.png");
     protected double lastDragX = 0, lastDragY = 0; // last mouse drag positions
-    //...
-    // states[i] applies to the controlled link from[i] -> to[i]
 
     // Constructor of MapCanvas
     public MapCanvas(double w, double h) {
@@ -90,23 +88,19 @@ public class MapCanvas {
         this.viewManager = new View(canvas, transform, model);
         this.viewManager.resetView();
     }
-
     // Set vehicle data for rendering
     public void setVehicleData(List<VehicleData> vehicles) {
         this.vehicleDataList = (vehicles != null) ? vehicles : List.of();
     }
-
     // Set traffic light data for rendering 
     public void setTrafficLightData(List<TrafficLightData> trafficLights) {
         this.trafficLightDataList = (trafficLights != null) ? trafficLights : List.of();
     }
-    
     // Set route data for rendering
     public void setRouteData(List<RouteData> routes) {
         this.routeDataList = (routes != null) ? routes : List.of();
         this.updateRoute = false;
     }
-
     // Set render mode
     public void setRenderMode(int inputMode) {
         if(inputMode == 0 || inputMode == 1 || inputMode == 2) {
@@ -134,7 +128,6 @@ public class MapCanvas {
     public void setHightLightEdge(String input) {
         this.hightlightEdge = input;
     }
-
     // Set highlight junctions
     public void setHightLightJunctions(List<String> input) {
         this.hightlightJunctions = new HashSet<String>(input);

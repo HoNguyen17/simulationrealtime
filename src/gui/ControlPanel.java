@@ -24,7 +24,7 @@ import wrapper.DataType.VehicleData;
 import wrapper.DataType;
 
 public class ControlPanel {
-    // --- CÁC BIẾN FXML (Giữ nguyên) ---
+    // --- FXML ---
     @FXML private StackPane mapContainer;
     @FXML private Button expBtn;
     @FXML private MenuButton expType;
@@ -56,7 +56,6 @@ public class ControlPanel {
     @FXML private TextField injectVehNum;
     @FXML private Button vehInject;
 
-    // --- BIẾN CỤC BỘ ---
     private MapCanvas mapCanvas;
     private SimulationWrapper sim;
     private final Graph stats = new Graph();
@@ -64,14 +63,11 @@ public class ControlPanel {
     private volatile boolean simRunning = false;
     private long idCounter = 0;
 
-    // --- HÀM SET MAP (Kết nối với App.java) ---
-    // Chỉ cần nhận MapCanvas để hiển thị
     public void initialize() {
         stats.SpeedChart(avgSpeed);
         stats.TravelTimeChart(travelTime);
         stats.DensityChart(density);
     
-
         //simulation
         filterOnOff.setItems(FXCollections.observableArrayList("Off", "On"));
         filterOnOff.setValue("Off");

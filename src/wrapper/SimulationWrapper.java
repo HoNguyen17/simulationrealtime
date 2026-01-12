@@ -215,51 +215,51 @@ public class SimulationWrapper implements Observer {
     }
     // get phase number of a traffic light
     public int getTLPhaseNum(String inputID) {
-        TrafficLightWrapper x = TrafficLightList.get(inputID);
-        int phaseNum = x.getPhaseNum(this, 0);
+        TrafficLightWrapper tl = TrafficLightList.get(inputID);
+        int phaseNum = tl.getPhaseNum(this, 0);
         return phaseNum;
     }
     // get phase definition of a traffic light (current light state)
     public String getTLPhaseDef(String inputID) {
-        TrafficLightWrapper x = TrafficLightList.get(inputID);
-        String phaseDef = x.getPhaseDef(0);
+        TrafficLightWrapper tl = TrafficLightList.get(inputID);
+        String phaseDef = tl.getPhaseDef(0);
         return phaseDef;
     }
     //get a traffic light definition and from, to lane ID of a link
     public List<String> getTLDefFromTo(String inputID, int index) {
-        TrafficLightWrapper x = TrafficLightList.get(inputID);
-        if (index < x.controlledLinksNum) {
-            List<String> defFromTo = x.getDefFromTo(index);
+        TrafficLightWrapper tl = TrafficLightList.get(inputID);
+        if (index < tl.controlledLinksNum) {
+            List<String> defFromTo = tl.getDefFromTo(index);
             return defFromTo;
         }
         else {return null;}
     }
     //
     public List<String> getTLControlledJunctions(String inputID) {
-        TrafficLightWrapper x = TrafficLightList.get(inputID);
-        List<String> controlledJunctions = x.getControlledJunctions(this, 0);
+        TrafficLightWrapper tl = TrafficLightList.get(inputID);
+        List<String> controlledJunctions = tl.getControlledJunctions(this, 0);
         return controlledJunctions;
     }
 //===== MAKE COPY =========================================
     public DataType.TrafficLightData makeTLCopy(String inputID) {
-        TrafficLightWrapper x = TrafficLightList.get(inputID);
-        return x.makeCopy();
+        TrafficLightWrapper tl = TrafficLightList.get(inputID);
+        return tl.makeCopy();
     }
 //===== SETTER ============================================
     // set phase definition of a traffic light to the origin
     public void setTLPhaseDefOrigin(String inputID) {
-        TrafficLightWrapper x = TrafficLightList.get(inputID);
-        x.setPhaseDefOrigin(this);
+        TrafficLightWrapper tl = TrafficLightList.get(inputID);
+        tl.setPhaseDefOrigin(this);
     }
     // set to the next phase
     public void setTLPhaseNext(String inputID) {
-        TrafficLightWrapper x = TrafficLightList.get(inputID);
-        x.setPhaseNext(this);
+        TrafficLightWrapper tl = TrafficLightList.get(inputID);
+        tl.setPhaseNext(this);
     }
     // set the duration for current phase
     public void setTLPhaseDuration(String inputID, double inputTime) {
-        TrafficLightWrapper x = TrafficLightList.get(inputID);
-        x.setPhaseDuration(this, inputTime);
+        TrafficLightWrapper tl = TrafficLightList.get(inputID);
+        tl.setPhaseDuration(this, inputTime);
     }
     // set all traffic light to next phase
     public void setTLPhaseNextAll() {
