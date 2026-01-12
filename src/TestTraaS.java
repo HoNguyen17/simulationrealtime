@@ -11,8 +11,8 @@ import de.tudresden.sumo.util.SumoCommand;
 import java.util.List;
 
 public class TestTraaS {
-    public static void main ( String [] args){
-        String sumo_bin = "sumo-gui";
+public static void main ( String [] args){ 
+String sumo_bin = "sumo-gui";
         String config_file = "../resource/test_7_huge.sumocfg";
         double step_length = 1;
 
@@ -35,7 +35,7 @@ public class TestTraaS {
             System.out.println("Vehicle type: " + vehicletype);
 
 
-
+            
             for (int i = 0; i < 1000; i++) {
                 Thread.sleep(200);
                 conn.do_timestep();
@@ -51,7 +51,7 @@ public class TestTraaS {
                     conn.do_job_set(Vehicle.rerouteEffort("f_0.0"));
                     conn.do_job_set(Vehicle.rerouteEffort("f_1.0"));
                     //conn.do_job_set(Vehicle.rerouteEffort("x_0"));
-
+                    
                     conn.do_job_set(Vehicle.add("i2d", "DEFAULT_VEHTYPE", "r_0", 0, 0, 0, (byte)0));
                     //conn.do_job_set(Vehicle.changeTarget("i2d", "E0"));
                     conn.do_job_set(Vehicle.rerouteEffort("i2d"));
@@ -66,9 +66,9 @@ public class TestTraaS {
                     //System.out.println(test);
                 }
                 if(i > 0){
-                    double testTime = (double)conn.do_job_get(Edge.getTraveltime("-E18"));
-                    System.out.println(testTime);
-                }
+                        double testTime = (double)conn.do_job_get(Edge.getTraveltime("-E18"));
+                        System.out.println(testTime);
+                    }
             }
 
             conn.close();

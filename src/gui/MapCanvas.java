@@ -19,7 +19,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.image.Image;
+import javafx.scene.image.Image; 
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.text.Text;
@@ -80,7 +80,7 @@ public class MapCanvas {
 
     public Canvas getCanvas() {return this.canvas;}
 
-    public int getRenderMode() {return this.renderMode;}
+    public int getRenderMode() {return this.renderMode;} 
 
     public boolean getUpdateRoute() {return this.updateRoute;}
 
@@ -96,11 +96,11 @@ public class MapCanvas {
         this.vehicleDataList = (vehicles != null) ? vehicles : List.of();
     }
 
-    // Set traffic light data for rendering
+    // Set traffic light data for rendering 
     public void setTrafficLightData(List<TrafficLightData> trafficLights) {
         this.trafficLightDataList = (trafficLights != null) ? trafficLights : List.of();
     }
-
+    
     // Set route data for rendering
     public void setRouteData(List<RouteData> routes) {
         this.routeDataList = (routes != null) ? routes : List.of();
@@ -139,7 +139,7 @@ public class MapCanvas {
     public void setHightLightJunctions(List<String> input) {
         this.hightlightJunctions = new HashSet<String>(input);
     }
-
+    
     // Offset polyline points by distance d
     private List<Point2D> offsetPolyline(List<Point2D> pts, double d) {
         if (pts.size() < 2) return pts;
@@ -197,8 +197,8 @@ public class MapCanvas {
         g.setFill(roadFill);
 
         // add sizes for roads
-        double roadsize = 1.65;
-        double centermarksize = 0.5;
+        double roadsize = 1.65;     
+        double centermarksize = 0.5;  
 
         // Convert to pixels based on current transform (scale * zoom)
         double roadsizePx = transform.worldscreenSize(roadsize);
@@ -211,11 +211,11 @@ public class MapCanvas {
                 List<Point2D> screenPts = new ArrayList<>(); // transformed points
                 for (Point2D p : lane.shapePoints) {
                     screenPts.add(new Point2D(
-                            transform.worldscreenX(p.getX()),
-                            transform.worldscreenY(p.getY())
+                        transform.worldscreenX(p.getX()),
+                        transform.worldscreenY(p.getY())
                     ));
                 }
-                g.setStroke(roadFill);
+                g.setStroke(roadFill); 
                 g.setLineWidth(roadsizePx * 2); // full road width in px
                 g.setLineDashes();
                 drawPolyline(g, screenPts);
@@ -262,21 +262,21 @@ public class MapCanvas {
                 Networkpaser.Edge e = findEdgeById(rouData.getFirstEdgeID(0));
                 double offSet = 0;
                 double offSet2 = 0;
-                if (!labeledEdge.add(e.id)) offSet = 20;
+                if (!labeledEdge.add(e.id)) offSet = 20; 
                 else {
                     for (Networkpaser.Lane lane : e.lanes) {
                         if (lane.shapePoints.size() < 2) continue;
                         List<Point2D> screenPts = new ArrayList<>(); // transformed points
                         for (Point2D p : lane.shapePoints) {
                             screenPts.add(new Point2D(
-                                    transform.worldscreenX(p.getX()),
-                                    transform.worldscreenY(p.getY())
+                                transform.worldscreenX(p.getX()),
+                                transform.worldscreenY(p.getY())
                             ));
                         }
                         labelX = screenPts.get(0).getX();
                         labelY = screenPts.get(0).getY();
                         if (hightlightEdge.equals(e.id)) {
-                            g.setStroke(highlightFill);
+                            g.setStroke(highlightFill); 
                             g.setLineWidth(roadsizePx * 2); // full road width in px
                             g.setLineDashes();
                             drawPolyline(g, screenPts);
@@ -294,11 +294,11 @@ public class MapCanvas {
 
         for (VehicleData vehData : vehicleDataList) {
             if (Double.isNaN(vehData.getPositionX(0))) {continue;}
-
+            
             double screenX = transform.worldscreenX(vehData.getPositionX(0));
             double screenY = transform.worldscreenY(vehData.getPositionY(0));
             double screenAngle = 90 - vehData.getAngle(0);
-
+            
             g.save();
             g.translate(screenX, screenY);
             g.rotate(screenAngle);
@@ -353,7 +353,7 @@ public class MapCanvas {
                 g.setLineDashes();
                 g.strokeLine(x1, y1, x2, y2);
             }
-        }
+        }   
     }
 
     private Networkpaser.Lane findLaneById(String laneId) {

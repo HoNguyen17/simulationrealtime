@@ -1,9 +1,9 @@
 import wrapper.*;
 
-public class MainTest {
-    public static void main ( String [] args){
+public class MainTest { 
+public static void main ( String [] args){ 
         // config_file path is based on this class path
-        String config_file = "../resource/test_7_huge.sumocfg";
+        String config_file = "../resource/test_7_huge.sumocfg"; 
         double step_length = 1;
         String sumo_bin = "sumo-gui";
         SimulationWrapper A = new SimulationWrapper(config_file, step_length, sumo_bin);
@@ -71,4 +71,4 @@ public class MainTest {
             System.out.println("Error in Main");
         }
     }
-}
+} 

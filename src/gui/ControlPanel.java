@@ -24,6 +24,8 @@ import wrapper.DataType.VehicleData;
 import wrapper.DataType;
 
 import tracker.Statistic;
+import javafx.stage.Stage;
+import javafx.scene.Node;
 
 public class ControlPanel {
     // --- CÁC BIẾN FXML (Giữ nguyên) ---
@@ -67,7 +69,7 @@ public class ControlPanel {
 
     private volatile boolean simRunning = false;
     private long idCounter = 0;
-    private String selectedExportType = "PDF"; // Default export type
+    private String selectedExportType = ""; // No default - user must select from menu
 
     // --- HÀM SET MAP (Kết nối với App.java) ---
     // Chỉ cần nhận MapCanvas để hiển thị
@@ -75,7 +77,11 @@ public class ControlPanel {
         stats.SpeedChart(avgSpeed);
         stats.TravelTimeChart(travelTime);
         stats.DensityChart(density);
-
+        
+        // Set default text for export type menu (user must select)
+        if (expType != null) {
+            expType.setText("Select Type");
+        }
 
         //simulation
         filterOnOff.setItems(FXCollections.observableArrayList("Off", "On"));
@@ -131,50 +137,55 @@ public class ControlPanel {
 
     @FXML void expBtnAct(ActionEvent event) {
         try {
+            // Get stage from event source
+            Node source = (Node) event.getSource();
+            Stage stage = (Stage) source.getScene().getWindow();
+            
+            // Check if export type is selected, if not show error
+            if (selectedExportType == null || selectedExportType.isEmpty()) {
+                showAlert(Alert.AlertType.WARNING, "Export Type Not Selected", 
+                    "Please select an export type (PDF or CSV) from the Type menu first.");
+                return;
+            }
+            
             if (selectedExportType.equals("PDF")) {
-                // Export as HTML (can be converted to PDF)
-                boolean success = Statistic.export();
-                if (success) {
-                    showAlert(Alert.AlertType.INFORMATION, "Export Successful", 
-                        "Statistics exported successfully!\nCheck the tracker directory for the HTML file.\nYou can open it in a browser and print to PDF.");
-                } else {
-                    showAlert(Alert.AlertType.ERROR, "Export Failed", 
-                        "Failed to export statistics. Please check the console for errors.");
+                // Export PDF with graphs using PrinterJob
+                boolean success = Statistic.exportPDF(stage, avgSpeed, travelTime, density);
+                // Alert is shown inside exportPDF method
+            } else if (selectedExportType.equals("CSV") || 
+                       selectedExportType.equals("CSV Vehicle") || 
+                       selectedExportType.equals("CSV Edge")) {
+                // CSV export - Show filter selection dialog
+                List<String> filterOptions = new ArrayList<>();
+                filterOptions.add("ALL - Export all data");
+                filterOptions.add("CONGESTED_ONLY - Export only congested edges");
+                
+                ChoiceDialog<String> filterDialog = new ChoiceDialog<>("ALL - Export all data", filterOptions);
+                filterDialog.setTitle("CSV Export Filter");
+                filterDialog.setHeaderText("Select export filter");
+                filterDialog.setContentText("Choose filter type:");
+                
+                java.util.Optional<String> filterResult = filterDialog.showAndWait();
+                
+                // If user cancels dialog, don't export
+                if (!filterResult.isPresent()) {
+                    return;
                 }
-            } else if (selectedExportType.equals("CSV")) {
-                // Export CSV with all data sorted by time
-                boolean success = Statistic.exportCSV();
-                if (success) {
-                    showAlert(Alert.AlertType.INFORMATION, "CSV Export Successful", 
-                        "CSV files exported successfully!\nCheck the tracker directory for:\n" +
-                        "- vehicle_statistics_[timestamp].csv\n" +
-                        "- edge_statistics_[timestamp].csv");
-                } else {
-                    showAlert(Alert.AlertType.ERROR, "Export Failed", 
-                        "Failed to export CSV files. Please check the console for errors.");
+                
+                String selectedOption = filterResult.get();
+                
+                // Extract filter type from selected option
+                String filterType = "ALL";
+                if (selectedOption.startsWith("CONGESTED_ONLY")) {
+                    filterType = "CONGESTED_ONLY";
                 }
-            } else if (selectedExportType.equals("CSV Vehicle")) {
-                // Export Vehicle CSV only
-                boolean success = Statistic.exportVehicleCSV();
-                if (success) {
-                    showAlert(Alert.AlertType.INFORMATION, "CSV Export Successful", 
-                        "Vehicle CSV exported successfully!\nCheck the tracker directory for:\n" +
-                        "- vehicle_statistics_[timestamp].csv");
-                } else {
-                    showAlert(Alert.AlertType.ERROR, "Export Failed", 
-                        "Failed to export vehicle CSV. Please check the console for errors.");
-                }
-            } else if (selectedExportType.equals("CSV Edge")) {
-                // Export Edge CSV only
-                boolean success = Statistic.exportEdgeCSV();
-                if (success) {
-                    showAlert(Alert.AlertType.INFORMATION, "CSV Export Successful", 
-                        "Edge CSV exported successfully!\nCheck the tracker directory for:\n" +
-                        "- edge_statistics_[timestamp].csv");
-                } else {
-                    showAlert(Alert.AlertType.ERROR, "Export Failed", 
-                        "Failed to export edge CSV. Please check the console for errors.");
-                }
+                
+                // Export CSV to user-selected location with filter
+                boolean success = Statistic.exportCSV(stage, filterType);
+                // Alert is shown inside exportCSV method
+            } else {
+                showAlert(Alert.AlertType.WARNING, "Unknown Export Type", 
+                    "Please select a valid export type (PDF or CSV) from the Type menu.");
             }
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Export Error", 

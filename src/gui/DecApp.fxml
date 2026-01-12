@@ -71,12 +71,12 @@
                                             <padding>
                                                 <Insets left="10.0" top="10.0" />
                                             </padding>
-                                            <Label text="Filter Option" />
-                                            <ComboBox fx:id="filterOnOff" onAction="#switchFilterAct" prefWidth="150.0" />
-                                            <Label text="Color" />
-                                            <ComboBox fx:id="filterColor" onAction="#colorFilterAct" prefWidth="150.0" />
-                                            <Label text="Speed Limit" />
-                                            <TextField fx:id="filterSpeed" promptText="Enter speed" onAction="#speedFilterAct" prefWidth="150.0"/>
+                                                <Label text="Filter Option" />
+                                                <ComboBox fx:id="filterOnOff" onAction="#switchFilterAct" prefWidth="150.0" />
+                                                <Label text="Color" />
+                                                <ComboBox fx:id="filterColor" onAction="#colorFilterAct" prefWidth="150.0" />
+                                                <Label text="Speed Limit" />
+                                                <TextField fx:id="filterSpeed" promptText="Enter speed" onAction="#speedFilterAct" prefWidth="150.0"/>
                                         </VBox>
                                     </children>
                                 </AnchorPane>
@@ -165,9 +165,9 @@
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                     <children>
                                         <BarChart fx:id="travelTime"
-                                                  layoutX="0.0" layoutY="0.0"
-                                                  prefWidth="250.0" prefHeight="180.0"
-                                                  animated="false">
+                                                   layoutX="0.0" layoutY="0.0"
+                                                   prefWidth="250.0" prefHeight="180.0"
+                                                   animated="false">
                                             <xAxis>
                                                 <CategoryAxis side="BOTTOM" label="Time (s)" />
                                             </xAxis>
@@ -184,9 +184,9 @@
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                     <children>
                                         <BarChart fx:id="density"
-                                                  layoutX="0.0" layoutY="0.0"
-                                                  prefWidth="250.0" prefHeight="180.0"
-                                                  animated="false">
+                                                   layoutX="0.0" layoutY="0.0"
+                                                   prefWidth="250.0" prefHeight="180.0"
+                                                   animated="false">
                                             <xAxis>
                                                 <CategoryAxis side="BOTTOM" label="Edge" />
                                             </xAxis>
@@ -231,12 +231,10 @@
                 </TabPane>
                 <HBox prefWidth="250.0" spacing="10.0">
                     <children>
-                        <MenuButton fx:id="expType" mnemonicParsing="false" prefWidth="100.0" text="Type">
+                        <MenuButton fx:id="expType" mnemonicParsing="false" onAction="#expTypeAct" prefWidth="100.0" text="Type">
                             <items>
                                 <MenuItem fx:id="expTypePDF" mnemonicParsing="false" onAction="#expTypePDFAct" text="PDF" />
                                 <MenuItem fx:id="expTypeCSV" mnemonicParsing="false" onAction="#expTypeCSVAct" text="CSV" />
-                                <MenuItem fx:id="expTypeCSVVehicle" mnemonicParsing="false" onAction="#expTypeCSVVehicleAct" text="CSV Vehicle" />
-                                <MenuItem fx:id="expTypeCSVEdge" mnemonicParsing="false" onAction="#expTypeCSVEdgeAct" text="CSV Edge" />
                             </items>
                         </MenuButton>
                         <Button fx:id="expBtn" mnemonicParsing="false" onAction="#expBtnAct" prefWidth="100.0" text="Export" />

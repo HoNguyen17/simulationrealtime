@@ -1,4 +1,3 @@
-
 package gui;
 
 import javafx.scene.canvas.Canvas;
@@ -29,7 +28,7 @@ public class View {
         updateTransform();
     }
 
-    //Fit entire network to canvas with margins and reset zoom/pan
+    //Fit entire network to canvas with margins and reset zoom/pan 
     public void resetView() {
         double margin = 60.0; // Margin in screen pixels
         double minX = Double.POSITIVE_INFINITY, minY = Double.POSITIVE_INFINITY;

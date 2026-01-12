@@ -25,6 +25,7 @@ import javafx.scene.Parent;
 import javafx.scene.paint.Color;
 import javafx.scene.layout.BorderPane;
 import javafx.fxml.FXMLLoader;
+import java.io.File;
 
 public class App extends Application {
     private MapCanvas mapCanvas;
@@ -34,16 +35,41 @@ public class App extends Application {
     private Thread simulationThread; // background simulation stepper
     private volatile boolean simRunning = false;
 
-    private static final String NET_FILE = "simulationrealtime/resource/test_7_huge.net.xml";
-    private static final String SUMOCFG_FILE = "simulationrealtime/resource/test_7_huge.sumocfg";
+    private static final String NET_FILE_RELATIVE = "simulationrealtime/resource/test_7_huge.net.xml";
+    private static final String SUMOCFG_FILE_RELATIVE = "simulationrealtime/resource/test_7_huge.sumocfg";
 
     private Networkpaser.NetworkModel model;
 
+    /**
+     * Helper method to find resource file by trying multiple possible paths
+     */
+    private static String findResourceFile(String relativePath) {
+        // Try different possible locations
+        String[] possiblePaths = {
+            relativePath,  // Direct path (if running from workspace root)
+            "../" + relativePath,  // One level up
+            "../../" + relativePath,  // Two levels up
+            "../../../" + relativePath,  // Three levels up (from out/production/traffic_light-main)
+            "../../../../" + relativePath,  // Four levels up
+            System.getProperty("user.dir") + "/" + relativePath  // Absolute from user.dir
+        };
+
+        for (String path : possiblePaths) {
+            File file = new File(path);
+            if (file.exists() && file.isFile()) {
+                return path;
+            }
+        }
+
+        // If none found, return the original path (will throw error with better message)
+        return relativePath;
+    }
 
     @Override
     public void start(Stage stage) throws Exception{
         // Tải model mạng lưới
-        model = Networkpaser.parse(NET_FILE);
+        String netFile = findResourceFile(NET_FILE_RELATIVE);
+        model = Networkpaser.parse(netFile);
         // Canvas bản đồ chuyển thành MapCanvas để quản lý pan/zoom/vẽ
         mapCanvas = new MapCanvas(1000, 800);
         mapCanvas.setModel(model);
@@ -51,7 +77,8 @@ public class App extends Application {
         //mapCanvas.render();
 
         //Start simulation
-        simulationWrapper = new SimulationWrapper(SUMOCFG_FILE); // initialize with SUMO config file
+        String sumocfgFile = findResourceFile(SUMOCFG_FILE_RELATIVE);
+        simulationWrapper = new SimulationWrapper(sumocfgFile); // initialize with SUMO config file
         simulationWrapper.setDelay(200); //  set step delay in ms
         simulationWrapper.Start();
         Statistic.initialize(simulationWrapper);
@@ -140,8 +167,8 @@ public class App extends Application {
             if (simulationThread != null) {
                 try { simulationThread.join(500); } catch (InterruptedException ex) { /* ignore */ }
             }
-            // Export statistics before closing
-            Statistic.export();
+            // Export statistics before closing (CSV export with file chooser)
+            Statistic.exportCSV(stage);
             simulationWrapper.End();
         });
 
