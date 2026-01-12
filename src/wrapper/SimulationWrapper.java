@@ -30,7 +30,15 @@ import java.util.HashMap;
 
 import javafx.scene.paint.Color;
 
+// Logging
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
+public class SimulationWrapper extends Simulation {}
 public class SimulationWrapper implements Observer {
+    // creating an instance of logger
+    private final static Logger LOG = Logger.getLogger(SimulationWrapper.class.getName());
+
     protected static SumoTraciConnection conn; //core connection object used to send commands to and receive data from the running SUMO simulation
     protected int delay = 200;
     protected boolean isPaused = false;
@@ -49,7 +57,7 @@ public class SimulationWrapper implements Observer {
         conn = new SumoTraciConnection(sumo_bin, sumocfg);
         conn.addOption("step-length", step_length + "");
         conn.addOption("start", "true"); //start sumo immediately
-        System.out.println("Simulation created");
+        LOG.info("Simulation created by constructor 1");
     }
     // Constructor 2
     public SimulationWrapper(String sumocfg){
@@ -58,7 +66,7 @@ public class SimulationWrapper implements Observer {
         conn = new SumoTraciConnection(sumo_bin, sumocfg);
         conn.addOption("step-length", step_length + "");
         conn.addOption("start", "true"); //start sumo immediately
-        System.out.println("Simulation created");
+        LOG.info("Simulation created with config: " + sumocfg);
     }
 //===== SIMULATION STUFF ==================================
     // check if connection is closed
@@ -84,9 +92,11 @@ public class SimulationWrapper implements Observer {
             TrafficLightWrapper.updateTrafficLightIDs(this);
             EdgeWrapper.updateEdgeIDs(this);
             RouteWrapper.updateRouteIDs(this);
-            System.out.println("Started successfully.");
+            LOG.info("Simulation started successfully");
         }
-        catch(Exception e) {System.out.println("Failed to start.");}
+        catch(Exception e) {
+            LOG.log(Level.SEVERE, "Failed to start simulation", e);
+        }
     }
     // do a simulation's time step
     public void Step(){
@@ -95,7 +105,7 @@ public class SimulationWrapper implements Observer {
                 Thread.sleep(delay);
                 conn.do_timestep();
             }
-            catch(Exception e) {System.out.println("Failed to step.");}
+            catch(Exception e) {LOG.log(Level.SEVERE, "Failed to step simulation", e);}
         }
     }
     // close simulation
@@ -106,10 +116,10 @@ public class SimulationWrapper implements Observer {
     public double getTime(int po) {
         try {
             double time = (double)conn.do_job_get(Simulation.getTime());
-            if (po == 1) {System.out.println("Current Time: " + time);}
+            if (po == 1) {LOG.info("Current Time: " + time);}
             return time;
         }
-        catch(Exception e) {System.out.println("Can't get the time.");}
+        catch(Exception e) {LOG.log(Level.SEVERE, "Failed to get simulation time", e);}
         return -1;
     }
     //(new) update from subscription, abstract method of observer
@@ -142,8 +152,11 @@ public class SimulationWrapper implements Observer {
                                 this.setVehicleColor(vehID, r, g, b, 1);
                                 ColorQueue.remove(vehID);
                             }
-                        } 
-                        catch (Exception ex) {System.err.println("subscription to " + vehID + " failed");}
+                        }
+                        // use placeholder here because (update) run thousands of times, so saving CPU cycles help our simulation running smoothly
+                        // when using string concatenation, Java builds that string every single time the code runs, even if the Logger turned off
+                        // with placeholders, the Logger checks the level first. If the level is hidden, it ignores the variables entirely
+                        catch (Exception ex) {LOG.log(Level.SEVERE, "subscription to {0} failed", new Object[]{vehID,ex});}
                     }
                 }
             }
@@ -159,10 +172,10 @@ public class SimulationWrapper implements Observer {
                                 VehicleDepartTime.remove(vehID);
                             }
                             VehicleList.remove(vehID);
-                            System.out.println("Delete " + vehID + " from the hashmap");
+                            LOG.log(Level.INFO, "Vehicle {0} has been departed and deleted from hashmap", vehID);
                         }
                         catch (Exception ex) {
-                            System.err.println("Unable to delete " + vehID + " from hashmap");
+                            LOG.log(Level.WARNING, "Unable to delete {0} from hashmap", new Object[]{vehID, ex});
                         }
                     }
                 }
@@ -333,7 +346,7 @@ public class SimulationWrapper implements Observer {
         double result = 0;
         for (VehicleWrapper x : VehicleList.values()) {result += x.speed;}
         if (VehicleList.size() != 0) result /= VehicleList.size();
-        if (po == 1) {System.out.println("Average speed is " + result);}
+        if (po == 1) {LOG.info("Average speed is " + result);}
         return result;
     }
 //===== MAKE COPY =========================================
@@ -348,7 +361,7 @@ public class SimulationWrapper implements Observer {
             VehicleWrapper x = VehicleList.get(inputID);
             x.setSpeed(this, inputSpeed, 0);
         }
-        else {System.out.println("Vehicle not exist");}
+        else {LOG.log(Level.WARNING, "Vehicle not exist");}
     }
     // set Vehicle's color
     public void setVehicleColor(String inputID, double r, double g, double b, double a) {
@@ -356,36 +369,39 @@ public class SimulationWrapper implements Observer {
             VehicleWrapper x = VehicleList.get(inputID);
             x.setColor(this, r, g, b, a);
         }
-        else {System.out.println("Vehicle not exist");}
+        else {LOG.log(Level.WARNING, "Vehicle not exist");}
     }
 //===== ADDER =============================================
     // add a vehicle into the 1st route in RouteList (might not work)
     public void addVehicleBasic(String inputID) {
         try {
             RouteWrapper.updateRouteIDs(this);
-            if (RouteList.size() == 0) {System.out.println("No available route");}
+            if (RouteList.size() == 0) {LOG.log(Level.WARNING, "No available routes");}
             else {VehicleWrapper.addVehicle(this, inputID, "r_0");}
         }
-        catch (Exception e) {System.out.println("hmm");}
+        catch (Exception e) {LOG.log(Level.WARNING, "Invalid injection", e);}
     }
-    //add a vehicle into selected route
+    // add a vehicle into selected route
     public void addVehicleNormal(String inputID, String inputRouteID) {
         try {
             RouteWrapper.updateRouteIDs(this);
-            if (1==0) {System.out.println("Invalid injection");}
-            else {VehicleWrapper.addVehicle(this, inputID, inputRouteID);}
+            if (1==0) {LOG.log(Level.WARNING, "Invalid injection");}
+            else {
+                VehicleWrapper.addVehicle(this, inputID, inputRouteID);
+                LOG.log(Level.INFO, "Added vehicle {0} to {1}", new Object[]{inputID, inputRouteID});
+            }
         }
-        catch (Exception e) {System.out.println("Error when adding vehicle normally");}
+        catch (Exception e) {LOG.log(Level.WARNING, "Error when adding vehicle {0} normally", new Object[]{inputID, e});}
     }
-    //add vehicle with color
+    // add vehicle with color
     public void addVehicleWithColor(String inputID, String inputRouteID, Color inputColor) {
         try {
             RouteWrapper.updateRouteIDs(this);
-            if (1==0) {System.out.println("Invalid injection");}
+            if (1==0) {LOG.log(Level.WARNING, "Invalid injection");}
             else {VehicleWrapper.addVehicle(this, inputID, inputRouteID);}
             ColorQueue.put(inputID, inputColor);
         }
-        catch (Exception e) {System.out.println("Error when adding vehicle normally");}
+        catch (Exception e) {LOG.log(Level.WARNING, "Error when adding vehicle with color", e);}
     }
 //===== ROUTE STUFF ========================================
 //===== GETTER =============================================
@@ -393,15 +409,15 @@ public class SimulationWrapper implements Observer {
     public int getRouteNum(int po) {
         RouteWrapper.updateRouteIDs(this);
         int routeNum = RouteList.size();
-        if (po == 1) {System.out.println(routeNum);}
+        if (po == 1) {LOG.info("Number of routes is " + routeNum);}
         return routeNum;
     }
-    //get first edge id of the route
+    // get first edge id of the route
     public String getRouteFirstEdge(String inputID) {
         RouteWrapper x = RouteList.get(inputID);
         return x.getFirstEdgeID(0);
     }
-    //get route id list
+    // get route id list
     public List<String> getRouteIDsList() {
         List<String> routeIDs = new ArrayList<>(RouteList.keySet());
         return routeIDs;
