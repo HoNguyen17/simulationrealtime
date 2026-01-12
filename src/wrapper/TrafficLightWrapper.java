@@ -19,11 +19,40 @@ import java.util.ArrayList;
 
 class TrafficLightWrapper extends DataType.TrafficLightData { 
     String originProgramID;
-    // constructor
+
     TrafficLightWrapper(String inputID, String startProgram, List<String> inputFrom, List<String> inputTo){
         super(inputID, inputFrom, inputTo);
         this.originProgramID = startProgram;
         System.out.println("Added " + ID + " with program " + originProgramID);
+    }
+//=================STATIC================================
+    // update TrafficLightList of SimulationWrapper
+    protected static void updateTrafficLightIDs(SimulationWrapper temp) {
+        try {
+            List<String> IDsList = (List<String>)temp.conn.do_job_get(Trafficlight.getIDList()); 
+            for (String id : IDsList) { 
+
+                String program = (String)temp.conn.do_job_get(Trafficlight.getProgram(id)); 
+                List<String> inputFrom = new ArrayList<String>();
+                List<String> inputTo = new ArrayList<String>();
+                List<SumoLink> controlledLinks = (List<SumoLink>)temp.conn.do_job_get(Trafficlight.getControlledLinks(id)); 
+                for (int i = 0; i < controlledLinks.size(); i++) {
+                    SumoLink link = controlledLinks.get(i);
+                    inputFrom.add(link.from);
+                    inputTo.add(link.to);
+                }
+
+                TrafficLightWrapper tl = new TrafficLightWrapper(id, program, inputFrom, inputTo);
+                temp.TrafficLightList.put(id, tl);
+
+                VariableSubscription vs = new VariableSubscription(SubscribtionVariable.trafficlight, 0, 100000 * 60, id); // initiates a variable subscription for each traffic light ID
+                vs.addCommand(Constants.TL_RED_YELLOW_GREEN_STATE);
+                temp.conn.do_subscription(vs);
+            }
+        }
+        catch (Exception A) {
+            System.out.println("Set up traffic lights failed.");
+        }
     }
 //=================GETTER================================
     // get the current phase index (number) of the traffic light's program from SUMO
@@ -67,7 +96,6 @@ class TrafficLightWrapper extends DataType.TrafficLightData {
         return copy;
     }
 //=================SETTER================================
-    // set phase definition to origin (auto)
     public boolean setPhaseDefOrigin(SimulationWrapper temp) {
         try {
             temp.conn.do_job_set(Trafficlight.setProgram(ID, originProgramID));
@@ -78,7 +106,6 @@ class TrafficLightWrapper extends DataType.TrafficLightData {
         }
         return false;
     }
-    // set the traffic light program to the next phase
     public boolean setPhaseNext(SimulationWrapper temp) {
         try {
             String program = (String)temp.conn.do_job_get(Trafficlight.getProgram(ID));
@@ -94,7 +121,6 @@ class TrafficLightWrapper extends DataType.TrafficLightData {
         }
         return false;
     }
-    // set current phase duration
     public boolean setPhaseDuration(SimulationWrapper temp, double inputTime) {
         try {
             temp.conn.do_job_set(Trafficlight.setPhaseDuration(ID, inputTime));
@@ -103,36 +129,6 @@ class TrafficLightWrapper extends DataType.TrafficLightData {
         catch (Exception E) {
             System.out.println("Unable to set phase duration for " + ID);
             return false;
-        }
-    }
-//=================STATIC================================
-    // update all traffic light IDs of simulation
-    protected static void updateTrafficLightIDs(SimulationWrapper temp) {
-        try {
-            List<String> IDsList = (List<String>)temp.conn.do_job_get(Trafficlight.getIDList()); 
-            for (String x : IDsList) { 
-                // set up base variable
-                String program = (String)temp.conn.do_job_get(Trafficlight.getProgram(x)); 
-                List<String> inputFrom = new ArrayList<String>();
-                List<String> inputTo = new ArrayList<String>();
-                List<SumoLink> controlledLinks = (List<SumoLink>)temp.conn.do_job_get(Trafficlight.getControlledLinks(x)); 
-                for (int i = 0; i < controlledLinks.size(); i++) {
-                    SumoLink link = controlledLinks.get(i);
-                    inputFrom.add(link.from);
-                    inputTo.add(link.to);
-                }
-                // create a new TrafficLightWrapper object with the gathered data and add to the temp.TrafficLightList HashMap in the SimulationWrapper
-                TrafficLightWrapper y = new TrafficLightWrapper(x, program, inputFrom, inputTo);
-                temp.TrafficLightList.put(x, y);
-
-                // set up subscription for traffic light
-                VariableSubscription vs = new VariableSubscription(SubscribtionVariable.trafficlight, 0, 100000 * 60, x); // initiates a variable subscription for each traffic light ID
-                vs.addCommand(Constants.TL_RED_YELLOW_GREEN_STATE);
-                temp.conn.do_subscription(vs);
-            }
-        }
-        catch (Exception A) {
-            System.out.println("Set up traffic lights failed.");
         }
     }
 }
