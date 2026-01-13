@@ -33,11 +33,49 @@ import javafx.scene.paint.Color;
 // Logging
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
 
-public class SimulationWrapper extends Simulation {}
 public class SimulationWrapper implements Observer {
     // creating an instance of logger
     private final static Logger LOG = Logger.getLogger(SimulationWrapper.class.getName());
+    // use static because a static block (also called a static initializer) runs once and only once when the class is first loaded into memory
+    static {
+        Handler fileHandler;
+        Handler consoleHandler;
+        try {
+            // 1. Setup File Handler
+            fileHandler = new java.util.logging.FileHandler("logfile.log", true);
+            LOG.addHandler(fileHandler);
+
+            // use XML format tại trong slide thầy làm thế =)))
+            java.util.logging.Formatter xmlFormat = new java.util.logging.XMLFormatter();
+            fileHandler.setFormatter(xmlFormat);
+            fileHandler.setLevel(Level.ALL);
+
+            // 2. Setup Console Handler
+            consoleHandler = new java.util.logging.ConsoleHandler();
+            LOG.addHandler(consoleHandler);
+
+            // Console only shows WARNING and higher
+            consoleHandler.setLevel(Level.WARNING);
+
+            // Simple text format for the console
+            java.util.logging.Formatter consoleFormat = new java.util.logging.SimpleFormatter();
+            consoleHandler.setFormatter(consoleFormat);
+
+            // Ensure the main logger allows all levels through to the handlers
+            LOG.setLevel(Level.ALL);
+
+            // Disable default console logging to avoid duplicate messages
+            LOG.setUseParentHandlers(false);
+
+        } catch (java.io.IOException | SecurityException e) {
+            // Basic exception handling as shown in your notes
+            System.err.println("Logging setup failed: " + e.getMessage());
+        }
+    }
 
     protected static SumoTraciConnection conn; //core connection object used to send commands to and receive data from the running SUMO simulation
     protected int delay = 200;
