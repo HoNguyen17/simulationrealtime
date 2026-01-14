@@ -127,37 +127,42 @@ public class Graph {
         List<Double> travelTimes = sim.getCompletedTravelTimes();
         
         // Count vehicles 
-        int count0 = 0, count1 = 0, count2 = 0, count3 = 0, count4 = 0, count5 = 0;
+        int countTravel0 = 0;
+         int countTravel1 = 0;
+         int countTravel2 = 0;
+         int countTravel3 = 0;
+         int countTravel4 = 0;
+         int countTravel5 = 0;
         
         // Categorize travel times 
         for (int i = 0; i < travelTimes.size(); i++) {
             double time = travelTimes.get(i);
             if (time < 60){ 
-                count0++;
+                countTravel0++;
             }
             else if (time < 120) {
-                count1++;
+                countTravel1++;
             }
             else if (time < 180) {
-                count2++;
+                countTravel2++;
             }
             else if (time < 240) {
-                count3++;
+                countTravel3++;
             }
             else if (time < 300) {
-                count4++;
+                countTravel4++;
             }
             else {
-                count5++;
+                countTravel5++;
             }
         }
         // Add data to chart
-        travelTimeSeries.getData().add(new XYChart.Data<>("0-60", count0));
-        travelTimeSeries.getData().add(new XYChart.Data<>("60-120", count1));
-        travelTimeSeries.getData().add(new XYChart.Data<>("120-180", count2));
-        travelTimeSeries.getData().add(new XYChart.Data<>("180-240", count3));
-        travelTimeSeries.getData().add(new XYChart.Data<>("240-300", count4));
-        travelTimeSeries.getData().add(new XYChart.Data<>("300+", count5));
+        travelTimeSeries.getData().add(new XYChart.Data<>("0-60", countTravel0));
+        travelTimeSeries.getData().add(new XYChart.Data<>("60-120", countTravel1));
+        travelTimeSeries.getData().add(new XYChart.Data<>("120-180", countTravel2));
+        travelTimeSeries.getData().add(new XYChart.Data<>("180-240", countTravel3));
+        travelTimeSeries.getData().add(new XYChart.Data<>("240-300", countTravel4));
+        travelTimeSeries.getData().add(new XYChart.Data<>("300+", countTravel5));
     }
     public BarChart<String, Number> makeTravelTimeChartCopy() {
         return this.makeBarChartCopy(TravelTimeChart, travelTimeSeries);
@@ -200,13 +205,38 @@ public class Graph {
         // Get all edge IDs from simulation
         List<String> edgeIDs = sim.getEdgeIDsList();
         
-        // Add data to chart (only edges with vehicles)
-        for (String edgeId : edgeIDs) {
-            int density = sim.getEdgeDensity(edgeId);
-            if (density > 0) {
-                densitySeries.getData().add(new XYChart.Data<>(edgeId, density));
+        // Get density for each edge using getEdgeDensity
+        List<Integer> densityedge = new ArrayList<>();
+        for (String edgeID : edgeIDs) {
+            densityedge.add(sim.getEdgeDensity(edgeID));
+        }
+
+        int count_edgeDensity1 = 0;
+        int count_edgeDensity2 = 0;
+        int count_edgeDensity3 = 0;
+        int count_edgeDensity4 = 0;
+        int count_edgeDensity5 = 0;
+
+        for (int density : densityedge) {
+            if (density >= 5 && density < 10) {
+                count_edgeDensity1++;
+            } else if (density >= 10 && density < 15) {
+                count_edgeDensity2++;
+            } else if (density >= 15 && density < 20) {
+                count_edgeDensity3++;
+            } else if (density >= 20 && density < 25) {
+                count_edgeDensity4++;
+            } else if (density >= 25) {
+                count_edgeDensity5++;
             }
         }
+        
+        densitySeries.getData().add(new XYChart.Data<>("5-10", count_edgeDensity1));
+        densitySeries.getData().add(new XYChart.Data<>("10-15", count_edgeDensity2));
+        densitySeries.getData().add(new XYChart.Data<>("15-20", count_edgeDensity3));
+        densitySeries.getData().add(new XYChart.Data<>("20-25", count_edgeDensity4));
+        densitySeries.getData().add(new XYChart.Data<>("25+", count_edgeDensity5));
+
     }
     public BarChart<String, Number> makeDensityChartCopy() {
         return this.makeBarChartCopy(DensityChart, densitySeries);
