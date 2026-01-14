@@ -1,0 +1,2788 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2026-01-14T14:45:23.175637100Z</date>
+  <millis>1768401923175</millis>
+  <nanos>637100</nanos>
+  <sequence>0</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>&lt;init&gt;</method>
+  <thread>35</thread>
+  <message>Simulation created with config: ../resource/test_7_huge.sumocfg</message>
+</record>
+<record>
+  <date>2026-01-14T14:45:24.579544Z</date>
+  <millis>1768401924579</millis>
+  <nanos>544000</nanos>
+  <sequence>328</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>Start</method>
+  <thread>35</thread>
+  <message>Simulation started successfully</message>
+</record>
+<record>
+  <date>2026-01-14T14:45:33.876158600Z</date>
+  <millis>1768401933876</millis>
+  <nanos>158600</nanos>
+  <sequence>355</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.0 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:45:34.545252300Z</date>
+  <millis>1768401934545</millis>
+  <nanos>252300</nanos>
+  <sequence>358</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.1 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:45:35.869844600Z</date>
+  <millis>1768401935869</millis>
+  <nanos>844600</nanos>
+  <sequence>361</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.2 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:45:48.987212400Z</date>
+  <millis>1768401948987</millis>
+  <nanos>212400</nanos>
+  <sequence>383</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.3 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:45:49.431448100Z</date>
+  <millis>1768401949431</millis>
+  <nanos>448100</nanos>
+  <sequence>386</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.4 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:45:49.867201400Z</date>
+  <millis>1768401949867</millis>
+  <nanos>201400</nanos>
+  <sequence>387</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.5 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:45:50.083761200Z</date>
+  <millis>1768401950083</millis>
+  <nanos>761200</nanos>
+  <sequence>388</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.6 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:45:50.524442Z</date>
+  <millis>1768401950524</millis>
+  <nanos>442000</nanos>
+  <sequence>390</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.7 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:45:53.619433Z</date>
+  <millis>1768401953619</millis>
+  <nanos>433000</nanos>
+  <sequence>395</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.8 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:45:54.062159100Z</date>
+  <millis>1768401954062</millis>
+  <nanos>159100</nanos>
+  <sequence>397</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.9 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:45:54.280841800Z</date>
+  <millis>1768401954280</millis>
+  <nanos>841800</nanos>
+  <sequence>398</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.10 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:45:54.724526400Z</date>
+  <millis>1768401954724</millis>
+  <nanos>526400</nanos>
+  <sequence>400</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.21 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:45:55.173818800Z</date>
+  <millis>1768401955173</millis>
+  <nanos>818800</nanos>
+  <sequence>401</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.11 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:45:56.058960700Z</date>
+  <millis>1768401956058</millis>
+  <nanos>960700</nanos>
+  <sequence>403</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.22 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:45:56.283728400Z</date>
+  <millis>1768401956283</millis>
+  <nanos>728400</nanos>
+  <sequence>404</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.12 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:45:56.722331700Z</date>
+  <millis>1768401956722</millis>
+  <nanos>331700</nanos>
+  <sequence>406</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.23 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:45:57.159811600Z</date>
+  <millis>1768401957159</millis>
+  <nanos>811600</nanos>
+  <sequence>408</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.24 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:45:59.598119300Z</date>
+  <millis>1768401959598</millis>
+  <nanos>119300</nanos>
+  <sequence>414</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_2.0 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:00.926917100Z</date>
+  <millis>1768401960926</millis>
+  <nanos>917100</nanos>
+  <sequence>417</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_2.1 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:01.361493Z</date>
+  <millis>1768401961361</millis>
+  <nanos>493000</nanos>
+  <sequence>418</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_2.2 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:08.862297100Z</date>
+  <millis>1768401968862</millis>
+  <nanos>297100</nanos>
+  <sequence>430</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.13 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:09.094410400Z</date>
+  <millis>1768401969094</millis>
+  <nanos>410400</nanos>
+  <sequence>432</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.25 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:09.533059700Z</date>
+  <millis>1768401969533</millis>
+  <nanos>59700</nanos>
+  <sequence>433</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.26 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:09.980513100Z</date>
+  <millis>1768401969980</millis>
+  <nanos>513100</nanos>
+  <sequence>435</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.14 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:10.422351700Z</date>
+  <millis>1768401970422</millis>
+  <nanos>351700</nanos>
+  <sequence>437</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.15 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:11.088192600Z</date>
+  <millis>1768401971088</millis>
+  <nanos>192600</nanos>
+  <sequence>439</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.16 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:11.553209400Z</date>
+  <millis>1768401971553</millis>
+  <nanos>209400</nanos>
+  <sequence>441</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.28 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:11.782032400Z</date>
+  <millis>1768401971782</millis>
+  <nanos>32400</nanos>
+  <sequence>442</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.17 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:12.212660Z</date>
+  <millis>1768401972212</millis>
+  <nanos>660000</nanos>
+  <sequence>443</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.18 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:12.653768300Z</date>
+  <millis>1768401972653</millis>
+  <nanos>768300</nanos>
+  <sequence>444</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.19 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:13.089221400Z</date>
+  <millis>1768401973089</millis>
+  <nanos>221400</nanos>
+  <sequence>445</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.20 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:13.540416200Z</date>
+  <millis>1768401973540</millis>
+  <nanos>416200</nanos>
+  <sequence>446</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.27 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:13.764695600Z</date>
+  <millis>1768401973764</millis>
+  <nanos>695600</nanos>
+  <sequence>447</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.29 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:14.204478500Z</date>
+  <millis>1768401974204</millis>
+  <nanos>478500</nanos>
+  <sequence>448</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.40 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:14.860957300Z</date>
+  <millis>1768401974860</millis>
+  <nanos>957300</nanos>
+  <sequence>449</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.31 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:15.080959200Z</date>
+  <millis>1768401975080</millis>
+  <nanos>959200</nanos>
+  <sequence>451</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.41 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:15.522321900Z</date>
+  <millis>1768401975522</millis>
+  <nanos>321900</nanos>
+  <sequence>453</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.32 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:15.969182400Z</date>
+  <millis>1768401975969</millis>
+  <nanos>182400</nanos>
+  <sequence>454</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.42 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:16.407380700Z</date>
+  <millis>1768401976407</millis>
+  <nanos>380700</nanos>
+  <sequence>456</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.30 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:16.632322900Z</date>
+  <millis>1768401976632</millis>
+  <nanos>322900</nanos>
+  <sequence>458</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_1.0 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:16.633332800Z</date>
+  <millis>1768401976633</millis>
+  <nanos>332800</nanos>
+  <sequence>459</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.43 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:17.081001100Z</date>
+  <millis>1768401977081</millis>
+  <nanos>1100</nanos>
+  <sequence>461</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.33 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:19.507638200Z</date>
+  <millis>1768401979507</millis>
+  <nanos>638200</nanos>
+  <sequence>467</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_2.3 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:20.171960500Z</date>
+  <millis>1768401980171</millis>
+  <nanos>960500</nanos>
+  <sequence>469</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_2.4 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:21.042347800Z</date>
+  <millis>1768401981042</millis>
+  <nanos>347800</nanos>
+  <sequence>471</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_2.5 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:28.620212200Z</date>
+  <millis>1768401988620</millis>
+  <nanos>212200</nanos>
+  <sequence>479</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.44 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:29.064646600Z</date>
+  <millis>1768401989064</millis>
+  <nanos>646600</nanos>
+  <sequence>481</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.45 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:29.503985700Z</date>
+  <millis>1768401989503</millis>
+  <nanos>985700</nanos>
+  <sequence>483</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.34 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:29.959564400Z</date>
+  <millis>1768401989959</millis>
+  <nanos>564400</nanos>
+  <sequence>485</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.35 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:30.186070800Z</date>
+  <millis>1768401990186</millis>
+  <nanos>70800</nanos>
+  <sequence>487</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.46 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:30.635556300Z</date>
+  <millis>1768401990635</millis>
+  <nanos>556300</nanos>
+  <sequence>488</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.36 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:31.071161500Z</date>
+  <millis>1768401991071</millis>
+  <nanos>161500</nanos>
+  <sequence>491</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.47 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:32.611403700Z</date>
+  <millis>1768401992611</millis>
+  <nanos>403700</nanos>
+  <sequence>494</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.48 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:33.276119Z</date>
+  <millis>1768401993276</millis>
+  <nanos>119000</nanos>
+  <sequence>496</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.37 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:33.713175300Z</date>
+  <millis>1768401993713</millis>
+  <nanos>175300</nanos>
+  <sequence>497</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.38 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:34.152099700Z</date>
+  <millis>1768401994152</millis>
+  <nanos>99700</nanos>
+  <sequence>498</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.49 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:34.387409300Z</date>
+  <millis>1768401994387</millis>
+  <nanos>409300</nanos>
+  <sequence>499</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.58 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:34.838250300Z</date>
+  <millis>1768401994838</millis>
+  <nanos>250300</nanos>
+  <sequence>500</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.51 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:35.278045200Z</date>
+  <millis>1768401995278</millis>
+  <nanos>45200</nanos>
+  <sequence>501</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.60 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:35.719893800Z</date>
+  <millis>1768401995719</millis>
+  <nanos>893800</nanos>
+  <sequence>503</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.39 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:35.936862300Z</date>
+  <millis>1768401995936</millis>
+  <nanos>862300</nanos>
+  <sequence>504</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.62 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:36.601478200Z</date>
+  <millis>1768401996601</millis>
+  <nanos>478200</nanos>
+  <sequence>506</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_1.1 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:36.602465200Z</date>
+  <millis>1768401996602</millis>
+  <nanos>465200</nanos>
+  <sequence>507</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.50 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:37.287907500Z</date>
+  <millis>1768401997287</millis>
+  <nanos>907500</nanos>
+  <sequence>510</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.63 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:39.501547100Z</date>
+  <millis>1768401999501</millis>
+  <nanos>547100</nanos>
+  <sequence>514</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_2.6 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:40.601736400Z</date>
+  <millis>1768402000601</millis>
+  <nanos>736400</nanos>
+  <sequence>515</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_2.7 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:41.484226500Z</date>
+  <millis>1768402001484</millis>
+  <nanos>226500</nanos>
+  <sequence>516</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_2.8 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:48.100813300Z</date>
+  <millis>1768402008100</millis>
+  <nanos>813300</nanos>
+  <sequence>528</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.52 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:48.764810300Z</date>
+  <millis>1768402008764</millis>
+  <nanos>810300</nanos>
+  <sequence>531</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.64 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:49.428384900Z</date>
+  <millis>1768402009428</millis>
+  <nanos>384900</nanos>
+  <sequence>534</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.54 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:50.308022800Z</date>
+  <millis>1768402010308</millis>
+  <nanos>22800</nanos>
+  <sequence>536</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.65 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:50.761266700Z</date>
+  <millis>1768402010761</millis>
+  <nanos>266700</nanos>
+  <sequence>537</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.53 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:50.973650500Z</date>
+  <millis>1768402010973</millis>
+  <nanos>650500</nanos>
+  <sequence>538</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.66 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:51.406055900Z</date>
+  <millis>1768402011406</millis>
+  <nanos>55900</nanos>
+  <sequence>539</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.55 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:51.840028900Z</date>
+  <millis>1768402011840</millis>
+  <nanos>28900</nanos>
+  <sequence>540</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.67 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:52.275560500Z</date>
+  <millis>1768402012275</millis>
+  <nanos>560500</nanos>
+  <sequence>541</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.56 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:52.714683600Z</date>
+  <millis>1768402012714</millis>
+  <nanos>683600</nanos>
+  <sequence>542</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.69 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:53.141829700Z</date>
+  <millis>1768402013141</millis>
+  <nanos>829700</nanos>
+  <sequence>543</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.77 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:54.652011500Z</date>
+  <millis>1768402014652</millis>
+  <nanos>11500</nanos>
+  <sequence>544</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.57 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:55.090333700Z</date>
+  <millis>1768402015090</millis>
+  <nanos>333700</nanos>
+  <sequence>545</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.70 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:55.523574800Z</date>
+  <millis>1768402015523</millis>
+  <nanos>574800</nanos>
+  <sequence>547</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.78 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:56.182380300Z</date>
+  <millis>1768402016182</millis>
+  <nanos>380300</nanos>
+  <sequence>549</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_1.2 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:56.406432700Z</date>
+  <millis>1768402016406</millis>
+  <nanos>432700</nanos>
+  <sequence>551</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.79 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:56.630695200Z</date>
+  <millis>1768402016630</millis>
+  <nanos>695200</nanos>
+  <sequence>553</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.59 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:57.080183500Z</date>
+  <millis>1768402017080</millis>
+  <nanos>183500</nanos>
+  <sequence>555</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.71 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:57.525343200Z</date>
+  <millis>1768402017525</millis>
+  <nanos>343200</nanos>
+  <sequence>558</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.80 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:59.516845600Z</date>
+  <millis>1768402019516</millis>
+  <nanos>845600</nanos>
+  <sequence>563</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_2.9 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:46:59.963078200Z</date>
+  <millis>1768402019963</millis>
+  <nanos>78200</nanos>
+  <sequence>565</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_2.10 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:47:00.646157100Z</date>
+  <millis>1768402020646</millis>
+  <nanos>157100</nanos>
+  <sequence>567</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_2.11 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:47:08.369233400Z</date>
+  <millis>1768402028369</millis>
+  <nanos>233400</nanos>
+  <sequence>577</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.72 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:47:08.819028600Z</date>
+  <millis>1768402028819</millis>
+  <nanos>28600</nanos>
+  <sequence>579</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.81 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:47:09.265521Z</date>
+  <millis>1768402029265</millis>
+  <nanos>521000</nanos>
+  <sequence>580</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.61 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:47:09.708623200Z</date>
+  <millis>1768402029708</millis>
+  <nanos>623200</nanos>
+  <sequence>581</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.82 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:47:10.595250500Z</date>
+  <millis>1768402030595</millis>
+  <nanos>250500</nanos>
+  <sequence>583</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.74 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:47:11.028631800Z</date>
+  <millis>1768402031028</millis>
+  <nanos>631800</nanos>
+  <sequence>584</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.83 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:47:11.471285900Z</date>
+  <millis>1768402031471</millis>
+  <nanos>285900</nanos>
+  <sequence>585</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.68 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:47:11.681553800Z</date>
+  <millis>1768402031681</millis>
+  <nanos>553800</nanos>
+  <sequence>586</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.84 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:47:12.331023Z</date>
+  <millis>1768402032331</millis>
+  <nanos>23000</nanos>
+  <sequence>587</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.75 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:47:15.209471700Z</date>
+  <millis>1768402035209</millis>
+  <nanos>471700</nanos>
+  <sequence>590</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.85 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:47:15.640889700Z</date>
+  <millis>1768402035640</millis>
+  <nanos>889700</nanos>
+  <sequence>591</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.73 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:47:16.084096200Z</date>
+  <millis>1768402036084</millis>
+  <nanos>96200</nanos>
+  <sequence>593</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.95 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:47:16.303513800Z</date>
+  <millis>1768402036303</millis>
+  <nanos>513800</nanos>
+  <sequence>595</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_1.3 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:47:16.303513800Z</date>
+  <millis>1768402036303</millis>
+  <nanos>513800</nanos>
+  <sequence>596</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.96 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:47:16.737881400Z</date>
+  <millis>1768402036737</millis>
+  <nanos>881400</nanos>
+  <sequence>598</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.86 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:47:17.171558700Z</date>
+  <millis>1768402037171</millis>
+  <nanos>558700</nanos>
+  <sequence>601</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.87 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:47:17.610572800Z</date>
+  <millis>1768402037610</millis>
+  <nanos>572800</nanos>
+  <sequence>603</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_0.97 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:47:19.152198100Z</date>
+  <millis>1768402039152</millis>
+  <nanos>198100</nanos>
+  <sequence>606</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_2.12 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:47:19.814122800Z</date>
+  <millis>1768402039814</millis>
+  <nanos>122800</nanos>
+  <sequence>607</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_2.13 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:47:20.476204500Z</date>
+  <millis>1768402040476</millis>
+  <nanos>204500</nanos>
+  <sequence>608</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>42</thread>
+  <message>Vehicle f_2.14 has been departed and deleted from hashmap</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2026-01-14T14:50:26.272913300Z</date>
+  <millis>1768402226272</millis>
+  <nanos>913300</nanos>
+  <sequence>0</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>&lt;init&gt;</method>
+  <thread>35</thread>
+  <message>Simulation created with config: ../resource/test_7_huge.sumocfg</message>
+</record>
+<record>
+  <date>2026-01-14T14:50:27.546351400Z</date>
+  <millis>1768402227546</millis>
+  <nanos>351400</nanos>
+  <sequence>328</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>Start</method>
+  <thread>35</thread>
+  <message>Simulation started successfully</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2026-01-14T14:52:52.700330600Z</date>
+  <millis>1768402372700</millis>
+  <nanos>330600</nanos>
+  <sequence>0</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>&lt;init&gt;</method>
+  <thread>35</thread>
+  <message>Simulation created with config: ../resource/test_7_huge.sumocfg</message>
+</record>
+<record>
+  <date>2026-01-14T14:52:54.017893700Z</date>
+  <millis>1768402374017</millis>
+  <nanos>893700</nanos>
+  <sequence>328</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>Start</method>
+  <thread>35</thread>
+  <message>Simulation started successfully</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:02.704101Z</date>
+  <millis>1768402382704</millis>
+  <nanos>101000</nanos>
+  <sequence>355</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.0 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:03.330320Z</date>
+  <millis>1768402383330</millis>
+  <nanos>320000</nanos>
+  <sequence>358</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.1 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:04.579897600Z</date>
+  <millis>1768402384579</millis>
+  <nanos>897600</nanos>
+  <sequence>361</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.2 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:17.420393400Z</date>
+  <millis>1768402397420</millis>
+  <nanos>393400</nanos>
+  <sequence>383</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.3 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:17.870933Z</date>
+  <millis>1768402397870</millis>
+  <nanos>933000</nanos>
+  <sequence>386</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.4 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:18.304932Z</date>
+  <millis>1768402398304</millis>
+  <nanos>932000</nanos>
+  <sequence>387</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.5 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:18.531072800Z</date>
+  <millis>1768402398531</millis>
+  <nanos>72800</nanos>
+  <sequence>388</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.6 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:18.972627700Z</date>
+  <millis>1768402398972</millis>
+  <nanos>627700</nanos>
+  <sequence>390</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.7 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:22.218253900Z</date>
+  <millis>1768402402218</millis>
+  <nanos>253900</nanos>
+  <sequence>395</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.8 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:22.659252800Z</date>
+  <millis>1768402402659</millis>
+  <nanos>252800</nanos>
+  <sequence>397</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.9 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:22.883148300Z</date>
+  <millis>1768402402883</millis>
+  <nanos>148300</nanos>
+  <sequence>398</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.10 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:23.316636600Z</date>
+  <millis>1768402403316</millis>
+  <nanos>636600</nanos>
+  <sequence>400</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.21 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:23.759373600Z</date>
+  <millis>1768402403759</millis>
+  <nanos>373600</nanos>
+  <sequence>401</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.11 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:24.651966400Z</date>
+  <millis>1768402404651</millis>
+  <nanos>966400</nanos>
+  <sequence>403</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.22 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:24.871066300Z</date>
+  <millis>1768402404871</millis>
+  <nanos>66300</nanos>
+  <sequence>404</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.12 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:25.312452600Z</date>
+  <millis>1768402405312</millis>
+  <nanos>452600</nanos>
+  <sequence>406</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.23 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:25.758787800Z</date>
+  <millis>1768402405758</millis>
+  <nanos>787800</nanos>
+  <sequence>408</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.24 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:28.185296300Z</date>
+  <millis>1768402408185</millis>
+  <nanos>296300</nanos>
+  <sequence>414</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_2.0 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:29.513164900Z</date>
+  <millis>1768402409513</millis>
+  <nanos>164900</nanos>
+  <sequence>417</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_2.1 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:29.949449500Z</date>
+  <millis>1768402409949</millis>
+  <nanos>449500</nanos>
+  <sequence>418</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_2.2 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:37.573180800Z</date>
+  <millis>1768402417573</millis>
+  <nanos>180800</nanos>
+  <sequence>430</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.13 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:37.807498600Z</date>
+  <millis>1768402417807</millis>
+  <nanos>498600</nanos>
+  <sequence>432</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.25 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:38.239994800Z</date>
+  <millis>1768402418239</millis>
+  <nanos>994800</nanos>
+  <sequence>433</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.26 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:38.685927500Z</date>
+  <millis>1768402418685</millis>
+  <nanos>927500</nanos>
+  <sequence>435</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.14 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:39.128588200Z</date>
+  <millis>1768402419128</millis>
+  <nanos>588200</nanos>
+  <sequence>437</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.15 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:39.786632800Z</date>
+  <millis>1768402419786</millis>
+  <nanos>632800</nanos>
+  <sequence>439</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.16 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:40.234581700Z</date>
+  <millis>1768402420234</millis>
+  <nanos>581700</nanos>
+  <sequence>441</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.28 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:40.449293700Z</date>
+  <millis>1768402420449</millis>
+  <nanos>293700</nanos>
+  <sequence>442</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.17 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:40.890505400Z</date>
+  <millis>1768402420890</millis>
+  <nanos>505400</nanos>
+  <sequence>443</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.18 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:41.332064700Z</date>
+  <millis>1768402421332</millis>
+  <nanos>64700</nanos>
+  <sequence>444</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.19 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:41.774985300Z</date>
+  <millis>1768402421774</millis>
+  <nanos>985300</nanos>
+  <sequence>445</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.20 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:42.213342300Z</date>
+  <millis>1768402422213</millis>
+  <nanos>342300</nanos>
+  <sequence>446</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.27 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:42.434954600Z</date>
+  <millis>1768402422434</millis>
+  <nanos>954600</nanos>
+  <sequence>447</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.29 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:42.873753900Z</date>
+  <millis>1768402422873</millis>
+  <nanos>753900</nanos>
+  <sequence>448</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.40 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:43.528815400Z</date>
+  <millis>1768402423528</millis>
+  <nanos>815400</nanos>
+  <sequence>449</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.31 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:43.758249500Z</date>
+  <millis>1768402423758</millis>
+  <nanos>249500</nanos>
+  <sequence>451</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.41 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:44.209170200Z</date>
+  <millis>1768402424209</millis>
+  <nanos>170200</nanos>
+  <sequence>453</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.32 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:44.642067700Z</date>
+  <millis>1768402424642</millis>
+  <nanos>67700</nanos>
+  <sequence>454</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.42 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:45.080443800Z</date>
+  <millis>1768402425080</millis>
+  <nanos>443800</nanos>
+  <sequence>456</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.30 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:45.308616900Z</date>
+  <millis>1768402425308</millis>
+  <nanos>616900</nanos>
+  <sequence>458</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_1.0 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:45.309609200Z</date>
+  <millis>1768402425309</millis>
+  <nanos>609200</nanos>
+  <sequence>459</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.43 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:45.742843100Z</date>
+  <millis>1768402425742</millis>
+  <nanos>843100</nanos>
+  <sequence>461</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.33 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:48.189058100Z</date>
+  <millis>1768402428189</millis>
+  <nanos>58100</nanos>
+  <sequence>467</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_2.3 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:48.856012300Z</date>
+  <millis>1768402428856</millis>
+  <nanos>12300</nanos>
+  <sequence>469</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_2.4 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:49.736534800Z</date>
+  <millis>1768402429736</millis>
+  <nanos>534800</nanos>
+  <sequence>471</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_2.5 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:57.357632Z</date>
+  <millis>1768402437357</millis>
+  <nanos>632000</nanos>
+  <sequence>479</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.44 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:57.809360200Z</date>
+  <millis>1768402437809</millis>
+  <nanos>360200</nanos>
+  <sequence>481</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.45 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:58.248830900Z</date>
+  <millis>1768402438248</millis>
+  <nanos>830900</nanos>
+  <sequence>483</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.34 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:58.689311300Z</date>
+  <millis>1768402438689</millis>
+  <nanos>311300</nanos>
+  <sequence>485</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.35 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:58.911856200Z</date>
+  <millis>1768402438911</millis>
+  <nanos>856200</nanos>
+  <sequence>487</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.46 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:59.351314Z</date>
+  <millis>1768402439351</millis>
+  <nanos>314000</nanos>
+  <sequence>488</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.36 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:53:59.815237500Z</date>
+  <millis>1768402439815</millis>
+  <nanos>237500</nanos>
+  <sequence>491</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.47 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:01.353611300Z</date>
+  <millis>1768402441353</millis>
+  <nanos>611300</nanos>
+  <sequence>494</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.48 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:02.002476500Z</date>
+  <millis>1768402442002</millis>
+  <nanos>476500</nanos>
+  <sequence>496</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.37 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:02.447299900Z</date>
+  <millis>1768402442447</millis>
+  <nanos>299900</nanos>
+  <sequence>497</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.38 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:02.878601600Z</date>
+  <millis>1768402442878</millis>
+  <nanos>601600</nanos>
+  <sequence>498</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.49 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:03.094041700Z</date>
+  <millis>1768402443094</millis>
+  <nanos>41700</nanos>
+  <sequence>499</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.58 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:03.527350100Z</date>
+  <millis>1768402443527</millis>
+  <nanos>350100</nanos>
+  <sequence>500</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.51 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:03.964199100Z</date>
+  <millis>1768402443964</millis>
+  <nanos>199100</nanos>
+  <sequence>501</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.60 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:04.405957400Z</date>
+  <millis>1768402444405</millis>
+  <nanos>957400</nanos>
+  <sequence>503</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.39 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:04.621933500Z</date>
+  <millis>1768402444621</millis>
+  <nanos>933500</nanos>
+  <sequence>504</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.62 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:05.273301600Z</date>
+  <millis>1768402445273</millis>
+  <nanos>301600</nanos>
+  <sequence>506</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_1.1 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:05.273301600Z</date>
+  <millis>1768402445273</millis>
+  <nanos>301600</nanos>
+  <sequence>507</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.50 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:05.924837700Z</date>
+  <millis>1768402445924</millis>
+  <nanos>837700</nanos>
+  <sequence>510</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.63 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:08.376707100Z</date>
+  <millis>1768402448376</millis>
+  <nanos>707100</nanos>
+  <sequence>514</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_2.6 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:09.457273700Z</date>
+  <millis>1768402449457</millis>
+  <nanos>273700</nanos>
+  <sequence>515</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_2.7 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:10.324796700Z</date>
+  <millis>1768402450324</millis>
+  <nanos>796700</nanos>
+  <sequence>516</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_2.8 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:16.974215400Z</date>
+  <millis>1768402456974</millis>
+  <nanos>215400</nanos>
+  <sequence>528</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.52 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:17.655724500Z</date>
+  <millis>1768402457655</millis>
+  <nanos>724500</nanos>
+  <sequence>531</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.64 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:18.326326400Z</date>
+  <millis>1768402458326</millis>
+  <nanos>326400</nanos>
+  <sequence>534</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.54 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:19.202620Z</date>
+  <millis>1768402459202</millis>
+  <nanos>620000</nanos>
+  <sequence>536</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.65 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:19.640471Z</date>
+  <millis>1768402459640</millis>
+  <nanos>471000</nanos>
+  <sequence>537</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.53 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:19.853687200Z</date>
+  <millis>1768402459853</millis>
+  <nanos>687200</nanos>
+  <sequence>538</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.66 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:20.297674500Z</date>
+  <millis>1768402460297</millis>
+  <nanos>674500</nanos>
+  <sequence>539</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.55 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:20.744113900Z</date>
+  <millis>1768402460744</millis>
+  <nanos>113900</nanos>
+  <sequence>540</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.67 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:21.314270100Z</date>
+  <millis>1768402461314</millis>
+  <nanos>270100</nanos>
+  <sequence>541</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.56 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:21.813019800Z</date>
+  <millis>1768402461813</millis>
+  <nanos>19800</nanos>
+  <sequence>542</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.69 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:22.270847500Z</date>
+  <millis>1768402462270</millis>
+  <nanos>847500</nanos>
+  <sequence>543</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.77 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:23.805867200Z</date>
+  <millis>1768402463805</millis>
+  <nanos>867200</nanos>
+  <sequence>544</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.57 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:24.236347Z</date>
+  <millis>1768402464236</millis>
+  <nanos>347000</nanos>
+  <sequence>545</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.70 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:24.678160800Z</date>
+  <millis>1768402464678</millis>
+  <nanos>160800</nanos>
+  <sequence>547</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.78 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:25.341279Z</date>
+  <millis>1768402465341</millis>
+  <nanos>279000</nanos>
+  <sequence>549</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_1.2 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:25.567473900Z</date>
+  <millis>1768402465567</millis>
+  <nanos>473900</nanos>
+  <sequence>551</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.79 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:25.792704900Z</date>
+  <millis>1768402465792</millis>
+  <nanos>704900</nanos>
+  <sequence>553</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.59 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:26.244095200Z</date>
+  <millis>1768402466244</millis>
+  <nanos>95200</nanos>
+  <sequence>555</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.71 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:26.705460400Z</date>
+  <millis>1768402466705</millis>
+  <nanos>460400</nanos>
+  <sequence>558</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.80 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:28.680671600Z</date>
+  <millis>1768402468680</millis>
+  <nanos>671600</nanos>
+  <sequence>563</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_2.9 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:29.115892800Z</date>
+  <millis>1768402469115</millis>
+  <nanos>892800</nanos>
+  <sequence>565</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_2.10 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:29.767152900Z</date>
+  <millis>1768402469767</millis>
+  <nanos>152900</nanos>
+  <sequence>567</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_2.11 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:37.608033800Z</date>
+  <millis>1768402477608</millis>
+  <nanos>33800</nanos>
+  <sequence>577</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.72 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:38.052500500Z</date>
+  <millis>1768402478052</millis>
+  <nanos>500500</nanos>
+  <sequence>579</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.81 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:38.482633500Z</date>
+  <millis>1768402478482</millis>
+  <nanos>633500</nanos>
+  <sequence>580</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.61 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:38.923546100Z</date>
+  <millis>1768402478923</millis>
+  <nanos>546100</nanos>
+  <sequence>581</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.82 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:39.812381800Z</date>
+  <millis>1768402479812</millis>
+  <nanos>381800</nanos>
+  <sequence>583</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.74 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:40.244509800Z</date>
+  <millis>1768402480244</millis>
+  <nanos>509800</nanos>
+  <sequence>584</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.83 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:40.682301900Z</date>
+  <millis>1768402480682</millis>
+  <nanos>301900</nanos>
+  <sequence>585</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.68 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:40.904066400Z</date>
+  <millis>1768402480904</millis>
+  <nanos>66400</nanos>
+  <sequence>586</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.84 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:41.562610400Z</date>
+  <millis>1768402481562</millis>
+  <nanos>610400</nanos>
+  <sequence>587</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.75 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:44.437552700Z</date>
+  <millis>1768402484437</millis>
+  <nanos>552700</nanos>
+  <sequence>590</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.85 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:45.019625200Z</date>
+  <millis>1768402485019</millis>
+  <nanos>625200</nanos>
+  <sequence>591</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.73 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:45.474493100Z</date>
+  <millis>1768402485474</millis>
+  <nanos>493100</nanos>
+  <sequence>593</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.95 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:45.690801700Z</date>
+  <millis>1768402485690</millis>
+  <nanos>801700</nanos>
+  <sequence>595</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_1.3 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:45.691807400Z</date>
+  <millis>1768402485691</millis>
+  <nanos>807400</nanos>
+  <sequence>596</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.96 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:46.112008100Z</date>
+  <millis>1768402486112</millis>
+  <nanos>8100</nanos>
+  <sequence>598</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.86 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:46.532907300Z</date>
+  <millis>1768402486532</millis>
+  <nanos>907300</nanos>
+  <sequence>601</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.87 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T14:54:46.955237Z</date>
+  <millis>1768402486955</millis>
+  <nanos>237000</nanos>
+  <sequence>603</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.97 has been departed and deleted from hashmap</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2026-01-14T15:00:42.590476Z</date>
+  <millis>1768402842590</millis>
+  <nanos>476000</nanos>
+  <sequence>0</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>&lt;init&gt;</method>
+  <thread>35</thread>
+  <message>Simulation created with config: ../resource/test_7_huge.sumocfg</message>
+</record>
+<record>
+  <date>2026-01-14T15:00:44.051180400Z</date>
+  <millis>1768402844051</millis>
+  <nanos>180400</nanos>
+  <sequence>328</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>Start</method>
+  <thread>35</thread>
+  <message>Simulation started successfully</message>
+</record>
+<record>
+  <date>2026-01-14T15:00:52.887409200Z</date>
+  <millis>1768402852887</millis>
+  <nanos>409200</nanos>
+  <sequence>355</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.0 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T15:00:53.559122300Z</date>
+  <millis>1768402853559</millis>
+  <nanos>122300</nanos>
+  <sequence>358</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.1 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T15:00:54.895181700Z</date>
+  <millis>1768402854895</millis>
+  <nanos>181700</nanos>
+  <sequence>361</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.2 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T15:01:07.890490100Z</date>
+  <millis>1768402867890</millis>
+  <nanos>490100</nanos>
+  <sequence>383</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.3 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T15:01:08.330200800Z</date>
+  <millis>1768402868330</millis>
+  <nanos>200800</nanos>
+  <sequence>386</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.4 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T15:01:08.772329700Z</date>
+  <millis>1768402868772</millis>
+  <nanos>329700</nanos>
+  <sequence>387</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.5 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T15:01:09.002022600Z</date>
+  <millis>1768402869002</millis>
+  <nanos>22600</nanos>
+  <sequence>388</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.6 has been departed and deleted from hashmap</message>
+</record>
+<record>
+  <date>2026-01-14T15:01:09.462845600Z</date>
+  <millis>1768402869462</millis>
+  <nanos>845600</nanos>
+  <sequence>390</sequence>
+  <logger>wrapper.SimulationWrapper</logger>
+  <level>INFO</level>
+  <class>wrapper.SimulationWrapper</class>
+  <method>update</method>
+  <thread>43</thread>
+  <message>Vehicle f_0.7 has been departed and deleted from hashmap</message>
+</record>
+</log>

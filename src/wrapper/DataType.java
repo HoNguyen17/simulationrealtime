@@ -7,11 +7,19 @@ import java.util.ArrayList;
 
 import javafx.scene.paint.Color;
 
+// logging
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 public class DataType {
+    // logging
+    private final static Logger LOG = Logger.getLogger(DataType.class.getName());
+
     // interface for object with id
     public static interface Identifiable {
         public String getID(int po);
     }
+
     // basic traffic light data class
     public static class TrafficLightData implements Identifiable {
         protected String ID;
@@ -28,7 +36,7 @@ public class DataType {
         }
         // get ID
         public String getID(int po) {
-            if (po == 1) {System.out.print(" " + ID);}
+            if (po == 1) {LOG.log(Level.INFO, "Traffic Light ID: {0}", ID);}
             return ID;
         }
         // get the number of controlled links
@@ -67,28 +75,28 @@ public class DataType {
         }
         // get Vehicle's current x position
         public double getPositionX(int po) {
-            if (po == 1) {System.out.println("Position x of "+ ID +" is " + pos_x);}
+            if (po == 1) {LOG.log(Level.INFO, "Position x of {0} is {1}", new Object[]{ID, pos_x});}
             return pos_x;
         }
 
         // get Vehicle's current y position
         public double getPositionY(int po) {
-            if (po == 1) {System.out.println("Position x of "+ ID +" is " + pos_y);}
+            if (po == 1) {LOG.log(Level.INFO, "Position y of {0} is {1}", new Object[]{ID, pos_y});}
             return pos_y;
         }
         // get Vehicle's current angle/heading in degrees
         public double getAngle(int po) {
-            if (po == 1) {System.out.println("Vehicle " + ID + " is facing " + angle);}
+            if (po == 1) {LOG.log(Level.INFO, "Vehicle {0} is facing {1}", new Object[]{ID, angle});}
             return angle;
         }
         // get Vehicle's current speed
         public double getSpeed(int po) {
-            if (po == 1) {System.out.println("Speed of "+ ID +" is " + speed);}
+            if (po == 1) {LOG.log(Level.INFO, "Speed of {0} is {1}", new Object[]{ID, speed});}
             return speed;
         }
         // get Vehicle's color
         public Color getColor(int po) {
-            if (po == 1) {System.out.println("Color of "+ ID +" is " + color);}
+            if (po == 1) {LOG.log(Level.INFO, "Color of {0} is {1}", new Object[]{ID, color});}
             return color;
         }
     }
@@ -101,12 +109,12 @@ public class DataType {
         } 
         //
         public String getID(int po) {
-            if(po == 1){System.out.println(ID);}
+            if(po == 1){LOG.log(Level.INFO, "Route ID: {0}", ID);}
             return ID;
         }
         // get first edge ID of the route
         public String getFirstEdgeID(int po) {
-            if (po == 1) {System.out.println("First edge " + this.firstEdgeID);}
+            if (po == 1) {LOG.log(Level.INFO, "First edge of route {0}: {1}", new Object[]{ID, firstEdgeID});}
             return firstEdgeID;
         }
     }
@@ -120,19 +128,19 @@ public class DataType {
             this.ID = inputID;
         }
         public String getID(int po) {
-            if (po == 1) {System.out.println(ID);}
+            if (po == 1) {LOG.log(Level.INFO, "Edge ID: {0}", ID);}
             return ID;
         }
         public int getDensity(int po) {
-            if (po == 1) {System.out.println(ID);}
+            if (po == 1) {LOG.log(Level.INFO, "Density of {0}: {1}", new Object[]{ID, density});}
             return density;
         }
         public double getTravelTime(int po) {
-            if (po == 1) {System.out.println(ID);}
+            if (po == 1) {LOG.log(Level.INFO, "Travel Time of {0}: {1}", new Object[]{ID, travelTime});}
             return travelTime;
         }
         public double getwaitingTime(int po) {
-            if (po == 1) {System.out.println(ID);}
+            if (po == 1) {LOG.log(Level.INFO, "Waiting Time of {0}: {1}", new Object[]{ID, waitingTime});}
             return waitingTime;
         }
     }

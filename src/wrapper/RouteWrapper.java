@@ -6,9 +6,17 @@ import de.tudresden.sumo.cmd.Route;
 import java.util.List;
 import java.util.ArrayList;
 
+// logging
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 class RouteWrapper extends DataType.RouteData {
-    RouteWrapper(String inputID, String inputEdgeID) {
+    // logging
+    private final static Logger LOG = Logger.getLogger(RouteWrapper.class.getName());
+    RouteWrapper(String inputID, String inputEdgeID)
+    {
         super(inputID, inputEdgeID);
+        LOG.log(Level.INFO, "Route wrapper created for ID: {0}", inputID);
     }
     // make copy of the object for MapCanvas
     public DataType.RouteData makeCopy() {
@@ -19,14 +27,17 @@ class RouteWrapper extends DataType.RouteData {
     static void updateRouteIDs(SimulationWrapper temp) { // refresh the list of routes available for vehicle injection in the simulation
         try {
             List<String> newRouteList = (List<String>) temp.conn.do_job_get(Route.getIDList());
+            int counter = 0;
             for (String x : newRouteList) {
                 if (x.charAt(0) != '!') {
                     String firstEdge = ((List<String>) temp.conn.do_job_get(Route.getEdges(x))).get(0);
                     RouteWrapper y = new RouteWrapper(x, firstEdge);
                     temp.RouteList.put(x, y);
+                    counter++;
                 }  
             }
+            LOG.log(Level.INFO, "Route list updated. {0} valid routes found.", counter);
         }
-        catch(Exception e) {System.out.println("Unable to update route list");}
+        catch(Exception e) {LOG.log(Level.SEVERE, "Unable to update the route list. ", e);}
     }
 }

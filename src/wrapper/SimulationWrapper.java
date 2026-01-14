@@ -71,6 +71,13 @@ public class SimulationWrapper implements Observer {
             // Disable default console logging to avoid duplicate messages
             LOG.setUseParentHandlers(false);
 
+            // Register a shutdown hook to close handlers properly
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                for (Handler h : LOG.getHandlers()) {
+                    h.close(); // Ensures all XML tags are closed and file is saved
+                }
+            }));
+
         } catch (java.io.IOException | SecurityException e) {
             // Basic exception handling as shown in your notes
             System.err.println("Logging setup failed: " + e.getMessage());

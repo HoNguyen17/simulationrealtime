@@ -11,12 +11,19 @@ import javafx.scene.paint.Color;
 import java.util.List;
 import java.util.ArrayList;
 
+// logging
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 class VehicleWrapper extends DataType.VehicleData {
+    // logging
+    private final static Logger LOG = Logger.getLogger(VehicleWrapper.class.getName());
+
     // constructor
     VehicleWrapper(String inputID, Color inputColor){
         super(inputID);
         color = inputColor;
-        System.out.println("Added vehicle " + inputID + ".");
+        LOG.log(Level.INFO, "Add vehicle: {0}", inputID);
     }
     //=================GETTER================================
     // get Vehicle's ID list
@@ -24,11 +31,11 @@ class VehicleWrapper extends DataType.VehicleData {
         try {
             @SuppressWarnings("unchecked")
             List<String> idList = (List<String>) temp.conn.do_job_get(Vehicle.getIDList());
-            if (po==1) {System.out.println(String.format("ID list of all vehicle in the current simulation: %s", idList));}
+            if (po==1) {LOG.log(Level.INFO, "ID list of all vehicle in the current simulation: {0}", idList);}
             return idList;
         }
         catch(Exception e) {
-            System.out.println("Cannot get vehicle ID list." + e.getMessage());
+            LOG.log(Level.SEVERE, "Error while getting vehicle ids from the simulation. ", e);
             return null;
         }
     }
@@ -37,11 +44,11 @@ class VehicleWrapper extends DataType.VehicleData {
     public String getTypeID(SimulationWrapper temp, int po) {
         try {
             String typeID = (String) temp.conn.do_job_get(Vehicle.getTypeID(ID));
-            if (po==1) {System.out.println(String.format("Type ID of vehicle %s: %s", typeID, ID));}
+            if (po==1) {LOG.log(Level.INFO, "Type ID of vehicle {0}: {1}", new Object[]{ID, typeID});}
             return typeID;
         }
         catch(Exception e) {
-            System.out.println("Cannot get type ID list of vehicle " + ID + e.getMessage());
+            LOG.log(Level.SEVERE, "Cannot get type ID list of vehicle {0}", new Object[]{ID,e});
         }
         return null;
     }
@@ -70,38 +77,38 @@ class VehicleWrapper extends DataType.VehicleData {
     public void setSpeed(SimulationWrapper temp, double inputSpeed, int po) {
         try {
             temp.conn.do_job_set(Vehicle.setSpeed(ID, inputSpeed));
-            if  (po==1) {System.out.println(String.format("Set the speed of the vehicle that has the ID %s into %.3f m/s", ID, speed));}
+            if  (po==1) {LOG.log(Level.INFO, "Set the speed of vehicle that has the ID {0} into {1}", new Object[]{ID, inputSpeed});}
         }
         catch(Exception e) {
-            System.out.println("Cannot set the speed of the vehicle that has the ID " + ID + e.getMessage());
+            LOG.log(Level.SEVERE, "Cannot set the speed of the vehicle that has the ID {0}", new Object[]{ID,e});
         }
     }
 
     // set Vehicle's color, also update the local (color) variable in the wrapper object
     public void setColor(SimulationWrapper temp, double r, double g, double b, double a) {
         try {
-            System.out.println("vehiclewrapper1");
             Color dataColor = new Color(r, g, b, a);
             this.color = dataColor;
             SumoColor inputColor = DataType.convertColor(dataColor);
             temp.conn.do_job_set(Vehicle.setColor(ID, inputColor));
-            System.out.println("vehiclewrapper2");
+            LOG.log(Level.INFO, "Set the color for vehicle with ID {0} into {1}", new Object[]{ID, inputColor});
             
             
         }
         catch(Exception e) {
-            System.out.println("Cannot set the color of the vehicle that has the ID " + ID + e.getMessage());
+            LOG.log(Level.SEVERE, "Cannot set the color of the vehicle that has the ID {0}", new Object[]{ID,e});
         }
     }
     public void set_test() {
-        System.out.println("still wotk");
+        LOG.log(Level.INFO, "Still work");
     }
     //=================STATIC================================
     // injecting a new vehicle into the simulation
     protected static void addVehicle(SimulationWrapper temp, String inputID, String inputRoute) { 
         try {
             temp.conn.do_job_set(Vehicle.add(inputID, "DEFAULT_VEHTYPE", inputRoute, 0, 0, 0, (byte)0)); // default vehicle type has the initial departure time, position, and speed = 0
+            LOG.log(Level.INFO, "Vehicle {0} injected into route {1}", new Object[]{inputID, inputRoute});
         }
-        catch (Exception e) {System.out.println("add vehicle fail");}
+        catch (Exception e) {LOG.log(Level.SEVERE, "Failed to add vehicle {0} to simulation", new Object[]{inputID, e});}
     }
 }
