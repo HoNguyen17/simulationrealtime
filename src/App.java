@@ -87,39 +87,41 @@ public class App extends Application {
         simulationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                // Create copy of current vehicle datas from wrapper
-                List<VehicleData> vehDatas = new ArrayList<>();
-                List<String> vehIds = simulationWrapper.getVehicleIDsList();
-                if (vehIds != null) {
-                    for (String vehId : vehIds) {
-                        vehDatas.add(simulationWrapper.makeVehicleCopy(vehId));
-                    }
-                }
-
-                // Create copy of current traffic light datas from wrapper
-                List<TrafficLightData> tlDatas = new ArrayList<>();
-                List<String> tlIds = simulationWrapper.getTLIDsList();
-                if (tlIds != null) {
-                    for (String tlId : tlIds) {
-                        tlDatas.add(simulationWrapper.makeTLCopy(tlId));
-                    }
-                }
-                // Create copy of current route datas from wrapper
-                if(mapCanvas.getRenderMode() == 1 && mapCanvas.getUpdateRoute()) {
-                    List<RouteData> rouData = new ArrayList<>();
-                    List<String> routeIds = simulationWrapper.getRouteIDsList();
-                    if (routeIds != null) {
-                        for (String routeId : routeIds) {
-                            rouData.add(simulationWrapper.makeRouteCopy(routeId));
+                if (!simulationWrapper.isPaused()) {
+                    // Create copy of current vehicle datas from wrapper
+                    List<VehicleData> vehDatas = new ArrayList<>();
+                    List<String> vehIds = simulationWrapper.getVehicleIDsList();
+                    if (vehIds != null) {
+                        for (String vehId : vehIds) {
+                            vehDatas.add(simulationWrapper.makeVehicleCopy(vehId));
                         }
                     }
-                    mapCanvas.setRouteData(rouData);
-                }
 
-                // Set the copied datas into mapCanvas and render
-                mapCanvas.setVehicleData(vehDatas);
-                mapCanvas.setTrafficLightData(tlDatas);
-                mapCanvas.render();
+                    // Create copy of current traffic light datas from wrapper
+                    List<TrafficLightData> tlDatas = new ArrayList<>();
+                    List<String> tlIds = simulationWrapper.getTLIDsList();
+                    if (tlIds != null) {
+                        for (String tlId : tlIds) {
+                            tlDatas.add(simulationWrapper.makeTLCopy(tlId));
+                        }
+                    }
+                    // Create copy of current route datas from wrapper
+                    if(mapCanvas.getRenderMode() == 1 && mapCanvas.getUpdateRoute()) {
+                        List<RouteData> rouData = new ArrayList<>();
+                        List<String> routeIds = simulationWrapper.getRouteIDsList();
+                        if (routeIds != null) {
+                            for (String routeId : routeIds) {
+                                rouData.add(simulationWrapper.makeRouteCopy(routeId));
+                            }
+                        }
+                        mapCanvas.setRouteData(rouData);
+                    }
+
+                    // Set the copied datas into mapCanvas and render
+                    mapCanvas.setVehicleData(vehDatas);
+                    mapCanvas.setTrafficLightData(tlDatas);
+                    mapCanvas.render();
+                }
 
                 if (controller_fxml != null) {
                 controller_fxml.updateUI(now);

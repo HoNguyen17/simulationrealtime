@@ -61,9 +61,12 @@ public class SimulationWrapper implements Observer {
     public boolean isClosed() {
         return conn.isClosed();
     } 
-    public void Pause(boolean justPause) {
-        if (!isPaused) {isPaused = true;}
-        else if (!justPause) {isPaused = false;}
+    public boolean isPaused() {
+        return isPaused;
+    }
+    public void Pause() {
+        if (!isPaused) isPaused = true;
+        else  isPaused = false;
     }
     public void Start(){
         try {

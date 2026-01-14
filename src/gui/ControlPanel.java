@@ -44,7 +44,6 @@ public class ControlPanel {
     @FXML private Label simTime;
     @FXML private Button simPause;
     @FXML private Button simPlay;
-    @FXML private Button simTest;//for testing
     @FXML private ComboBox<String> filterOnOff;
     @FXML private ComboBox<String> filterColor;
     @FXML private TextField filterSpeed;
@@ -102,8 +101,7 @@ public class ControlPanel {
     }
 
     @FXML void simPlayAct(ActionEvent event) {System.out.println("start");}
-    @FXML void simPauseAct(ActionEvent event) {this.sim.Pause(false);}
-    @FXML void simTestAct(ActionEvent event) {this.SimTest();}
+    @FXML void simPauseAct(ActionEvent event) {this.sim.Pause();}
 
     @FXML void switchFilterAct(ActionEvent event) {
         String chosenFilter = filterOnOff.getValue();
@@ -130,7 +128,7 @@ public class ControlPanel {
     }
 
     @FXML void exportPressed(ActionEvent event) { 
-        this.sim.Pause(true);
+        if (!this.sim.isPaused()) this.sim.Pause();
         String chosenType = exportType.getValue();
         Node source = (Node) event.getSource();
         Stage stage = (Stage) source.getScene().getWindow();
@@ -209,12 +207,6 @@ public class ControlPanel {
                 this.idCounter++;
             }
         }   
-    }
-    // test (easy to break)
-    private void SimTest() {
-        Color colour = new Color(0.5,0.5,0.5,1);
-        sim.addVehicleWithColor("test", "r_1",colour);
-        sim.setVehicleColor("f_0.0",1,1,1,1);
     }
     // change mode
     private void changeRenderMode(int input) {
