@@ -2,15 +2,26 @@ package tracker;
 
 import wrapper.SimulationWrapper;
 
+import javafx.print.PageLayout;
+import javafx.print.Paper;
+import javafx.print.PageOrientation;
+import javafx.print.Printer;
+import javafx.print.Printer.MarginType;
+import javafx.print.PrinterJob;
+
+import javafx.scene.layout.VBox;
+import javafx.scene.Scene;
+
+import javafx.stage.Stage;
+
 import java.io.File;
 import java.io.FileWriter;
+import java.io.FileReader;
+import java.io.BufferedWriter;
+import java.io.BufferedReader;
 import java.io.IOException;
 
 import java.text.SimpleDateFormat;
-
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -19,8 +30,8 @@ public class Statistic {
     private static SimulationWrapper sim = null;
     public static boolean initialize(SimulationWrapper input) {
         sim = input;
-        try (FileWriter writer = new FileWriter("tracker/data.csv")) {
-            writer.write("Simulation Time, Edge, Density, Travel Time, Congested\n");
+        try (FileWriter writer = new FileWriter("tracker/edgeData.csv")) {
+            writer.write("Simulation Time, Edge, Density, Estimate Travel Time, Congested\n");
             return true;
         } catch (Exception e) {
             System.out.println("An error occurred while opening the file.");
@@ -28,8 +39,8 @@ public class Statistic {
         }
         return false;
     }
-    public static boolean addNewData() {
-        try (FileWriter writer = new FileWriter("tracker/data.csv", true)) {
+    public static void addNewEdgeData() {
+        try (FileWriter writer = new FileWriter("tracker/edgeData.csv", true)) {
             double currentTime = sim.getTime(0);
             List<String> edges = sim.getEdgeIDsList();
             for (String e : edges) {
@@ -44,15 +55,83 @@ public class Statistic {
                     writer.write(congested + "\n");
                 }
             }
-            return true;
         } catch (Exception e) {
             System.out.println("An error occurred while opening the file.");
             e.printStackTrace();
         }
-        return false;
     }
-    public static boolean export() {
-        System.out.println("Do export and stuff");
+
+    public static String exportCSV(File destinationFile, String filterType) {
+        try {
+            File sourceFile = new File("tracker/edgeData.csv");
+            if (!sourceFile.exists()) {
+                return null;
+            }
+            if (destinationFile != null) {
+                // Read, filter, and write CSV data
+                try (BufferedReader reader = new BufferedReader(new FileReader(sourceFile));
+                     BufferedWriter writer = new BufferedWriter(new FileWriter(destinationFile))) {
+                    
+                    String header = reader.readLine();
+                    if (header == null) return null;
+                    
+                    // Write header
+                    writer.write(header);
+                    writer.newLine();
+                    
+                    // Filter and write data
+                    String line;
+                    int totalRows = 0;
+                    int exportedRows = 0;
+                    
+                    while ((line = reader.readLine()) != null) {
+                        totalRows++;
+                        boolean shouldExport = true;
+                        // Apply filter if CONGESTED_ONLY
+                        if ("CONGESTED_ONLY".equals(filterType)) {
+                            // Parse CSV line: "Time, Edge, Density, Travel Time, Congested"
+                            String[] parts = line.split(",");
+                            if (parts.length >= 5) {
+                                String congestedStr = parts[4].trim();
+                                // Check if congested is true
+                                if (!congestedStr.equalsIgnoreCase("true")) shouldExport = false;
+                            }
+                        }
+                        if (shouldExport) {
+                            writer.write(line);
+                            writer.newLine();
+                            exportedRows++;
+                        }
+                    }
+                    writer.flush();
+                    return destinationFile.getAbsolutePath();
+                }
+
+            }
+        } catch (Exception e) {
+            System.err.println("Error exporting CSV file: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static boolean exportPDF(VBox chartContainer, Stage stage) {
+        Scene printScene = new Scene(chartContainer, 600, 820);
+        PrinterJob printerJob = PrinterJob.createPrinterJob();
+
+        if (printerJob == null) return false;
+        
+        if (printerJob.showPrintDialog(stage)) {
+            Printer printer = printerJob.getPrinter();
+            // Configure page layout for better PDF output
+            PageLayout pageLayout = printer.createPageLayout(Paper.A4, 
+                PageOrientation.PORTRAIT, Printer.MarginType.DEFAULT);
+        
+            if (printerJob.printPage(pageLayout, chartContainer)) {
+                printerJob.endJob();
+                return true;
+            }
+        }
         return false;
     }
 }

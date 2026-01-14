@@ -6,6 +6,9 @@ import java.util.List;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.CategoryAxis;
+
 import wrapper.DataType.VehicleData;
 import wrapper.SimulationWrapper;
 
@@ -15,7 +18,6 @@ public class Graph {
     private AreaChart<Number, Number> SpeedChart;
     private BarChart<String, Number> TravelTimeChart;
     private BarChart<String, Number> DensityChart;
-    
 
     private SimulationWrapper sim;
 
@@ -40,7 +42,6 @@ public class Graph {
 
     private void setupSpeedChart() {
         if (SpeedChart == null) return;
-
         // Configure once (avoid re-adding series)
         if (!SpeedChart.getData().contains(avgSpeedSeries)) {
             SpeedChart.setAnimated(false);
@@ -73,6 +74,25 @@ public class Graph {
         }
             */
     }
+    public AreaChart<Number, Number> makeSpeedChartCopy() {
+        NumberAxis xAxis = new NumberAxis();
+        NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel(SpeedChart.getXAxis().getLabel());
+        yAxis.setLabel(SpeedChart.getYAxis().getLabel());
+
+        XYChart.Series<Number, Number> seriesCopy = new XYChart.Series<>();
+        seriesCopy.setName("speed (m/s)");
+        for (XYChart.Data<Number, Number> data : avgSpeedSeries.getData()) {
+                seriesCopy.getData().add(new XYChart.Data<>(data.getXValue(), data.getYValue()));
+        }
+
+        AreaChart<Number, Number> copy = new AreaChart<>(xAxis, yAxis);
+        copy.setAnimated(false);
+        copy.setLegendVisible(true);
+        copy.setTitle("Average Vehicle Speed");
+        copy.getData().add(seriesCopy);
+        return copy;
+    } 
 
     //Travel Time Chart
     public void TravelTimeChart(BarChart<String, Number> TravelTimeChart) {
@@ -131,7 +151,6 @@ public class Graph {
                 count5++;
             }
         }
-        
         // Add data to chart
         travelTimeSeries.getData().add(new XYChart.Data<>("0-60", count0));
         travelTimeSeries.getData().add(new XYChart.Data<>("60-120", count1));
@@ -140,6 +159,10 @@ public class Graph {
         travelTimeSeries.getData().add(new XYChart.Data<>("240-300", count4));
         travelTimeSeries.getData().add(new XYChart.Data<>("300+", count5));
     }
+    public BarChart<String, Number> makeTravelTimeChartCopy() {
+        return this.makeBarChartCopy(TravelTimeChart, travelTimeSeries);
+    }
+
     //Density Chart
     public void DensityChart(BarChart<String, Number> DensityChart) {
         if (DensityChart == null) {
@@ -185,5 +208,30 @@ public class Graph {
             }
         }
     }
+    public BarChart<String, Number> makeDensityChartCopy() {
+        return this.makeBarChartCopy(DensityChart, densitySeries);
+    }
 
+    public BarChart<String, Number> makeBarChartCopy(BarChart<String, Number> inputChart, 
+        XYChart.Series<String, Number> inputSeries) {
+        CategoryAxis xAxis = new CategoryAxis();
+        NumberAxis yAxis = new NumberAxis();     
+        
+        xAxis.setLabel(inputChart.getXAxis().getLabel());
+        yAxis.setLabel(inputChart.getYAxis().getLabel());
+
+        XYChart.Series<String, Number> seriesCopy = new XYChart.Series<>();
+        seriesCopy.setName(inputSeries.getName());
+        for (XYChart.Data<String, Number> data : inputSeries.getData()) {
+                seriesCopy.getData().add(new XYChart.Data<>(data.getXValue(), data.getYValue()));
+        }
+
+        BarChart<String, Number> copy = new BarChart<>(xAxis, yAxis);
+        copy.setAnimated(false);
+        copy.setLegendVisible(true);
+        copy.setTitle(inputChart.getTitle());
+
+        copy.getData().add(seriesCopy);
+        return copy;
+    }
 }

@@ -41,13 +41,12 @@ public class SimulationWrapper implements Observer {
     protected final HashMap<String, EdgeWrapper> EdgeList = new HashMap<>();
     protected final HashMap<String, Color> ColorQueue = new HashMap<>();
     // Track vehicle travel times
-    protected final HashMap<String, Double> VehicleDepartTime = new HashMap<>();
     protected final ArrayList<Double> CompletedTravelTimes = new ArrayList<>();
 
     public SimulationWrapper(String sumocfg, double step_length, String sumo_bin){
         conn = new SumoTraciConnection(sumo_bin, sumocfg);
         conn.addOption("step-length", step_length + "");
-        conn.addOption("start", "true"); //start sumo immediately
+        conn.addOption("start", "true");
         System.out.println("Simulation created");
     }
     public SimulationWrapper(String sumocfg){
@@ -55,16 +54,16 @@ public class SimulationWrapper implements Observer {
         double step_length = 1;
         conn = new SumoTraciConnection(sumo_bin, sumocfg);
         conn.addOption("step-length", step_length + "");
-        conn.addOption("start", "true"); //start sumo immediately
+        conn.addOption("start", "true");
         System.out.println("Simulation created");
     }
 //===== SIMULATION STUFF ==================================
     public boolean isClosed() {
         return conn.isClosed();
     } 
-    public void Pause() {
+    public void Pause(boolean justPause) {
         if (!isPaused) {isPaused = true;}
-        else {isPaused = false;}
+        else if (!justPause) {isPaused = false;}
     }
     public void Start(){
         try {
@@ -121,9 +120,9 @@ public class SimulationWrapper implements Observer {
                         try {
                             // create a vehicle wrapper object and add to the VehicleList hash map
                             SumoColor color = (SumoColor)conn.do_job_get(Vehicle.getColor(vehID));
-                            VehicleWrapper y = new VehicleWrapper(vehID, DataType.convertColor(color));
-                            VehicleList.put(vehID, y);
-                            VehicleDepartTime.put(vehID, getTime(0)); // track depart time
+                            VehicleWrapper vehicle = new VehicleWrapper(vehID, DataType.convertColor(color));
+                            VehicleList.put(vehID, vehicle);
+                            vehicle.departTime = this.getTime(0);
                             // start subscription of the vehicle
                             conn.do_subscription(vs);
                             if (ColorQueue.get(vehID) != null) {
@@ -131,7 +130,6 @@ public class SimulationWrapper implements Observer {
                                 double r = defaultColor.getRed();
                                 double g = defaultColor.getGreen();
                                 double b = defaultColor.getBlue();
-                                //System.out.println("color " + r + " " + g);
                                 this.setVehicleColor(vehID, r, g, b, 1);
                                 ColorQueue.remove(vehID);
                             }
@@ -140,19 +138,15 @@ public class SimulationWrapper implements Observer {
                     }
                 }
             }
-            else if (so.variable == Constants.VAR_ARRIVED_VEHICLES_IDS) {// when a vehicle has reached its end point
+            else if (so.variable == Constants.VAR_ARRIVED_VEHICLES_IDS) {
                 SumoStringList ssl = (SumoStringList) so.object;
                 if (ssl.size() > 0) {
                     for (String vehID : ssl) {
                         try {
-                            // calculate travel time Nguyen
-                            if (VehicleDepartTime.containsKey(vehID)) {
-                                double travelTime = getTime(0) - VehicleDepartTime.get(vehID);
-                                CompletedTravelTimes.add(travelTime);
-                                VehicleDepartTime.remove(vehID);
-                            }
+                            VehicleWrapper vehicle = VehicleList.get(vehID);
+                            double travelTime = this.getTime(0) - vehicle.departTime;
+                            CompletedTravelTimes.add(travelTime);
                             VehicleList.remove(vehID);
-                            System.out.println("Delete " + vehID + " from the hashmap");
                         }
                         catch (Exception ex) {
                             System.err.println("Unable to delete " + vehID + " from hashmap");

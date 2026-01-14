@@ -62,7 +62,7 @@ public class App extends Application {
         simulationThread = new Thread(() -> {
             while (simRunning && !simulationWrapper.isClosed()) {
                 simulationWrapper.Step();
-                Statistic.addNewData();
+                Statistic.addNewEdgeData();
             }
         }, "Sumo-Stepper");
         simulationThread.setDaemon(true);

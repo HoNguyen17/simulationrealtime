@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 class VehicleWrapper extends DataType.VehicleData {
+    protected double departTime = Double.NaN;
 
     VehicleWrapper(String inputID, Color inputColor){
         super(inputID);

@@ -139,15 +139,15 @@
                         <Insets left="10.0" top="10.0" />
                     </VBox.margin>
                 </Label>
-                <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+                <TabPane prefHeight="210.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
-                        <Tab style="-fx-background-color: #3b97ff63;" text="AvgSpeed">
+                        <Tab style="-fx-background-color: #3b97ff63;" text="Speed">
                             <content>
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                     <children>
                                         <AreaChart fx:id="avgSpeed"
                                                    layoutX="0.0" layoutY="0.0"
-                                                   prefWidth="250.0" prefHeight="180.0"
+                                                   prefWidth="250.0" prefHeight="250.0"
                                                    animated="false">
                                             <xAxis>
                                                 <NumberAxis side="BOTTOM" label="t(s)" />
@@ -179,7 +179,7 @@
                                 </AnchorPane>
                             </content>
                         </Tab>
-                        <Tab style="-fx-background-color: #3b97ff63;" text="Densitys">
+                        <Tab style="-fx-background-color: #3b97ff63;" text="Density">
                             <content>
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                     <children>
@@ -213,31 +213,12 @@
                                 </AnchorPane>
                             </content>
                         </Tab>
-                        <Tab style="-fx-background-color: #3b97ff63;" text="Traffic Light">
-                            <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                    <children>
-                                        <TableView fx:id="staTLTable" prefHeight="150.0" prefWidth="250.0">
-                                            <columns>
-                                                <TableColumn fx:id="staTLID" prefWidth="100.0" text="ID" />
-                                                <TableColumn fx:id="staTLPhase" prefWidth="150.0" text="Phase" />
-                                            </columns>
-                                        </TableView>
-                                    </children>
-                                </AnchorPane>
-                            </content>
-                        </Tab>
                     </tabs>
                 </TabPane>
                 <HBox prefWidth="250.0" spacing="10.0">
                     <children>
-                        <MenuButton fx:id="expType" mnemonicParsing="false" onAction="#expTypeAct" prefWidth="100.0" text="Type">
-                            <items>
-                                <MenuItem fx:id="expTypePDF" mnemonicParsing="false" text="PDF" />
-                                <MenuItem fx:id="expTypeCSV" mnemonicParsing="false" text="CSV" />
-                            </items>
-                        </MenuButton>
-                        <Button fx:id="expBtn" mnemonicParsing="false" onAction="#expBtnAct" prefWidth="100.0" text="Export" />
+                        <ComboBox fx:id="exportType" onAction="#exportTypeAct" prefWidth="100.0"/>
+                        <Button fx:id="exportButton" mnemonicParsing="false" onAction="#exportPressed" prefWidth="100.0" text="Export" />
                     </children>
                     <padding>
                         <Insets left="19.0" />
