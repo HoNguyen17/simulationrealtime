@@ -21,8 +21,7 @@ public class Graph {
 
     private SimulationWrapper sim;
 
-    // --- Chart state  ---
-    private final XYChart.Series<Number, Number> avgSpeedSeries = new XYChart.Series<>();
+    private final XYChart.Series<Number, Number> averageSpeedSeries = new XYChart.Series<>();
     private final XYChart.Series<String, Number> travelTimeSeries = new XYChart.Series<>();
     private final XYChart.Series<String, Number> densitySeries = new XYChart.Series<>();
 
@@ -43,36 +42,25 @@ public class Graph {
     private void setupSpeedChart() {
         if (SpeedChart == null) return;
         // Configure once (avoid re-adding series)
-        if (!SpeedChart.getData().contains(avgSpeedSeries)) {
+        if (!SpeedChart.getData().contains(averageSpeedSeries)) {
             SpeedChart.setAnimated(false);
             SpeedChart.setLegendVisible(true);
             SpeedChart.setTitle("Average Vehicle Speed");
 
-            avgSpeedSeries.setName("speed (m/s)");
-            SpeedChart.getData().add(avgSpeedSeries);
+            averageSpeedSeries.setName("speed (m/s)");
+            SpeedChart.getData().add(averageSpeedSeries);
         }
     }
 
-    /** Call this from App's AnimationTimer (JavaFX UI thread). */
     public void updateSpeedCharts(AreaChart<Number, Number> SpeedChart) {
         if (SpeedChart == null || sim == null) return;
 
-        // Ensure chart is configured even if chart was swapped/reset.
         setupSpeedChart();
 
-        // Use SimulationWrapper's average speed in SimulationWrapper
-        double avgSpeed = sim.getVehicleAverageSpeed(0);
-        // Time in seconds by getTime in SimulationWrapper
+        double averageSpeed = sim.getVehicleAverageSpeed(0);
         double tSec = sim.getTime(0);
 
-        avgSpeedSeries.getData().add(new XYChart.Data<>(tSec, avgSpeed));
-
-        /* optional:
-        // Keep chart bounded
-        if (avgSpeedSeries.getData().size() > MAX_POINTS) {
-            avgSpeedSeries.getData().remove(0, avgSpeedSeries.getData().size() - MAX_POINTS);
-        }
-            */
+        averageSpeedSeries.getData().add(new XYChart.Data<>(tSec, averageSpeed));
     }
     public AreaChart<Number, Number> makeSpeedChartCopy() {
         NumberAxis xAxis = new NumberAxis();
@@ -82,7 +70,7 @@ public class Graph {
 
         XYChart.Series<Number, Number> seriesCopy = new XYChart.Series<>();
         seriesCopy.setName("speed (m/s)");
-        for (XYChart.Data<Number, Number> data : avgSpeedSeries.getData()) {
+        for (XYChart.Data<Number, Number> data : averageSpeedSeries.getData()) {
                 seriesCopy.getData().add(new XYChart.Data<>(data.getXValue(), data.getYValue()));
         }
 
@@ -94,7 +82,6 @@ public class Graph {
         return copy;
     } 
 
-    //Travel Time Chart
     public void TravelTimeChart(BarChart<String, Number> TravelTimeChart) {
         if (TravelTimeChart == null) {
             this.TravelTimeChart = null;
@@ -123,40 +110,25 @@ public class Graph {
         setupTravelTimeChart();
         travelTimeSeries.getData().clear();
         
-        // Get completed travel times from simulation
         List<Double> travelTimes = sim.getCompletedTravelTimes();
         
-        // Count vehicles 
         int countTravel0 = 0;
-         int countTravel1 = 0;
-         int countTravel2 = 0;
-         int countTravel3 = 0;
-         int countTravel4 = 0;
-         int countTravel5 = 0;
+        int countTravel1 = 0;
+        int countTravel2 = 0;
+        int countTravel3 = 0;
+        int countTravel4 = 0;
+        int countTravel5 = 0;
         
         // Categorize travel times 
         for (int i = 0; i < travelTimes.size(); i++) {
             double time = travelTimes.get(i);
-            if (time < 60){ 
-                countTravel0++;
-            }
-            else if (time < 120) {
-                countTravel1++;
-            }
-            else if (time < 180) {
-                countTravel2++;
-            }
-            else if (time < 240) {
-                countTravel3++;
-            }
-            else if (time < 300) {
-                countTravel4++;
-            }
-            else {
-                countTravel5++;
-            }
+            if (time < 60) countTravel0++;
+            else if (time < 120) countTravel1++;
+            else if (time < 180) countTravel2++;
+            else if (time < 240) countTravel3++;
+            else if (time < 300) countTravel4++;
+            else countTravel5++;
         }
-        // Add data to chart
         travelTimeSeries.getData().add(new XYChart.Data<>("0-60", countTravel0));
         travelTimeSeries.getData().add(new XYChart.Data<>("60-120", countTravel1));
         travelTimeSeries.getData().add(new XYChart.Data<>("120-180", countTravel2));
@@ -185,17 +157,11 @@ public class Graph {
             DensityChart.setLegendVisible(true);
             DensityChart.setTitle("Vehicle Density per Edge");
 
-            densitySeries.setName("Vehicles");
+            densitySeries.setName("density (vehicles)");
             DensityChart.getData().add(densitySeries);
         }
     }
 
-    /** 
-     * Update the density bar chart showing vehicle count per edge.
-     * Y-axis: Number of vehicles
-     * X-axis: List of all edges
-     * Call this from App's AnimationTimer (JavaFX UI thread).
-     */
     public void updateDensityChart(BarChart<String, Number> DensityChart) {
         if (this.DensityChart == null || sim == null) return;
 

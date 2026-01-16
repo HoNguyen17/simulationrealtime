@@ -2,6 +2,8 @@ package gui;
 
 import javafx.fxml.FXML;
 
+import javafx.geometry.Insets;
+
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.BarChart;
 import javafx.scene.control.*;
@@ -9,6 +11,10 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.Node; 
+
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.Priority;
 
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
@@ -99,6 +105,12 @@ public class ControlPanel {
             mapCanvas.getCanvas().heightProperty().bind(mapContainer.heightProperty());
         }
     }
+    public void updateUI(long nowNanos) {
+        stats.updateSpeedCharts(avgSpeed);
+        stats.updateTravelTimeChart(travelTime);
+        stats.updateDensityChart(density);
+        simTime.setText("" + sim.getTime(0));
+    }
 
     @FXML void simPlayAct(ActionEvent event) {System.out.println("start");}
     @FXML void simPauseAct(ActionEvent event) {this.sim.Pause();}
@@ -151,7 +163,6 @@ public class ControlPanel {
         this.sim.setTLPhaseNext(chosenTL);
     }
     
-    // set tl phase event
     @FXML void tlSetTimeAct(ActionEvent event) {
         String chosenTL = tlIDs.getValue();
         String inputTime = tlPhaseTime.getText();
@@ -161,16 +172,16 @@ public class ControlPanel {
             this.sim.setTLPhaseDuration(chosenTL, chosenTime);
         }
     }
-    // tl next phase all event
+
     @FXML void tlNPhaseAllAct(ActionEvent event) {sim.setTLPhaseNextAll();}
-    // inhect vehicle event
+
     @FXML void chosenRouteAct(ActionEvent event) {
         String chosenRoute = injectVehRoute.getValue();
         String startEdge = null;
         if (chosenRoute != null) startEdge = sim.getRouteFirstEdge(chosenRoute);
         this.mapCanvas.setHightLightEdge(startEdge);
     }
-    //inject button clicked
+
     @FXML void vehInjectAct(ActionEvent event) {
         String chosenRoute = injectVehRoute.getValue();
         String inputColor = vehColor.getValue();
@@ -191,15 +202,7 @@ public class ControlPanel {
             else if (tabName.equals("Traffic Light")) {this.changeRenderMode(2);}
         }
     }
-
-    public void updateUI(long nowNanos) {
-        stats.updateSpeedCharts(avgSpeed);
-        stats.updateTravelTimeChart(travelTime);
-        stats.updateDensityChart(density);
-        simTime.setText("" + sim.getTime(0));
-    }
-    // interaction methods
-
+// interaction methods==============================================
     private void VehicleInject(int num, String routeId, Color color) {
         if (1 <= num && num <= 300) {
             for (int i = 0; i < num; i++) {
@@ -254,21 +257,18 @@ public class ControlPanel {
         
         String selectedOption = filterResult.get();
         
-        // Extract filter type from selected option
         String filterType = "ALL";
         if (selectedOption.startsWith("CONGESTED_ONLY")) {
             filterType = "CONGESTED_ONLY";
         }
         
-        // Export CSV to user-selected location with filter
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Export CSV File");
         fileChooser.getExtensionFilters().add(
             new javafx.stage.FileChooser.ExtensionFilter("CSV Files", "*.csv")
         );
         
-        //Set default filename with timestamp
-        fileChooser.setInitialFileName("edgeData.csv");
+        fileChooser.setInitialFileName("trackedData.csv");
         String destinationPath = Statistic.exportCSV(fileChooser.showSaveDialog(stage), filterType);
         
         if (destinationPath != null) {
@@ -283,11 +283,11 @@ public class ControlPanel {
     }
 
     private void exportPDFMenu(Stage stage) {
-        // Create a container to hold all charts 
+
         VBox chartContainer = new VBox(20); 
-        chartContainer.setStyle("-fx-padding: 30; -fx-background-color: white; -fx-alignment: center;");
-        chartContainer.setPrefWidth(600);
-        chartContainer.setPrefHeight(820);
+        chartContainer.setStyle("-fx-padding: 5, 5, 5, 5; -fx-background-color: white; -fx-alignment: center;");
+        chartContainer.setPrefWidth(480);
+        chartContainer.setPrefHeight(656);
         chartContainer.setAlignment(Pos.CENTER);
         chartContainer.getChildren().add(stats.makeSpeedChartCopy());
         chartContainer.getChildren().add(stats.makeTravelTimeChartCopy());

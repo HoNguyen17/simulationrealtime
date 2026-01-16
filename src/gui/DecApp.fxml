@@ -181,10 +181,10 @@
                                                    prefWidth="250.0" prefHeight="180.0"
                                                    animated="false">
                                             <xAxis>
-                                                <CategoryAxis side="BOTTOM" label="Edge" />
+                                                <CategoryAxis side="BOTTOM" label="Density (vehicles)" />
                                             </xAxis>
                                             <yAxis>
-                                                <NumberAxis fx:id="densityYAxis" side="LEFT" label="Count Edges" autoRanging="false" lowerBound="0" upperBound="10"/>
+                                                <NumberAxis fx:id="densityYAxis" side="LEFT" label="Edge Counts" autoRanging="false" lowerBound="0" upperBound="10"/>
                                             </yAxis>
                                         </BarChart>
                                     </children>

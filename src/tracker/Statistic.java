@@ -30,8 +30,8 @@ public class Statistic {
     private static SimulationWrapper sim = null;
     public static boolean initialize(SimulationWrapper input) {
         sim = input;
-        try (FileWriter writer = new FileWriter("tracker/edgeData.csv")) {
-            writer.write("Simulation Time, Edge, Density, Estimate Travel Time, Congested\n");
+        try (FileWriter writer = new FileWriter("tracker/trackedData.csv")) {
+            writer.write("Simulation Time, Overall Average Speed of Time Step, Edge, Density, Estimate Travel Time, Congested\n");
             return true;
         } catch (Exception e) {
             System.out.println("An error occurred while opening the file.");
@@ -40,7 +40,7 @@ public class Statistic {
         return false;
     }
     public static void addNewEdgeData() {
-        try (FileWriter writer = new FileWriter("tracker/edgeData.csv", true)) {
+        try (FileWriter writer = new FileWriter("tracker/trackedData.csv", true)) {
             double currentTime = sim.getTime(0);
             List<String> edges = sim.getEdgeIDsList();
             for (String e : edges) {
@@ -48,7 +48,9 @@ public class Statistic {
                 if(density > 0) {
                     double travelTime = sim.getEdgeTravelTime(e);
                     boolean congested = sim.getEdgeCongested(e);
+                    double averageSpeed = sim.getVehicleAverageSpeed(0);
                     writer.write(currentTime + ",");
+                    writer.write(averageSpeed + ",");
                     writer.write(" " + e + ",");
                     writer.write(density + ",");
                     writer.write(travelTime + ",");
@@ -63,8 +65,9 @@ public class Statistic {
 
     public static String exportCSV(File destinationFile, String filterType) {
         try {
-            File sourceFile = new File("tracker/edgeData.csv");
+            File sourceFile = new File("tracker/trackedData.csv");
             if (!sourceFile.exists()) {
+                // throw exception here
                 return null;
             }
             if (destinationFile != null) {
@@ -89,10 +92,10 @@ public class Statistic {
                         boolean shouldExport = true;
                         // Apply filter if CONGESTED_ONLY
                         if ("CONGESTED_ONLY".equals(filterType)) {
-                            // Parse CSV line: "Time, Edge, Density, Travel Time, Congested"
+                            // Parse CSV line: "Time, Average, Edge, Density, Travel Time, Congested"
                             String[] parts = line.split(",");
-                            if (parts.length >= 5) {
-                                String congestedStr = parts[4].trim();
+                            if (parts.length >= 6) {
+                                String congestedStr = parts[5].trim();
                                 // Check if congested is true
                                 if (!congestedStr.equalsIgnoreCase("true")) shouldExport = false;
                             }
@@ -116,7 +119,7 @@ public class Statistic {
     }
 
     public static boolean exportPDF(VBox chartContainer, Stage stage) {
-        Scene printScene = new Scene(chartContainer, 600, 820);
+        Scene printScene = new Scene(chartContainer, 480, 656); //600 820
         PrinterJob printerJob = PrinterJob.createPrinterJob();
 
         if (printerJob == null) return false;
