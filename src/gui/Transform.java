@@ -24,7 +24,6 @@ public class Transform {
         this.panX = panX;
         this.panY = panY;
     }
-
     // Update canvas height (for Y-axis inversion)
     public void setCanvasHeight(double canvasHeight) {
         this.canvasHeight = canvasHeight;
@@ -37,7 +36,6 @@ public class Transform {
     public double worldscreenY(double worldY) {
         return (worldY * scale * zoom) + offsetY + panY;
     }
-
     // Screen to world coordinate conversions
     public double screenworldX(double screenX) {
         return (screenX - offsetX - panX) / (scale * zoom);
@@ -46,8 +44,6 @@ public class Transform {
     public double screenworldY(double screenY) {
         return (screenY - offsetY - panY) / (scale * zoom);
     }
-
-
     // Convert world size to screen size
     public double worldscreenSize(double worldSize) {
         return worldSize * scale * zoom;
