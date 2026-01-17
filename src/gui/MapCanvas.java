@@ -131,7 +131,21 @@ public class MapCanvas {
     public void setHightLightJunctions(List<String> input) {
         this.hightlightJunctions = new HashSet<String>(input);
     }
-    
+    // find mid point, for dashed line
+    private List<Point2D> findMidPoint(List<Point2D> oldPts, List<Point2D> pts) {
+        if (oldPts.size() == pts.size()) {
+            List<Point2D> out = new ArrayList<>();
+            for (int i = 0; i < pts.size(); i++) {
+                Point2D midP = (oldPts.get(i)).midpoint(pts.get(i));
+                out.add(midP);
+            }
+            return out;
+        }
+        else {
+            System.out.println("NOT EQUAL");
+            return null;
+        }
+    }
     // Offset polyline points by distance d
     private List<Point2D> offsetPolyline(List<Point2D> pts, double d) {
         if (pts.size() < 2) return pts;
@@ -198,6 +212,7 @@ public class MapCanvas {
         // Draw roads
         for (Networkpaser.Edge e : model.edges) { // skip internal edges
             if (e.id.startsWith(":")) continue;
+            List<Point2D> oldScreenPts = null; 
             for (Networkpaser.Lane lane : e.lanes) {
                 if (lane.shapePoints.size() < 2) continue;
                 List<Point2D> screenPts = new ArrayList<>(); // transformed points
@@ -213,12 +228,31 @@ public class MapCanvas {
                 drawPolyline(g, screenPts);
 
                 // Draw center line inside the road
-                List<Point2D> centerline = offsetPolyline(screenPts, 0.0);
-                g.setStroke(Color.web("#ffffffff"));
-                g.setLineWidth(centermarksizePx);
-                g.setLineDashes(18, 12); // optionally scale dash lengths too
-                drawPolyline(g, centerline);
+                if(oldScreenPts != null) {
+                    List<Point2D> newline = findMidPoint(oldScreenPts, screenPts);
+                    List<Point2D> centerline = offsetPolyline(newline, 0.0);
+                    g.setStroke(Color.web("#ffffffff"));
+                    g.setLineWidth(centermarksizePx);
+                    g.setLineDashes(18, 12); 
+                    drawPolyline(g, centerline);
+                }
+                else {oldScreenPts = screenPts;}
             }
+        }
+        //draw midline between 2 edge
+        for (Networkpaser.MidLine m : model.midLines.values()) {
+            if (m.line.size() < 2) continue;
+                List<Point2D> screenPts = new ArrayList<>(); 
+                for (Point2D p : m.line) {
+                    screenPts.add(new Point2D(
+                        transform.worldscreenX(p.getX()),
+                        transform.worldscreenY(p.getY())
+                    ));
+                }
+            g.setStroke(Color.web("#ffffffff"));
+            g.setLineWidth(centermarksizePx);
+            g.setLineDashes(18, 12); 
+            drawPolyline(g, screenPts);
         }
         // draw junctions
         for (Networkpaser.Junction j : model.junctions) {
