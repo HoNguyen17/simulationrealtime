@@ -17,13 +17,17 @@ import de.tudresden.sumo.subscription.ResponseType;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 class TrafficLightWrapper extends DataType.TrafficLightData { 
+    private final static Logger LOG = Logger.getLogger(TrafficLightWrapper.class.getName());
     String originProgramID;
 
     TrafficLightWrapper(String inputID, String startProgram, List<String> inputFrom, List<String> inputTo){
         super(inputID, inputFrom, inputTo);
         this.originProgramID = startProgram;
-        System.out.println("Added " + ID + " with program " + originProgramID);
+        LOG.info("Added " + ID + " with program " + originProgramID);
     }
 //=================STATIC================================
     // update TrafficLightList of SimulationWrapper
@@ -50,8 +54,8 @@ class TrafficLightWrapper extends DataType.TrafficLightData {
                 temp.conn.do_subscription(vs);
             }
         }
-        catch (Exception A) {
-            System.out.println("Set up traffic lights failed.");
+        catch (Exception e) {
+            LOG.log(Level.SEVERE, "Set up traffic lights failed.", e);
         }
     }
 //=================GETTER================================
@@ -59,17 +63,17 @@ class TrafficLightWrapper extends DataType.TrafficLightData {
     public int getPhaseNum(SimulationWrapper temp, int po) {
         try {
             int tlsPhase = (int)temp.conn.do_job_get(Trafficlight.getPhase(ID));
-            if (po == 1) {System.out.println(String.format("tlsPhase of %s: %d", ID, tlsPhase));}
+            if (po == 1) {LOG.info(String.format("tlsPhase of %s: %d", ID, tlsPhase));}
             return tlsPhase;
         }
-        catch(Exception A) {
-            System.out.println("Failed to get phase number.");
+        catch(Exception e) {
+            LOG.log(Level.WARNING, "Failed to get phase number.", e);
         }
         return -1;
     }
     // get phase definition (Red-Green-Yellow) stored in the wrapper object, updated asynchronously via subscription
     public String getPhaseDef(int po) {
-        if (po == 1) {System.out.println(String.format("Current phase definition of %s: %s", ID, lightDef));}
+        if (po == 1) {LOG.info(String.format("Current phase definition of %s: %s", ID, lightDef));}
         return lightDef;
     }
     // get controlled junctions of traffic light (usually 1)
@@ -79,7 +83,7 @@ class TrafficLightWrapper extends DataType.TrafficLightData {
             return junctions;
         }   
         catch (Exception e) {
-            System.out.println("fail to get junctions");
+            LOG.log(Level.WARNING, "Fail to get junctions", e);
         }
         return null;
     }
@@ -101,8 +105,8 @@ class TrafficLightWrapper extends DataType.TrafficLightData {
             temp.conn.do_job_set(Trafficlight.setProgram(ID, originProgramID));
             return true;
         }
-        catch (Exception F) {
-            System.out.println("Unable to set light definition back to auto");
+        catch (Exception e) {
+            LOG.log(Level.WARNING, "Unable to set light definition back to auto", e);
         }
         return false;
     }
@@ -116,18 +120,19 @@ class TrafficLightWrapper extends DataType.TrafficLightData {
             else {temp.conn.do_job_set(Trafficlight.setPhase(ID, 0));}
             return true;
         }
-        catch (Exception G) {
-            System.out.println("Unable to set to next phase");
+        catch (Exception e) {
+            LOG.log(Level.WARNING, "Unable to set to next phase", e);
+            return false;
         }
-        return false;
+        
     }
     public boolean setPhaseDuration(SimulationWrapper temp, double inputTime) {
         try {
             temp.conn.do_job_set(Trafficlight.setPhaseDuration(ID, inputTime));
             return true;
         }
-        catch (Exception E) {
-            System.out.println("Unable to set phase duration for " + ID);
+        catch (Exception e) {
+            LOG.log(Level.WARNING, "Unable to set phase duration for " + ID, e);
             return false;
         }
     }

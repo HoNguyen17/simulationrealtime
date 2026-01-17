@@ -11,30 +11,35 @@ import javafx.scene.paint.Color;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 class VehicleWrapper extends DataType.VehicleData {
+    private final static Logger LOG = Logger.getLogger(VehicleWrapper.class.getName());
     protected double departTime = Double.NaN;
 
     VehicleWrapper(String inputID, Color inputColor){
         super(inputID);
         color = inputColor;
-        System.out.println("Added vehicle " + inputID + ".");
     }
     //=================ADDER=================================
     protected static void addVehicle(SimulationWrapper temp, String inputID, String inputRoute) { 
         try {
-            temp.conn.do_job_set(Vehicle.add(inputID, "DEFAULT_VEHTYPE", inputRoute, 0, 0, 0, (byte)0)); // default vehicle type has the initial departure time, position, and speed = 0
+            temp.conn.do_job_set(Vehicle.add(inputID, "DEFAULT_VEHTYPE", inputRoute, 0, 0, 0, (byte)0)); 
         }
-        catch (Exception e) {System.out.println("add vehicle fail");}
+        catch (Exception e) {
+            LOG.log(Level.WARNING, "Add vehicle failed.", e);
+        }
     }
     //=================GETTER================================
-    public static List<String> getIDList(SimulationWrapper temp, int po) { // the method should be static, because it returns all vehicles, not one
+    public static List<String> getIDList(SimulationWrapper temp, int po) { 
         try {
             List<String> idList = (List<String>) temp.conn.do_job_get(Vehicle.getIDList());
-            if (po==1) {System.out.println(String.format("ID list of all vehicle in the current simulation: %s", idList));}
+            if (po == 1) {LOG.info("ID list of all vehicle in the current simulation: %s" + idList);}
             return idList;
         }
         catch(Exception e) {
-            System.out.println("Cannot get vehicle ID list." + e.getMessage());
+            LOG.log(Level.SEVERE, "Cannot get vehicle ID list.", e);
             return null;
         }
     }
@@ -52,10 +57,10 @@ class VehicleWrapper extends DataType.VehicleData {
     public void setSpeed(SimulationWrapper temp, double inputSpeed, int po) {
         try {
             temp.conn.do_job_set(Vehicle.setSpeed(ID, inputSpeed));
-            if (po==1) System.out.println(String.format("Set the speed of the vehicle that has the ID %s into %.3f m/s", ID, speed));
+            if (po == 1) {LOG.info("Set the speed of the vehicle " + ID +" to " + speed);}
         }
         catch(Exception e) {
-            System.out.println("Cannot set the speed of the vehicle that has the ID " + ID + e.getMessage());
+            LOG.log(Level.WARNING, "Cannot set the speed of the vehicle" + ID, e);
         }
     }
     public void setColor(SimulationWrapper temp, double r, double g, double b, double a) {
@@ -66,7 +71,7 @@ class VehicleWrapper extends DataType.VehicleData {
             temp.conn.do_job_set(Vehicle.setColor(ID, inputColor));    
         }
         catch(Exception e) {
-            System.out.println("Cannot set the color of the vehicle that has the ID " + ID + e.getMessage());
+            LOG.log(Level.WARNING, "Cannot set the color of the vehicle" + ID, e);
         }
     }
 }

@@ -1,9 +1,13 @@
 package paser;
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -12,16 +16,8 @@ import org.w3c.dom.NodeList;
 import javafx.geometry.Point2D;
 import java.io.File;
 
-
-
-
-
 public class Networkpaser {
-    /*
-    First we need to build 3 class for the network
-    */
 
-    //class Junction
     public static class Junction {
         public String id;
         public double x;
@@ -30,7 +26,6 @@ public class Networkpaser {
         public String shape;
         public List<Point2D> shapePoints = new ArrayList<>();
 
-        // Constructor đầy đủ
         public Junction(String id, double x, double y, String type, String shape) {
             this.id = id;
             this.x = x;
@@ -39,12 +34,9 @@ public class Networkpaser {
             this.shape = shape;
             this.shapePoints = parseShape(shape);
         }
-
-        // Constructor mặc định
+        // Default constructor
         public Junction() {}
     }
-
-    
 
     public static class Lane {
         public String id;
@@ -52,9 +44,8 @@ public class Networkpaser {
         public double speed;
         public double length;
         public double width;
-        public List<Point2D> shapePoints = new ArrayList<>();// the list of the point(take it in shape in lane(xml file)) <point2D>
+        public List<Point2D> shapePoints = new ArrayList<>();
 
-        // Constructor đầy đủ
         public Lane(String id, int index, double speed, double length, double width, List<Point2D> shapePoints) {
             this.id = id;
             this.index = index;
@@ -63,48 +54,52 @@ public class Networkpaser {
             this.width = width;
             if (shapePoints != null) this.shapePoints = shapePoints; else this.shapePoints = new ArrayList<>();
         }
-
-        // Constructor mặc định
+        // Default constructor
         public Lane() {}
     }
 
-    //class edge
     public static class Edge {
         public String id;
         public String from;
         public String to;
-        public List<Lane> lanes; //<lane>
+        public List<Lane> lanes; 
 
-        // Constructor đầy đủ
         public Edge(String id, String from, String to, List<Lane> lanes) {
             this.id = id;
             this.from = from;
             this.to = to;
             this.lanes = lanes;
         }
-
-        // Constructor mặc định
+        // Default constructor
         public Edge() {}
     }
 
+    public static class MidLine {
+        public String id;
+        public List<Point2D> line;
+
+        public MidLine(String id, List<Point2D> line) {
+            this.id = id;
+            this.line = line;
+        }
+    }
     //class Networkmodel : use to overrall all the Junction, Lane, Edge together
     public static class NetworkModel {
         public List<Edge> edges;
         public List<Junction> junctions;
+        public HashMap<String, MidLine> midLines;
         public double minX, maxX, minY, maxY;
 
-
-        // Constructor đầy đủ
-        public NetworkModel(List<Edge> edges, List<Junction> junctions, double minX, double maxX, double minY, double maxY) {
+        public NetworkModel(List<Edge> edges, List<Junction> junctions, HashMap<String, MidLine>midLines, double minX, double maxX, double minY, double maxY) {
             this.edges = edges;
             this.junctions = junctions;
+            this.midLines = midLines;
             this.minX = minX;
             this.maxX = maxX;
             this.minY = minY;
             this.maxY = maxY;
         }
-
-        // Constructor mặc định
+        // Default constructor
         public NetworkModel() {}
     }
 
@@ -168,6 +163,7 @@ public class Networkpaser {
         // Parse edges
         NodeList edgeNodes = doc.getElementsByTagName("edge");
         List<Edge> edges = new ArrayList<>();
+        HashMap<String, MidLine> midLines = new HashMap<>();
         for (int i = 0; i < edgeNodes.getLength(); i++) {
             Node node = edgeNodes.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -192,6 +188,19 @@ public class Networkpaser {
                         List<Point2D> shapePoints = parseShape(shape);
 
                         lanes.add( new Lane(laneId, index, speed, length, width, shapePoints));
+                        if (j == 0) {
+                            if(!id.startsWith(":")) {
+                                String tempID = id;
+                                if(id.startsWith("-")) {tempID = id.substring(1);}
+                                MidLine newline = new MidLine(tempID, shapePoints);
+                                if (midLines.containsKey(tempID)) {
+                                    MidLine oldline = midLines.get(tempID);
+                                    newline = new MidLine(tempID, findMidLine(oldline, newline));
+                                    midLines.put(tempID, newline);
+                                }
+                                else {midLines.put(tempID, newline);}
+                            }
+                        }
                     }
                 }
                 //Only add edges if it has lanes
@@ -201,7 +210,7 @@ public class Networkpaser {
                 }
             }
         }
-        return new NetworkModel(edges, junctions, minX, maxX, minY, maxY);
+        return new NetworkModel(edges, junctions, midLines, minX, maxX, minY, maxY);
     }
 
     private static double safeParseDouble(String s, double def) {
@@ -211,5 +220,10 @@ public class Networkpaser {
     private static int safeParseInt(String s, int def) {
         if (s == null || s.isEmpty()) return def;
         try { return Integer.parseInt(s); } catch (NumberFormatException ex) { return def; }
+    }
+    private static List<Point2D> findMidLine(MidLine oldline, MidLine newline) {
+        Point2D mid1 = (oldline.line.get(0)).midpoint(newline.line.get(1));
+        Point2D mid2 = (oldline.line.get(1)).midpoint(newline.line.get(0));
+        return List.of(mid1, mid2);
     }
 }

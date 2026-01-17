@@ -5,10 +5,13 @@ import de.tudresden.sumo.objects.SumoColor;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 import javafx.scene.paint.Color;
 
 public class DataType {
-    
+    private final static Logger LOG = Logger.getLogger(DataType.class.getName());
     public static String[] colorOptions = {"Default", "Red", "Orange",  "Yellow", "Green", "Blue", "Indigo", "Violet", "Pink"};
     
     public static Color convertColor(SumoColor inputColor) {
@@ -67,7 +70,7 @@ public class DataType {
             this.controlledLinksNum = inputFrom.size();
         }
         public String getID(int po) {
-            if (po == 1) {System.out.print(" " + ID);}
+            if (po == 1) {LOG.info(" " + ID);}
             return ID;
         }
         public int getControlledLinksNum() {
@@ -98,23 +101,23 @@ public class DataType {
             return ID;
         }
         public double getPositionX(int po) {
-            if (po == 1) {System.out.println("Position x of "+ ID +" is " + pos_x);}
+            if (po == 1) {LOG.info("Position x of "+ ID +" is " + pos_x);}
             return pos_x;
         }
         public double getPositionY(int po) {
-            if (po == 1) {System.out.println("Position x of "+ ID +" is " + pos_y);}
+            if (po == 1) {LOG.info("Position x of "+ ID +" is " + pos_y);}
             return pos_y;
         }
         public double getAngle(int po) {
-            if (po == 1) {System.out.println("Vehicle " + ID + " is facing " + angle);}
+            if (po == 1) {LOG.info("Vehicle " + ID + " is facing " + angle);}
             return angle;
         }
         public double getSpeed(int po) {
-            if (po == 1) {System.out.println("Speed of "+ ID +" is " + speed);}
+            if (po == 1) {LOG.info("Speed of "+ ID +" is " + speed);}
             return speed;
         }
         public Color getColor(int po) {
-            if (po == 1) {System.out.println("Color of "+ ID +" is " + color);}
+            if (po == 1) {LOG.info("Color of "+ ID +" is " + color);}
             return color;
         }
     }
@@ -127,11 +130,11 @@ public class DataType {
             this.firstEdgeID = inputEdgeID;
         } 
         public String getID(int po) {
-            if(po == 1){System.out.println(ID);}
+            if(po == 1){LOG.info(ID);}
             return ID;
         }
         public String getFirstEdgeID(int po) {
-            if (po == 1) {System.out.println("First edge " + this.firstEdgeID);}
+            if (po == 1) {LOG.info("First edge " + this.firstEdgeID);}
             return firstEdgeID;
         }
     }
@@ -146,20 +149,31 @@ public class DataType {
             this.ID = inputID;
         }
         public String getID(int po) {
-            if (po == 1) {System.out.println(ID);}
+            if (po == 1) {LOG.info(ID);}
             return ID;
         }
         public int getDensity(int po) {
-            if (po == 1) {System.out.println(ID);}
+            if (po == 1) {LOG.info(ID);}
             return density;
         }
         public double getTravelTime(int po) {
-            if (po == 1) {System.out.println(ID);}
+            if (po == 1) {LOG.info(ID);}
             return travelTime;
         }
         public double getwaitingTime(int po) {
-            if (po == 1) {System.out.println(ID);}
+            if (po == 1) {LOG.info(ID);}
             return waitingTime;
+        }
+    }
+    //exceptions
+    public static class RouteNotFoundException extends Exception {
+        public RouteNotFoundException(String inputID) {
+            super("Cannot find route " + inputID);
+        }
+    }
+    public static class VehicleExistedException extends Exception {
+        public VehicleExistedException(String inputID) {
+            super("Vehicle " + inputID + " already existed");
         }
     }
 }
