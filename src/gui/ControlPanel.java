@@ -35,6 +35,9 @@ import javafx.geometry.Pos;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 import wrapper.SimulationWrapper;
 import wrapper.DataType.VehicleData;
 import wrapper.DataType;
@@ -42,7 +45,8 @@ import wrapper.DataType;
 import tracker.Statistic;
 
 public class ControlPanel {
-    // --- FXML ---
+    private static final Logger LOG = Logger.getLogger(ControlPanel.class.getName());
+
     @FXML private StackPane mapContainer;
     @FXML private Button exportButton;
     @FXML private ComboBox<String> exportType;
@@ -238,7 +242,10 @@ public class ControlPanel {
         try {
             Integer.parseInt(input);
             return true;
-        } catch (NumberFormatException e) {return false;}
+        } catch (NumberFormatException e) {
+            LOG.log(Level.WARNING, "User attempt to input non-integer");
+            return false;
+        }
     }
 
     private void exportCSVMenu(Stage stage) {

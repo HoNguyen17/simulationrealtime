@@ -26,16 +26,20 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 public class Statistic {
     private static SimulationWrapper sim = null;
+    private final static Logger LOG = Logger.getLogger(Statistic.class.getName());
+
     public static boolean initialize(SimulationWrapper input) {
         sim = input;
         try (FileWriter writer = new FileWriter("tracker/trackedData.csv")) {
             writer.write("Simulation Time, Overall Average Speed of Time Step, Edge, Density, Estimate Travel Time, Congested\n");
             return true;
         } catch (Exception e) {
-            System.out.println("An error occurred while opening the file.");
-            e.printStackTrace();
+            LOG.log(Level.WARNING, "An error occurred while opening the file.", e);
         }
         return false;
     }
@@ -58,8 +62,7 @@ public class Statistic {
                 }
             }
         } catch (Exception e) {
-            System.out.println("An error occurred while opening the file.");
-            e.printStackTrace();
+            LOG.log(Level.WARNING, "An error occurred while opening the file.", e);
         }
     }
 
@@ -71,18 +74,15 @@ public class Statistic {
                 return null;
             }
             if (destinationFile != null) {
-                // Read, filter, and write CSV data
                 try (BufferedReader reader = new BufferedReader(new FileReader(sourceFile));
                      BufferedWriter writer = new BufferedWriter(new FileWriter(destinationFile))) {
                     
                     String header = reader.readLine();
                     if (header == null) return null;
                     
-                    // Write header
                     writer.write(header);
                     writer.newLine();
                     
-                    // Filter and write data
                     String line;
                     int totalRows = 0;
                     int exportedRows = 0;
@@ -96,7 +96,6 @@ public class Statistic {
                             String[] parts = line.split(",");
                             if (parts.length >= 6) {
                                 String congestedStr = parts[5].trim();
-                                // Check if congested is true
                                 if (!congestedStr.equalsIgnoreCase("true")) shouldExport = false;
                             }
                         }
@@ -112,8 +111,7 @@ public class Statistic {
 
             }
         } catch (Exception e) {
-            System.err.println("Error exporting CSV file: " + e.getMessage());
-            e.printStackTrace();
+            LOG.log(Level.SEVERE, "Error exporting CSV file: ", e);
         }
         return null;
     }
@@ -126,7 +124,6 @@ public class Statistic {
         
         if (printerJob.showPrintDialog(stage)) {
             Printer printer = printerJob.getPrinter();
-            // Configure page layout for better PDF output
             PageLayout pageLayout = printer.createPageLayout(Paper.A4, 
                 PageOrientation.PORTRAIT, Printer.MarginType.DEFAULT);
         

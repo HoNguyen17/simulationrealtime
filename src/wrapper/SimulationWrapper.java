@@ -1,5 +1,8 @@
 package wrapper;
 
+import wrapper.DataType.RouteNotFoundException;
+import wrapper.DataType.VehicleExistedException;
+
 import it.polito.appeal.traci.SumoTraciConnection;
 import it.polito.appeal.traci.TraCIException;
 
@@ -366,7 +369,8 @@ public class SimulationWrapper implements Observer {
     public void addVehicleNormal(String inputID, String inputRouteID) {
         try {
             RouteWrapper.updateRouteIDs(this);
-            if (RouteList.containsKey(inputRouteID)) {LOG.info("Invalid injection");}
+            if (VehicleList.containsKey(inputID)) {throw new VehicleExistedException(inputID);}
+            else if (!RouteList.containsKey(inputRouteID)) {throw new RouteNotFoundException(inputRouteID);}
             else VehicleWrapper.addVehicle(this, inputID, inputRouteID);
         }
         catch (Exception e) {
@@ -377,7 +381,8 @@ public class SimulationWrapper implements Observer {
     public void addVehicleWithColor(String inputID, String inputRouteID, Color inputColor) {
         try {
             RouteWrapper.updateRouteIDs(this);
-            if (RouteList.containsKey(inputID)) {LOG.info("Invalid injection");}
+            if (VehicleList.containsKey(inputID)) {throw new VehicleExistedException(inputID);}
+            else if (!RouteList.containsKey(inputRouteID)) {throw new RouteNotFoundException(inputRouteID);}
             else {VehicleWrapper.addVehicle(this, inputID, inputRouteID);}
             ColorQueue.put(inputID, inputColor);
         }

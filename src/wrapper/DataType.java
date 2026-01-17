@@ -165,4 +165,15 @@ public class DataType {
             return waitingTime;
         }
     }
+    //exceptions
+    public static class RouteNotFoundException extends Exception {
+        public RouteNotFoundException(String inputID) {
+            super("Cannot find route " + inputID);
+        }
+    }
+    public static class VehicleExistedException extends Exception {
+        public VehicleExistedException(String inputID) {
+            super("Vehicle " + inputID + " already existed");
+        }
+    }
 }

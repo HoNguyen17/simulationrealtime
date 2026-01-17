@@ -13,7 +13,7 @@ public class AppLog {
         Handler fileHandler;
         Handler consoleHandler;
 
-        for (Handler h : rootLog.getHandlers()) rootLog.removeHandler(h);
+        for (Handler h : rootLog.getHandlers()) {rootLog.removeHandler(h);}
 
         try {
             fileHandler = new java.util.logging.FileHandler("logfile.log");

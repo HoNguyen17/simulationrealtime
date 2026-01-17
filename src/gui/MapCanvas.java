@@ -114,7 +114,6 @@ public class MapCanvas {
     // set color for filter
     public void setColorFilter(String input) {
         this.filterColor = input;
-        System.out.println(filterColor);
     }
     // set speed limit for filter
     public void setSpeedFilter(double input) {
@@ -336,7 +335,6 @@ public class MapCanvas {
                 // color by state
                 Color c;
                 char st = defFromTo.get(0).charAt(0);
-                //System.out.println("=="+st+"==");
                 if (st == 'r') {c = Color.RED;}
                 else if (st == 'y') {c = Color.YELLOW;}
                 else if (st == 'g' || st == 'G') {c = Color.LIMEGREEN;}

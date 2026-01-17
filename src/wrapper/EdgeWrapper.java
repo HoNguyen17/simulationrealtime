@@ -35,6 +35,7 @@ class EdgeWrapper extends DataType.EdgeData {
                 vs.addCommand(Constants.VAR_WAITING_TIME);
                 temp.conn.do_subscription(vs);
             }
+            LOG.info("Set up edge list success");
         }
         catch (Exception e) {
             LOG.log(Level.SEVERE, "Set up edge data failed.", e);
