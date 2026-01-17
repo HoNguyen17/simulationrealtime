@@ -6,7 +6,11 @@ import de.tudresden.sumo.cmd.Route;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 class RouteWrapper extends DataType.RouteData {
+    private final static Logger LOG = Logger.getLogger(RouteWrapper.class.getName());
 
     RouteWrapper(String inputID, String inputEdgeID) {
         super(inputID, inputEdgeID);
@@ -23,7 +27,9 @@ class RouteWrapper extends DataType.RouteData {
                 }  
             }
         }
-        catch(Exception e) {System.out.println("Unable to update route list");}
+        catch(Exception e) {
+            LOG.log(Level.SEVERE, "Unable to update route list", e);
+        }
     }
     // make copy of the object for rendering in MapCanvas
     public DataType.RouteData makeCopy() {

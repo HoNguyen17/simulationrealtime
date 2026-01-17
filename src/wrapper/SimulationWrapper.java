@@ -28,9 +28,13 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 import javafx.scene.paint.Color;
 
 public class SimulationWrapper implements Observer {
+    private final static Logger LOG = Logger.getLogger(SimulationWrapper.class.getName());
     protected static SumoTraciConnection conn; 
     protected int delay = 200;
     protected boolean isPaused = false;
@@ -47,7 +51,7 @@ public class SimulationWrapper implements Observer {
         conn = new SumoTraciConnection(sumo_bin, sumocfg);
         conn.addOption("step-length", step_length + "");
         conn.addOption("start", "true");
-        System.out.println("Simulation created");
+        LOG.info("Simulation created");
     }
     public SimulationWrapper(String sumocfg){
         String sumo_bin = "sumo";
@@ -55,7 +59,7 @@ public class SimulationWrapper implements Observer {
         conn = new SumoTraciConnection(sumo_bin, sumocfg);
         conn.addOption("step-length", step_length + "");
         conn.addOption("start", "true");
-        System.out.println("Simulation created");
+        LOG.info("Simulation created");
     }
 //===== SIMULATION STUFF ==================================
     public boolean isClosed() {
@@ -65,8 +69,8 @@ public class SimulationWrapper implements Observer {
         return isPaused;
     }
     public void Pause() {
-        if (!isPaused) isPaused = true;
-        else  isPaused = false;
+        if (!isPaused) {isPaused = true;}
+        else {isPaused = false;}
     }
     public void Start(){
         try {
@@ -82,9 +86,11 @@ public class SimulationWrapper implements Observer {
             TrafficLightWrapper.updateTrafficLightIDs(this);
             EdgeWrapper.updateEdgeIDs(this);
             RouteWrapper.updateRouteIDs(this);
-            System.out.println("Started successfully.");
+            LOG.info("Simulation started successfully");
         }
-        catch(Exception e) {System.out.println("Failed to start.");}
+        catch(Exception e) {
+            LOG.log(Level.SEVERE, "Failed to start simulation", e);
+        }
     }
     public void Step(){
         if(!isPaused) {
@@ -92,7 +98,9 @@ public class SimulationWrapper implements Observer {
                 Thread.sleep(delay);
                 conn.do_timestep();
             }
-            catch(Exception e) {System.out.println("Failed to step.");}
+            catch (Exception e) {
+                LOG.log(Level.SEVERE, "Failed to step simulation", e);
+            }
         }
     }
     public void End() {
@@ -101,11 +109,13 @@ public class SimulationWrapper implements Observer {
     public double getTime(int po) {
         try {
             double time = (double) conn.do_job_get(Simulation.getTime());
-            if (po == 1) System.out.println("Current Time: " + time);
+            if (po == 1) {LOG.info("Current Time: " + time);}
             return time;
         }
-        catch (Exception e) {System.out.println("Can't get the time.");}
-        return -1;
+        catch (Exception e) {
+            LOG.log(Level.SEVERE, "Failed to get simulation time", e);
+            return -1;
+        }
     }
     // update from subscription, abstract method of observer
     public void update(Observable arg0, SubscriptionObject so) { 
@@ -137,7 +147,9 @@ public class SimulationWrapper implements Observer {
                                 ColorQueue.remove(vehID);
                             }
                         } 
-                        catch (Exception ex) {System.err.println("subscription to " + vehID + " failed");}
+                        catch (Exception e) {
+                            LOG.log(Level.SEVERE, "subscription to " + vehID + " failed", e);
+                        }
                     }
                 }
             }
@@ -151,8 +163,8 @@ public class SimulationWrapper implements Observer {
                             CompletedTravelTimes.add(travelTime);
                             VehicleList.remove(vehID);
                         }
-                        catch (Exception ex) {
-                            System.err.println("Unable to delete " + vehID + " from hashmap");
+                        catch (Exception e) {
+                            LOG.log(Level.SEVERE, "Unable to delete " + vehID, e);
                         }
                     }
                 }
@@ -325,8 +337,8 @@ public class SimulationWrapper implements Observer {
             result += vehicle.speed;
         }
 
-        if (VehicleList.size() != 0) result /= VehicleList.size();
-        if (po == 1) System.out.println("Average speed is " + result);
+        if (VehicleList.size() != 0) {result /= VehicleList.size();}
+        if (po == 1) {LOG.info("Average speed is " + result);}
         return result;
     }
 //===== MAKE COPY =========================================
@@ -340,34 +352,38 @@ public class SimulationWrapper implements Observer {
             VehicleWrapper vehicle = VehicleList.get(inputID);
             vehicle.setSpeed(this, inputSpeed, 0);
         }
-        else {System.out.println("Vehicle not exist");}
+        else {LOG.info("Vehicle not exist, set speed failed");}
     }
     public void setVehicleColor(String inputID, double r, double g, double b, double a) {
         if (VehicleList.containsKey(inputID)) {  
             VehicleWrapper vehicle = VehicleList.get(inputID);
             vehicle.setColor(this, r, g, b, a);
         }
-        else {System.out.println("Vehicle not exist");}
+        else {LOG.info("Vehicle not exist, set color failed");}
     }
 //===== ADDER =============================================
     //add a vehicle into selected route
     public void addVehicleNormal(String inputID, String inputRouteID) {
         try {
             RouteWrapper.updateRouteIDs(this);
-            if (1==0) {System.out.println("Invalid injection");}
-            else {VehicleWrapper.addVehicle(this, inputID, inputRouteID);}
+            if (RouteList.containsKey(inputRouteID)) {LOG.info("Invalid injection");}
+            else VehicleWrapper.addVehicle(this, inputID, inputRouteID);
         }
-        catch (Exception e) {System.out.println("Error when adding vehicle normally");}
+        catch (Exception e) {
+            LOG.log(Level.WARNING, "Error when adding vehicle normally", e);
+        }
     }
     //add vehicle with color into selected route
     public void addVehicleWithColor(String inputID, String inputRouteID, Color inputColor) {
         try {
             RouteWrapper.updateRouteIDs(this);
-            if (1==0) {System.out.println("Invalid injection");}
+            if (RouteList.containsKey(inputID)) {LOG.info("Invalid injection");}
             else {VehicleWrapper.addVehicle(this, inputID, inputRouteID);}
             ColorQueue.put(inputID, inputColor);
         }
-        catch (Exception e) {System.out.println("Error when adding vehicle normally");}
+        catch (Exception e) {
+            LOG.log(Level.WARNING, "Error when adding vehicle with color", e);
+        }
     }
 //===== ROUTE STUFF ========================================
 //===== GETTER =============================================
@@ -375,7 +391,7 @@ public class SimulationWrapper implements Observer {
     public int getRouteNum(int po) {
         RouteWrapper.updateRouteIDs(this);
         int routeNum = RouteList.size();
-        if (po == 1) {System.out.println(routeNum);}
+        if (po == 1) {LOG.info("" + routeNum);}
         return routeNum;
     }
     //get first edge id of the route

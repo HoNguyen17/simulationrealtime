@@ -13,7 +13,11 @@ import de.tudresden.sumo.subscription.ResponseType;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 class EdgeWrapper extends DataType.EdgeData {
+    private final static Logger LOG = Logger.getLogger(EdgeWrapper.class.getName());
 
     EdgeWrapper(String inputID) {
         super(inputID);
@@ -32,8 +36,8 @@ class EdgeWrapper extends DataType.EdgeData {
                 temp.conn.do_subscription(vs);
             }
         }
-        catch (Exception A) {
-            System.out.println("Set up edge data failed.");
+        catch (Exception e) {
+            LOG.log(Level.SEVERE, "Set up edge data failed.", e);
         }
     }
 }

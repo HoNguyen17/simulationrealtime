@@ -1,0 +1,26 @@
+Jan 17, 2026 10:55:13 AM wrapper.SimulationWrapper <init>
+INFO: Simulation created
+Jan 17, 2026 10:55:13 AM wrapper.TrafficLightWrapper <init>
+INFO: Added J13 with program 0
+Jan 17, 2026 10:55:13 AM wrapper.TrafficLightWrapper <init>
+INFO: Added J15 with program 0
+Jan 17, 2026 10:55:13 AM wrapper.TrafficLightWrapper <init>
+INFO: Added J2 with program 0
+Jan 17, 2026 10:55:13 AM wrapper.TrafficLightWrapper <init>
+INFO: Added J27 with program 0
+Jan 17, 2026 10:55:13 AM wrapper.TrafficLightWrapper <init>
+INFO: Added J28 with program 0
+Jan 17, 2026 10:55:13 AM wrapper.TrafficLightWrapper <init>
+INFO: Added J38 with program 1
+Jan 17, 2026 10:55:13 AM wrapper.TrafficLightWrapper <init>
+INFO: Added J40 with program 0
+Jan 17, 2026 10:55:13 AM wrapper.TrafficLightWrapper <init>
+INFO: Added J41 with program 0
+Jan 17, 2026 10:55:13 AM wrapper.TrafficLightWrapper <init>
+INFO: Added J6 with program 0
+Jan 17, 2026 10:55:13 AM wrapper.TrafficLightWrapper <init>
+INFO: Added J8 with program 0
+Jan 17, 2026 10:55:13 AM wrapper.TrafficLightWrapper <init>
+INFO: Added J9 with program 0
+Jan 17, 2026 10:55:13 AM wrapper.SimulationWrapper Start
+INFO: Simulation started successfully
