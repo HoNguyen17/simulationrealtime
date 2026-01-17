@@ -46,6 +46,7 @@ import tracker.Statistic;
 
 public class ControlPanel {
     private static final Logger LOG = Logger.getLogger(ControlPanel.class.getName());
+    private static final Object lock = new Object();
 
     @FXML private StackPane mapContainer;
     @FXML private Button exportButton;
@@ -190,10 +191,10 @@ public class ControlPanel {
         String chosenRoute = injectVehRoute.getValue();
         String inputColor = vehColor.getValue();
         Color chosenColor = Color.RED;
-        if (inputColor != null) chosenColor = DataType.convertColor(inputColor);
+        if (inputColor != null) {chosenColor = DataType.convertColor(inputColor);}
         String inputNum = injectVehNum.getText();
         int chosenNum = 1;
-        if (this.checkIntConvertable(inputNum)) chosenNum = Integer.parseInt(inputNum);
+        if (this.checkIntConvertable(inputNum)) {chosenNum = Integer.parseInt(inputNum);}
         this.VehicleInject(chosenNum, chosenRoute, chosenColor);
     }
     
@@ -208,20 +209,28 @@ public class ControlPanel {
     }
 // interaction methods==============================================
     private void VehicleInject(int num, String routeId, Color color) {
-        if (1 <= num && num <= 300) {
-            for (int i = 0; i < num; i++) {
-                this.sim.addVehicleWithColor(String.format("v_%d", this.idCounter), routeId, color);
-                this.idCounter++;
-            }
-        }   
+        // if (1 <= num && num <= 300) {
+        //     for (int i = 0; i < num; i++) {
+        //         this.sim.addVehicleWithColor(String.format("v_%d", this.idCounter), routeId, color);
+        //         this.idCounter++;
+        //     }
+        // }  
+        if (1 <= num && num <= 3000) {
+            Thread injectionThread = new Thread(() -> {
+                synchronized (lock) {
+                    for (int i = 0; i < num; i++) {
+                        this.sim.addVehicleWithColor(String.format("v_%d", this.idCounter), routeId, color);
+                        this.idCounter++;
+                    }
+                }
+            });
+            injectionThread.start();
+        }
     }
     // change mode
     private void changeRenderMode(int input) {
         if (this.mapCanvas != null) {
             this.mapCanvas.setRenderMode(input);
-        }
-        if (input == 0) {
-            System.out.println("Switch to normal mode");
         }
         if (input == 1) {
             this.mapCanvas.setUpdateRoute(true);
@@ -259,11 +268,9 @@ public class ControlPanel {
         filterDialog.setContentText("Choose filter type:");
         
         java.util.Optional<String> filterResult = filterDialog.showAndWait();
-            
         if (!filterResult.isPresent()) return;
         
         String selectedOption = filterResult.get();
-        
         String filterType = "ALL";
         if (selectedOption.startsWith("CONGESTED_ONLY")) {
             filterType = "CONGESTED_ONLY";
@@ -280,7 +287,6 @@ public class ControlPanel {
         
         if (destinationPath != null) {
             String message = String.format("File saved to: %s:", destinationPath);
-            
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Export Successful");
             alert.setHeaderText("CSV file exported");
