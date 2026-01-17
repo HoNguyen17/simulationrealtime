@@ -205,10 +205,11 @@ public class MapCanvas {
         // add sizes for roads
         double roadsize = 1.65;     
         double centermarksize = 0.5;  
-
         // Convert to pixels based on current transform (scale * zoom)
         double roadsizePx = transform.worldscreenSize(roadsize);
         double centermarksizePx = transform.worldscreenSize(centermarksize);
+        double centerMarkLength = transform.worldscreenSize(4);
+        double centerMarkSpace = transform.worldscreenSize(2);
         // Draw roads
         for (Networkpaser.Edge e : model.edges) { // skip internal edges
             if (e.id.startsWith(":")) continue;
@@ -233,7 +234,7 @@ public class MapCanvas {
                     List<Point2D> centerline = offsetPolyline(newline, 0.0);
                     g.setStroke(Color.web("#ffffffff"));
                     g.setLineWidth(centermarksizePx);
-                    g.setLineDashes(18, 12); 
+                    g.setLineDashes(centerMarkLength, centerMarkSpace); 
                     drawPolyline(g, centerline);
                 }
                 else {oldScreenPts = screenPts;}
@@ -251,7 +252,7 @@ public class MapCanvas {
                 }
             g.setStroke(Color.web("#ffffffff"));
             g.setLineWidth(centermarksizePx);
-            g.setLineDashes(18, 12); 
+            g.setLineDashes(centerMarkLength, centerMarkSpace); 
             drawPolyline(g, screenPts);
         }
         // draw junctions
