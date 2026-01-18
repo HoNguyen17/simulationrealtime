@@ -20,7 +20,7 @@ following core functionalities are following.
 
 ## 3. Instructiona
 ### Step 1: Installation 
-Download the whole git
+Download the whole git<br/>
 Download Java SDK 17 or newer
 Download Sumo
 ### Step 2: Run 
@@ -30,6 +30,7 @@ Download Sumo
 - First open the terminal, then navigate to the `simulationrealtime` directory and ``.\run.bat``.
 #### Option 3: Click to run
 - Find the run.bat file and double click to start the program.
+
 
 
 
