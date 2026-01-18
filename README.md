@@ -24,14 +24,12 @@ Download the whole git
 Download Java SDK 17 or newer
 Download Sumo
 ### Step 2: Run 
-- Option 1: Run using window terminal
+#### Option 1: Run using window terminal
+- First open the terminal, then navigate to the `simulationrealtime` directory and ``run.bat``.
+#### Option 2: Run using powershell terminal
+- First open the terminal, then navigate to the `simulationrealtime` directory and ``.\run.bat``.
+#### Option 3: Click to run
+- Find the run.bat file and double click to start the program.
 
-First open the terminal, then navigate to the `simulationrealtime` directory and ``run.bat``.
-- Option 2: Run using powershell terminal
-
-First open the terminal, then navigate to the `simulationrealtime` directory and ``.\run.bat``.
-- Option 3: Click to run
-
-Find the run.bat file and double click to start the program.
 
 
