@@ -1,0 +1,4 @@
+cd src
+javac --module-path "../lib/javafx-sdk-17.0.17/lib;." --add-modules javafx.base,javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web -cp "../lib/TraaS.jar;../lib/JavaFX/javafx-swt.jar;." App.java
+java --module-path "../lib/javafx-sdk-17.0.17/lib;." --add-modules javafx.base,javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web -cp "../lib/TraaS.jar;../lib/JavaFX/javafx-swt.jar;." App
+cd ..
