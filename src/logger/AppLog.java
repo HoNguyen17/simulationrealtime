@@ -35,7 +35,7 @@ public class AppLog {
             // Register a shutdown hook to close handlers properly
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 for (Handler h : rootLog.getHandlers()) {
-                    h.close(); // Ensures all XML tags are closed and file is saved
+                    h.close(); 
                 }
             }));
 
