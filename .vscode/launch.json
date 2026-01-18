@@ -10,7 +10,7 @@
             "request": "launch",
             "mainClass": "App",
             "cwd": "C:/Honguyen/VGU/Nam 3/sems1/Java/simulationrealtime/src",
-            "vmArgs": "--module-path \"C:/Program Files/javafx-sdk-17.0.17/lib\" --add-modules javafx.controls,javafx.fxml"
+            "vmArgs": "--module-path \"C:/Program Files/javafx-sdk-17.0.17/lib\" --add-modules javafx.controls,javafx.fxml,javafx.graphics"
         }
     ]
 }

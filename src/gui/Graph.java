@@ -20,7 +20,7 @@ public class Graph {
     private BarChart<String, Number> DensityChart;
 
     private SimulationWrapper sim;
-
+    
     private final XYChart.Series<Number, Number> averageSpeedSeries = new XYChart.Series<>();
     private final XYChart.Series<String, Number> travelTimeSeries = new XYChart.Series<>();
     private final XYChart.Series<String, Number> densitySeries = new XYChart.Series<>();
