@@ -84,9 +84,11 @@ public class ControlPanel {
     private long idCounter = 0;
 
     public void initialize() {
+        // statistics tab (Nguyen)
         stats.SpeedChart(avgSpeed);
         stats.TravelTimeChart(travelTime);
         stats.DensityChart(density);
+
         // simulation tab
         filterOnOff.setItems(FXCollections.observableArrayList("Off", "On"));
         filterOnOff.setValue("Off");
@@ -109,8 +111,9 @@ public class ControlPanel {
             mapCanvas.getCanvas().widthProperty().bind(mapContainer.widthProperty());
             mapCanvas.getCanvas().heightProperty().bind(mapContainer.heightProperty());
         }
-    }
-    public void updateUI(long nowNanos) {
+    } 
+    // update UI method called from App.java AnimationTimer handle (Nguyen)
+    public void updateUI(long nowNanos) { 
         stats.updateSpeedCharts(avgSpeed);
         stats.updateTravelTimeChart(travelTime);
         stats.updateDensityChart(density);

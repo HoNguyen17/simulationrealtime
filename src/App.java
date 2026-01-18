@@ -122,7 +122,7 @@ public class App extends Application {
                 }
 
                 if (controller_fxml != null) {
-                controller_fxml.updateUI(now);
+                controller_fxml.updateUI(now); // Update UI elements in ControlPanel (Nguyen)
                 }
             }
         };
