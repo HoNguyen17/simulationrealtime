@@ -282,33 +282,36 @@ public class MapCanvas {
         }
         // hightlight and label start of route
         if (renderMode == 1) {
-            HashSet<String> labeledEdge = new HashSet<>();
+            HashMap<String, Integer> labeledEdge = new HashMap<>();
             double labelX = 0;
             double labelY = 0;
             for(RouteData rouData : routeDataList) {
                 Networkpaser.Edge e = findEdgeById(rouData.getFirstEdgeID(0));
                 double offSet = 0;
-                double offSet2 = 0;
-                if (!labeledEdge.add(e.id)) offSet = 20; 
-                else {
-                    for (Networkpaser.Lane lane : e.lanes) {
-                        if (lane.shapePoints.size() < 2) continue;
-                        List<Point2D> screenPts = new ArrayList<>(); // transformed points
-                        for (Point2D p : lane.shapePoints) {
-                            screenPts.add(new Point2D(
-                                transform.worldscreenX(p.getX()),
-                                transform.worldscreenY(p.getY())
-                            ));
-                        }
-                        labelX = screenPts.get(0).getX();
-                        labelY = screenPts.get(0).getY();
-                        if (hightlightEdge.equals(e.id)) {
-                            g.setStroke(highlightFill); 
-                            g.setLineWidth(roadsizePx * 2); // full road width in px
-                            g.setLineDashes();
-                            drawPolyline(g, screenPts);
-                        }
+                if (labeledEdge.containsKey(e.id)) {
+                    int count = labeledEdge.get(e.id);
+                    offSet = 20 * count;
+                    labeledEdge.put(e.id, count + 1);
+                }
+                else {labeledEdge.put(e.id, 1);}
+                for (Networkpaser.Lane lane : e.lanes) {
+                    if (lane.shapePoints.size() < 2) continue;
+                    List<Point2D> screenPts = new ArrayList<>(); // transformed points
+                    for (Point2D p : lane.shapePoints) {
+                        screenPts.add(new Point2D(
+                            transform.worldscreenX(p.getX()),
+                            transform.worldscreenY(p.getY())
+                        ));
                     }
+                    labelX = screenPts.get(0).getX();
+                    labelY = screenPts.get(0).getY();
+                    if (hightlightEdge.equals(e.id)) {
+                        g.setStroke(highlightFill); 
+                        g.setLineWidth(roadsizePx * 2); // full road width in px
+                        g.setLineDashes();
+                        drawPolyline(g, screenPts);
+                    }
+                    // }
                 }
                 this.drawTextBox(g, rouData.getID(0), labelX, labelY, offSet);
             }

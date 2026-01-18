@@ -209,12 +209,6 @@ public class ControlPanel {
     }
 // interaction methods==============================================
     private void VehicleInject(int num, String routeId, Color color) {
-        // if (1 <= num && num <= 300) {
-        //     for (int i = 0; i < num; i++) {
-        //         this.sim.addVehicleWithColor(String.format("v_%d", this.idCounter), routeId, color);
-        //         this.idCounter++;
-        //     }
-        // }  
         if (1 <= num && num <= 3000) {
             Thread injectionThread = new Thread(() -> {
                 synchronized (lock) {
@@ -224,6 +218,7 @@ public class ControlPanel {
                     }
                 }
             });
+            injectionThread.setDaemon(true);
             injectionThread.start();
         }
     }

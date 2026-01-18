@@ -23,9 +23,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:controller="gui.ControlPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane fx:controller="gui.ControlPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" style="-fx-background-color: #3b97ff63;">
     <left>
-        <VBox prefWidth="250.0" style="-fx-background-color: rgba(7, 115, 238, 0.2);" BorderPane.alignment="CENTER">
+        <VBox prefWidth="250.0" style="-fx-background-color: #3b97ff63;" BorderPane.alignment="CENTER">
             <children>
                 <Label text="Control">
                     <VBox.margin>
@@ -35,13 +35,13 @@
                         <Font name="System Bold" size="18.0" />
                     </font>
                 </Label>
-                <TabPane minHeight="250.0" prefWidth="250.0" style="-fx-background-color: rgba(0,0,0,0.3);" tabClosingPolicy="UNAVAILABLE">
+                <TabPane minHeight="250.0" prefWidth="250.0" style="-fx-background-color: #83bdff; -fx-tab-header-background: #83bdff;" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
                         <Tab onSelectionChanged="#modeChangeAct" style="-fx-background-color: #3b97ff63;" text="Simulation">
                             <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="200.0">
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="200.0" style="-fx-background-color: #83bdff;">
                                     <children>
-                                        <VBox prefHeight="250.0" prefWidth="250.0" style="-fx-background-color: rgba(8, 136, 227, 0.3);">
+                                        <VBox prefHeight="250.0" prefWidth="250.0" >
                                             <children>
                                                 <Label text="Simulation Time:" />
                                                 <Label fx:id="simTime" text="0" style="-fx-font-size: 20px;" />
@@ -77,12 +77,12 @@
                         </Tab>
                         <Tab onSelectionChanged="#modeChangeAct" style="-fx-background-color: #3b97ff63;" text="Add Vehicle">
                             <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="250.0">
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="250.0" style="-fx-background-color: #83bdff;">
                                     <children>
-                                        <VBox prefHeight="250.0" prefWidth="250.0" style="-fx-background-color: rgba(8, 136, 227, 0.3);">
+                                        <VBox prefHeight="250.0" prefWidth="250.0" >
                                             <children>
                                                 <Label text="Number of Vehicle" />
-                                                <TextField fx:id="injectVehNum" promptText="Enter number of vehicles (1-300)" prefWidth="100.0"/>
+                                                <TextField fx:id="injectVehNum" promptText="Enter number of vehicles (1-3000)" prefWidth="100.0"/>
                                                 <Label text="Color" />
                                                 <ComboBox fx:id="vehColor" prefWidth="150.0" />
                                                 <Label text="Route" />
@@ -100,9 +100,9 @@
                         </Tab>
                         <Tab onSelectionChanged="#modeChangeAct" style="-fx-background-color: #3b97ff63;" text="Traffic Light">
                             <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="200.0">
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="200.0" style="-fx-background-color: #83bdff">
                                     <children>
-                                        <VBox prefHeight="250.0" prefWidth="250.0" style="-fx-background-color: rgba(8, 136, 227, 0.3);">
+                                        <VBox prefHeight="250.0" prefWidth="250.0" >
                                             <children>
                                                 <Label text="Traffic Light ID" />
                                                 <ComboBox fx:id="tlIDs" onAction="#chosenTLAct" prefWidth="150.0" />
@@ -132,11 +132,11 @@
                         <Insets left="10.0" top="10.0" />
                     </VBox.margin>
                 </Label>
-                <TabPane prefHeight="220.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+                <TabPane prefHeight="220.0" prefWidth="200.0" style="-fx-background-color: rgba(0,0,0,0.3);" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
                         <Tab style="-fx-background-color: #3b97ff63;" text="Speed">
                             <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #83bdff;">
                                     <children>
                                         <AreaChart fx:id="avgSpeed"
                                                    layoutX="0.0" layoutY="0.0"
@@ -155,7 +155,7 @@
                         </Tab>
                         <Tab style="-fx-background-color: #3b97ff63;" text="Travel Time">
                             <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #83bdff;">
                                     <children>
                                         <BarChart fx:id="travelTime"
                                                    layoutX="0.0" layoutY="0.0"
@@ -172,9 +172,9 @@
                                 </AnchorPane>
                             </content>
                         </Tab>
-                        <Tab style="-fx-background-color: #3b97ff63;" text="Density">
+                        <Tab style="-fx-background-color: #3b97ff63;" text="Density" >
                             <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #83bdff;">
                                     <children>
                                         <BarChart fx:id="density"
                                                    layoutX="0.0" layoutY="0.0"

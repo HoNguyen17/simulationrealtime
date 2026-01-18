@@ -41,8 +41,8 @@ public class App extends Application {
     private Thread simulationThread; // background simulation stepper
     private volatile boolean simRunning = false;
 
-    private static final String NET_FILE = "../SumoConfig/test_7_huge.net.xml";
-    private static final String SUMOCFG_FILE = "../SumoConfig/test_7_huge.sumocfg";
+    private static final String NET_FILE = "../SumoConfig/test_8_larger.net.xml";
+    private static final String SUMOCFG_FILE = "../SumoConfig/test_8_larger.sumocfg";
     private static final Logger LOG = Logger.getLogger(App.class.getName());
 
     private Networkpaser.NetworkModel model;
@@ -70,7 +70,6 @@ public class App extends Application {
                 Statistic.addNewEdgeData();
             }
         }, "Sumo-Stepper");
-        simulationThread.setDaemon(true);
         simulationThread.start();
         
         FXMLLoader load_fxml = new FXMLLoader(getClass().getResource("/gui/DecApp.fxml"));
