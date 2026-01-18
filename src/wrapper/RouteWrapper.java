@@ -6,27 +6,34 @@ import de.tudresden.sumo.cmd.Route;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 class RouteWrapper extends DataType.RouteData {
+    private final static Logger LOG = Logger.getLogger(RouteWrapper.class.getName());
+
     RouteWrapper(String inputID, String inputEdgeID) {
         super(inputID, inputEdgeID);
     }
-    // make copy of the object for MapCanvas
-    public DataType.RouteData makeCopy() {
-        DataType.RouteData copy = new DataType.RouteData(this.ID, this.firstEdgeID);
-        return copy;
-    }
-    // static method because a "route" in the context of SUMO is a network-level entity, and the purpose of this wrapper is just to manage the list of their IDs, not the state of any single route
-    static void updateRouteIDs(SimulationWrapper temp) { // refresh the list of routes available for vehicle injection in the simulation
+    // update RouteList of SimulationWrapper
+    static void updateRouteIDs(SimulationWrapper temp) {
         try {
             List<String> newRouteList = (List<String>) temp.conn.do_job_get(Route.getIDList());
-            for (String x : newRouteList) {
-                if (x.charAt(0) != '!') {
-                    String firstEdge = ((List<String>) temp.conn.do_job_get(Route.getEdges(x))).get(0);
-                    RouteWrapper y = new RouteWrapper(x, firstEdge);
-                    temp.RouteList.put(x, y);
+            for (String id : newRouteList) {
+                if (id.charAt(0) != '!') {
+                    String firstEdge = ((List<String>) temp.conn.do_job_get(Route.getEdges(id))).get(0);
+                    RouteWrapper route = new RouteWrapper(id, firstEdge);
+                    temp.RouteList.put(id, route);
                 }  
             }
         }
-        catch(Exception e) {System.out.println("Unable to update route list");}
+        catch(Exception e) {
+            LOG.log(Level.SEVERE, "Unable to update route list", e);
+        }
+    }
+    // make copy of the object for rendering in MapCanvas
+    public DataType.RouteData makeCopy() {
+        DataType.RouteData copy = new DataType.RouteData(this.ID, this.firstEdgeID);
+        return copy;
     }
 }

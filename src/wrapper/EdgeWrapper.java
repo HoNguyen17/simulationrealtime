@@ -13,26 +13,32 @@ import de.tudresden.sumo.subscription.ResponseType;
 import java.util.List;
 import java.util.ArrayList;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 class EdgeWrapper extends DataType.EdgeData {
+    private final static Logger LOG = Logger.getLogger(EdgeWrapper.class.getName());
+
     EdgeWrapper(String inputID) {
         super(inputID);
     }
-//=================STATIC================================VAR_EDGE_TRAVELTIME, LAST_STEP_VEHICLE_NUMBER, VAR_WAITING_TIME
+    // update EdgeList of SimulationWrapper
     public static void updateEdgeIDs(SimulationWrapper temp) {
         try {
             List<String> IDsList = (List<String>)temp.conn.do_job_get(Edge.getIDList());
-            for (String x : IDsList) {
-                EdgeWrapper y = new EdgeWrapper(x);
-                temp.EdgeList.put(x, y);
-                VariableSubscription vs = new VariableSubscription(SubscribtionVariable.edge, 0, 100000 * 60, x); 
+            for (String id : IDsList) {
+                EdgeWrapper edge = new EdgeWrapper(id);
+                temp.EdgeList.put(id, edge);
+                VariableSubscription vs = new VariableSubscription(SubscribtionVariable.edge, 0, 100000 * 60, id); 
                 vs.addCommand(Constants.LAST_STEP_VEHICLE_NUMBER);
                 vs.addCommand(Constants.VAR_CURRENT_TRAVELTIME);
                 vs.addCommand(Constants.VAR_WAITING_TIME);
                 temp.conn.do_subscription(vs);
             }
+            LOG.info("Set up edge list success");
         }
-        catch (Exception A) {
-            System.out.println("Set up edge data failed.");
+        catch (Exception e) {
+            LOG.log(Level.SEVERE, "Set up edge data failed.", e);
         }
     }
 }

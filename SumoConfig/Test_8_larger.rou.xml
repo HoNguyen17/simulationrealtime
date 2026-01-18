@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-01-18 08:17:55 by Eclipse SUMO netedit Version 1.24.0
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <!-- Routes -->
+    <route id="r_0" edges="-E18 -E17 -E16 -E14 -E13 -E12 E121 E127 E128 -E147 E148 -E150 E78 E79 -E55 -E54 E56"/>
+    <route id="r_1" edges="-E7 -E6 -E5 -E4 E8 E87 E95 E96 E97 E89 E91"/>
+    <route id="r_2" edges="-E7 -E6 -E5 -E4 E8 E9 E10 E11 E12 E13 E14 E15 E19"/>
+    <route id="r_3" edges="-E161 -E135 -E134 -E133 -E132 -E85 -E84 E93 E115 E117"/>
+    <route id="r_4" edges="-E154 E152 E147 E126 -E122 -E121 -E11 -E10 -E9 E143 E144 E142"/>
+    <route id="r_5" edges="-E113 -E112 -E111 E110 E94 E95 -E106 -E105 E104"/>
+    <route id="r_6" edges="-E19 -E15 E16 E17 E18"/>
+    <route id="r_7" edges="-E7 -E6 -E5 -E4 E8 E9 E10 E11 E121 E122 E123 E124 E153"/>
+    <route id="r_8" edges="-E103 E102 -E98 -E88 -E87 -E8 E4 E5 E6 E7"/>
+    <!-- Vehicles, persons and containers (sorted by depart) -->
+    <flow id="f_0" begin="0.00" color="blue" from="-E18" to="E19" via="-E17 -E16 E15" end="3600.00" vehsPerHour="450"/>
+    <flow id="f_1" begin="0.00" color="red" from="-E19" to="E7" via="-E15 -E14 -E13 -E12 -E11 -E10 -E9 -E8 E4 E5 E6" end="3600.00" vehsPerHour="450"/>
+    <flow id="f_2" begin="0.00" color="red" from="-E141" to="E19" via="E137 E138 -E144 -E143 E9 E10 E11 E12 E13 E14 E15" end="3600.00" vehsPerHour="200"/>
+</routes>

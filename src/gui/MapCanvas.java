@@ -46,8 +46,6 @@ public class MapCanvas {
 
     protected Image vehicleTexture = new Image("file:../texture/humveeV2.png");
     protected double lastDragX = 0, lastDragY = 0; // last mouse drag positions
-    //...
-    // states[i] applies to the controlled link from[i] -> to[i]
 
     // Constructor of MapCanvas
     public MapCanvas(double w, double h) {
@@ -90,23 +88,19 @@ public class MapCanvas {
         this.viewManager = new View(canvas, transform, model);
         this.viewManager.resetView();
     }
-
     // Set vehicle data for rendering
     public void setVehicleData(List<VehicleData> vehicles) {
         this.vehicleDataList = (vehicles != null) ? vehicles : List.of();
     }
-
     // Set traffic light data for rendering 
     public void setTrafficLightData(List<TrafficLightData> trafficLights) {
         this.trafficLightDataList = (trafficLights != null) ? trafficLights : List.of();
     }
-    
     // Set route data for rendering
     public void setRouteData(List<RouteData> routes) {
         this.routeDataList = (routes != null) ? routes : List.of();
         this.updateRoute = false;
     }
-
     // Set render mode
     public void setRenderMode(int inputMode) {
         if(inputMode == 0 || inputMode == 1 || inputMode == 2) {
@@ -120,7 +114,6 @@ public class MapCanvas {
     // set color for filter
     public void setColorFilter(String input) {
         this.filterColor = input;
-        System.out.println(filterColor);
     }
     // set speed limit for filter
     public void setSpeedFilter(double input) {
@@ -134,12 +127,25 @@ public class MapCanvas {
     public void setHightLightEdge(String input) {
         this.hightlightEdge = input;
     }
-
     // Set highlight junctions
     public void setHightLightJunctions(List<String> input) {
         this.hightlightJunctions = new HashSet<String>(input);
     }
-    
+    // find mid point, for dashed line
+    private List<Point2D> findMidPoint(List<Point2D> oldPts, List<Point2D> pts) {
+        if (oldPts.size() == pts.size()) {
+            List<Point2D> out = new ArrayList<>();
+            for (int i = 0; i < pts.size(); i++) {
+                Point2D midP = (oldPts.get(i)).midpoint(pts.get(i));
+                out.add(midP);
+            }
+            return out;
+        }
+        else {
+            System.out.println("NOT EQUAL");
+            return null;
+        }
+    }
     // Offset polyline points by distance d
     private List<Point2D> offsetPolyline(List<Point2D> pts, double d) {
         if (pts.size() < 2) return pts;
@@ -199,13 +205,15 @@ public class MapCanvas {
         // add sizes for roads
         double roadsize = 1.65;     
         double centermarksize = 0.5;  
-
         // Convert to pixels based on current transform (scale * zoom)
         double roadsizePx = transform.worldscreenSize(roadsize);
         double centermarksizePx = transform.worldscreenSize(centermarksize);
+        double centerMarkLength = transform.worldscreenSize(4);
+        double centerMarkSpace = transform.worldscreenSize(2);
         // Draw roads
         for (Networkpaser.Edge e : model.edges) { // skip internal edges
             if (e.id.startsWith(":")) continue;
+            List<Point2D> oldScreenPts = null; 
             for (Networkpaser.Lane lane : e.lanes) {
                 if (lane.shapePoints.size() < 2) continue;
                 List<Point2D> screenPts = new ArrayList<>(); // transformed points
@@ -221,12 +229,31 @@ public class MapCanvas {
                 drawPolyline(g, screenPts);
 
                 // Draw center line inside the road
-                List<Point2D> centerline = offsetPolyline(screenPts, 0.0);
-                g.setStroke(Color.web("#ffffffff"));
-                g.setLineWidth(centermarksizePx);
-                g.setLineDashes(18, 12); // optionally scale dash lengths too
-                drawPolyline(g, centerline);
+                if(oldScreenPts != null) {
+                    List<Point2D> newline = findMidPoint(oldScreenPts, screenPts);
+                    List<Point2D> centerline = offsetPolyline(newline, 0.0);
+                    g.setStroke(Color.web("#ffffffff"));
+                    g.setLineWidth(centermarksizePx);
+                    g.setLineDashes(centerMarkLength, centerMarkSpace); 
+                    drawPolyline(g, centerline);
+                }
+                else {oldScreenPts = screenPts;}
             }
+        }
+        //draw midline between 2 edge
+        for (Networkpaser.MidLine m : model.midLines.values()) {
+            if (m.line.size() < 2) continue;
+                List<Point2D> screenPts = new ArrayList<>(); 
+                for (Point2D p : m.line) {
+                    screenPts.add(new Point2D(
+                        transform.worldscreenX(p.getX()),
+                        transform.worldscreenY(p.getY())
+                    ));
+                }
+            g.setStroke(Color.web("#ffffffff"));
+            g.setLineWidth(centermarksizePx);
+            g.setLineDashes(centerMarkLength, centerMarkSpace); 
+            drawPolyline(g, screenPts);
         }
         // draw junctions
         for (Networkpaser.Junction j : model.junctions) {
@@ -255,33 +282,36 @@ public class MapCanvas {
         }
         // hightlight and label start of route
         if (renderMode == 1) {
-            HashSet<String> labeledEdge = new HashSet<>();
+            HashMap<String, Integer> labeledEdge = new HashMap<>();
             double labelX = 0;
             double labelY = 0;
             for(RouteData rouData : routeDataList) {
                 Networkpaser.Edge e = findEdgeById(rouData.getFirstEdgeID(0));
                 double offSet = 0;
-                double offSet2 = 0;
-                if (!labeledEdge.add(e.id)) offSet = 20; 
-                else {
-                    for (Networkpaser.Lane lane : e.lanes) {
-                        if (lane.shapePoints.size() < 2) continue;
-                        List<Point2D> screenPts = new ArrayList<>(); // transformed points
-                        for (Point2D p : lane.shapePoints) {
-                            screenPts.add(new Point2D(
-                                transform.worldscreenX(p.getX()),
-                                transform.worldscreenY(p.getY())
-                            ));
-                        }
-                        labelX = screenPts.get(0).getX();
-                        labelY = screenPts.get(0).getY();
-                        if (hightlightEdge.equals(e.id)) {
-                            g.setStroke(highlightFill); 
-                            g.setLineWidth(roadsizePx * 2); // full road width in px
-                            g.setLineDashes();
-                            drawPolyline(g, screenPts);
-                        }
+                if (labeledEdge.containsKey(e.id)) {
+                    int count = labeledEdge.get(e.id);
+                    offSet = 20 * count;
+                    labeledEdge.put(e.id, count + 1);
+                }
+                else {labeledEdge.put(e.id, 1);}
+                for (Networkpaser.Lane lane : e.lanes) {
+                    if (lane.shapePoints.size() < 2) continue;
+                    List<Point2D> screenPts = new ArrayList<>(); // transformed points
+                    for (Point2D p : lane.shapePoints) {
+                        screenPts.add(new Point2D(
+                            transform.worldscreenX(p.getX()),
+                            transform.worldscreenY(p.getY())
+                        ));
                     }
+                    labelX = screenPts.get(0).getX();
+                    labelY = screenPts.get(0).getY();
+                    if (hightlightEdge.equals(e.id)) {
+                        g.setStroke(highlightFill); 
+                        g.setLineWidth(roadsizePx * 2); // full road width in px
+                        g.setLineDashes();
+                        drawPolyline(g, screenPts);
+                    }
+                    // }
                 }
                 this.drawTextBox(g, rouData.getID(0), labelX, labelY, offSet);
             }
@@ -343,7 +373,6 @@ public class MapCanvas {
                 // color by state
                 Color c;
                 char st = defFromTo.get(0).charAt(0);
-                //System.out.println("=="+st+"==");
                 if (st == 'r') {c = Color.RED;}
                 else if (st == 'y') {c = Color.YELLOW;}
                 else if (st == 'g' || st == 'G') {c = Color.LIMEGREEN;}

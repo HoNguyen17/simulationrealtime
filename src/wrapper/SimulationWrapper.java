@@ -1,5 +1,8 @@
 package wrapper;
 
+import wrapper.DataType.RouteNotFoundException;
+import wrapper.DataType.VehicleExistedException;
+
 import it.polito.appeal.traci.SumoTraciConnection;
 import it.polito.appeal.traci.TraCIException;
 
@@ -28,91 +31,96 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 import javafx.scene.paint.Color;
 
 public class SimulationWrapper implements Observer {
-    protected static SumoTraciConnection conn; //core connection object used to send commands to and receive data from the running SUMO simulation
+    private final static Logger LOG = Logger.getLogger(SimulationWrapper.class.getName());
+    protected static SumoTraciConnection conn; 
     protected int delay = 200;
     protected boolean isPaused = false;
 
-    // HashMaps to store custom wrapper objects for easier management
     protected final HashMap<String, TrafficLightWrapper> TrafficLightList = new HashMap<>();
     protected final HashMap<String, VehicleWrapper> VehicleList = new HashMap<>();
     protected final HashMap<String, RouteWrapper> RouteList = new HashMap<>(); 
     protected final HashMap<String, EdgeWrapper> EdgeList = new HashMap<>();
     protected final HashMap<String, Color> ColorQueue = new HashMap<>();
     // Track vehicle travel times
-    protected final HashMap<String, Double> VehicleDepartTime = new HashMap<>();
     protected final ArrayList<Double> CompletedTravelTimes = new ArrayList<>();
-    // Constructor 1
+
     public SimulationWrapper(String sumocfg, double step_length, String sumo_bin){
         conn = new SumoTraciConnection(sumo_bin, sumocfg);
         conn.addOption("step-length", step_length + "");
-        conn.addOption("start", "true"); //start sumo immediately
-        System.out.println("Simulation created");
+        conn.addOption("start", "true");
+        LOG.info("Simulation created");
     }
-    // Constructor 2
     public SimulationWrapper(String sumocfg){
         String sumo_bin = "sumo";
         double step_length = 1;
         conn = new SumoTraciConnection(sumo_bin, sumocfg);
         conn.addOption("step-length", step_length + "");
-        conn.addOption("start", "true"); //start sumo immediately
-        System.out.println("Simulation created");
+        conn.addOption("start", "true");
+        LOG.info("Simulation created");
     }
 //===== SIMULATION STUFF ==================================
-    // check if connection is closed
     public boolean isClosed() {
         return conn.isClosed();
     } 
+    public boolean isPaused() {
+        return isPaused;
+    }
     public void Pause() {
         if (!isPaused) {isPaused = true;}
         else {isPaused = false;}
     }
-    // start simulation, update TrafficLightList, more will be implemented
     public void Start(){
         try {
             conn.runServer(); 
             conn.setOrder(1); 
-            conn.addObserver(this);// add observer
+            conn.addObserver(this);
             //start subscription to look out for departed (spawn in) and arrived (despawn) vehicle
             VariableSubscription vs = new VariableSubscription(SubscribtionVariable.simulation, 0, 100000 * 60, "");
             vs.addCommand(Constants.VAR_DEPARTED_VEHICLES_IDS);
             vs.addCommand(Constants.VAR_ARRIVED_VEHICLES_IDS);
-            conn.do_subscription(vs);//start the subscription
+            conn.do_subscription(vs);
 
             TrafficLightWrapper.updateTrafficLightIDs(this);
             EdgeWrapper.updateEdgeIDs(this);
             RouteWrapper.updateRouteIDs(this);
-            System.out.println("Started successfully.");
+            LOG.info("Simulation started successfully");
         }
-        catch(Exception e) {System.out.println("Failed to start.");}
+        catch(Exception e) {
+            LOG.log(Level.SEVERE, "Failed to start simulation", e);
+        }
     }
-    // do a simulation's time step
     public void Step(){
         if(!isPaused) {
             try {
                 Thread.sleep(delay);
                 conn.do_timestep();
             }
-            catch(Exception e) {System.out.println("Failed to step.");}
+            catch (Exception e) {
+                LOG.log(Level.SEVERE, "Failed to step simulation", e);
+            }
         }
     }
-    // close simulation
     public void End() {
         conn.close();
     }
-    // get current simulation time
     public double getTime(int po) {
         try {
-            double time = (double)conn.do_job_get(Simulation.getTime());
-            if (po == 1) {System.out.println("Current Time: " + time);}
+            double time = (double) conn.do_job_get(Simulation.getTime());
+            if (po == 1) {LOG.info("Current Time: " + time);}
             return time;
         }
-        catch(Exception e) {System.out.println("Can't get the time.");}
-        return -1;
+        catch (Exception e) {
+            LOG.log(Level.SEVERE, "Failed to get simulation time", e);
+            return -1;
+        }
     }
-    //(new) update from subscription, abstract method of observer
+    // update from subscription, abstract method of observer
     public void update(Observable arg0, SubscriptionObject so) { 
         if (so.response == ResponseType.SIM_VARIABLE) { 
             if (so.variable == Constants.VAR_DEPARTED_VEHICLES_IDS) {
@@ -128,9 +136,9 @@ public class SimulationWrapper implements Observer {
                         try {
                             // create a vehicle wrapper object and add to the VehicleList hash map
                             SumoColor color = (SumoColor)conn.do_job_get(Vehicle.getColor(vehID));
-                            VehicleWrapper y = new VehicleWrapper(vehID, DataType.convertColor(color));
-                            VehicleList.put(vehID, y);
-                            VehicleDepartTime.put(vehID, getTime(0)); // track depart time
+                            VehicleWrapper vehicle = new VehicleWrapper(vehID, DataType.convertColor(color));
+                            VehicleList.put(vehID, vehicle);
+                            vehicle.departTime = this.getTime(0);
                             // start subscription of the vehicle
                             conn.do_subscription(vs);
                             if (ColorQueue.get(vehID) != null) {
@@ -138,79 +146,75 @@ public class SimulationWrapper implements Observer {
                                 double r = defaultColor.getRed();
                                 double g = defaultColor.getGreen();
                                 double b = defaultColor.getBlue();
-                                //System.out.println("color " + r + " " + g);
                                 this.setVehicleColor(vehID, r, g, b, 1);
                                 ColorQueue.remove(vehID);
                             }
                         } 
-                        catch (Exception ex) {System.err.println("subscription to " + vehID + " failed");}
+                        catch (Exception e) {
+                            LOG.log(Level.SEVERE, "subscription to " + vehID + " failed", e);
+                        }
                     }
                 }
             }
-            else if (so.variable == Constants.VAR_ARRIVED_VEHICLES_IDS) {// when a vehicle has reached its end point
+            else if (so.variable == Constants.VAR_ARRIVED_VEHICLES_IDS) {
                 SumoStringList ssl = (SumoStringList) so.object;
                 if (ssl.size() > 0) {
                     for (String vehID : ssl) {
                         try {
-                            // calculate travel time Nguyen
-                            if (VehicleDepartTime.containsKey(vehID)) {
-                                double travelTime = getTime(0) - VehicleDepartTime.get(vehID);
-                                CompletedTravelTimes.add(travelTime);
-                                VehicleDepartTime.remove(vehID);
-                            }
+                            VehicleWrapper vehicle = VehicleList.get(vehID);
+                            double travelTime = this.getTime(0) - vehicle.departTime;
+                            CompletedTravelTimes.add(travelTime);
                             VehicleList.remove(vehID);
-                            System.out.println("Delete " + vehID + " from the hashmap");
                         }
-                        catch (Exception ex) {
-                            System.err.println("Unable to delete " + vehID + " from hashmap");
+                        catch (Exception e) {
+                            LOG.log(Level.SEVERE, "Unable to delete " + vehID, e);
                         }
                     }
                 }
             }
         } 
-        else if (so.response == ResponseType.VEHICLE_VARIABLE) { // vehicle variables
-            VehicleWrapper x = VehicleList.get(so.id);
-            // update the speed, position, angle of a VehicleWrapper object in the VehicleList based on the received data
+        else if (so.response == ResponseType.VEHICLE_VARIABLE) { 
+            VehicleWrapper vehicle = VehicleList.get(so.id);
+
             if (so.variable == Constants.VAR_SPEED) {
                 SumoPrimitive sp = (SumoPrimitive) so.object;
-                x.speed = (double) sp.val;
+                vehicle.speed = (double) sp.val;
             } 
             else if (so.variable == Constants.VAR_POSITION) {
                 SumoPosition2D sc = (SumoPosition2D) so.object;
-                x.pos_x = sc.x;
-                x.pos_y = sc.y;
+                vehicle.pos_x = sc.x;
+                vehicle.pos_y = sc.y;
             }
             else if (so.variable == Constants.VAR_ANGLE) {
                 SumoPrimitive sp = (SumoPrimitive) so.object;
-                x.angle = (double) sp.val;
+                vehicle.angle = (double) sp.val;
             }
         }
-        else if (so.response == ResponseType.TL_VARIABLE) { // traffic light variables
-            if (so.variable == Constants.TL_RED_YELLOW_GREEN_STATE) { // update the lightDef of a TrafficLightWrapper in the TrafficLightList
+        else if (so.response == ResponseType.TL_VARIABLE) { 
+            if (so.variable == Constants.TL_RED_YELLOW_GREEN_STATE) { 
                 SumoPrimitive sp = (SumoPrimitive) so.object;
-                TrafficLightWrapper x = TrafficLightList.get(so.id);
-                x.lightDef = (String) sp.val;
+                TrafficLightWrapper tl = TrafficLightList.get(so.id);
+                tl.lightDef = (String) sp.val;
             }
         }
         else if (so.response == ResponseType.EDGE_VARIABLE) {
-            EdgeWrapper x = EdgeList.get(so.id);
+            EdgeWrapper edge = EdgeList.get(so.id);
             if (so.variable == Constants.LAST_STEP_VEHICLE_NUMBER) {
                 SumoPrimitive sp = (SumoPrimitive) so.object;
-                x.density = (int) sp.val;
+                edge.density = (int) sp.val;
             }
             if (so.variable == Constants.VAR_CURRENT_TRAVELTIME) {
                 SumoPrimitive sp = (SumoPrimitive) so.object;
-                x.travelTime = (double) sp.val;
+                edge.travelTime = (double) sp.val;
             }
             if (so.variable == Constants.VAR_WAITING_TIME) {
                 SumoPrimitive sp = (SumoPrimitive) so.object;
-                x.waitingTime = (double) sp.val;
-                if (x.waitingTime > 130) x.congested = true;
-                else x.congested = false;
+                edge.waitingTime = (double) sp.val;
+                if (edge.waitingTime > 130) edge.congested = true;
+                else edge.congested = false;
             }
         }
     }
-    // set delay
     public void setDelay(int input) {
         delay = input;
     } 
@@ -223,50 +227,51 @@ public class SimulationWrapper implements Observer {
     }
     // get phase number of a traffic light
     public int getTLPhaseNum(String inputID) {
-        TrafficLightWrapper x = TrafficLightList.get(inputID);
-        int phaseNum = x.getPhaseNum(this, 0);
+        TrafficLightWrapper tl = TrafficLightList.get(inputID);
+        int phaseNum = tl.getPhaseNum(this, 0);
         return phaseNum;
     }
     // get phase definition of a traffic light (current light state)
     public String getTLPhaseDef(String inputID) {
-        TrafficLightWrapper x = TrafficLightList.get(inputID);
-        String phaseDef = x.getPhaseDef(0);
+        TrafficLightWrapper tl = TrafficLightList.get(inputID);
+        String phaseDef = tl.getPhaseDef(0);
         return phaseDef;
     }
     //get a traffic light definition and from, to lane ID of a link
     public List<String> getTLDefFromTo(String inputID, int index) {
-        TrafficLightWrapper x = TrafficLightList.get(inputID);
-        if (index < x.controlledLinksNum) {
-            List<String> defFromTo = x.getDefFromTo(index);
+        TrafficLightWrapper tl = TrafficLightList.get(inputID);
+        if (index < tl.controlledLinksNum) {
+            List<String> defFromTo = tl.getDefFromTo(index);
             return defFromTo;
         }
         else {return null;}
     }
+    //
     public List<String> getTLControlledJunctions(String inputID) {
-        TrafficLightWrapper x = TrafficLightList.get(inputID);
-        List<String> controlledJunctions = x.getControlledJunctions(this, 0);
+        TrafficLightWrapper tl = TrafficLightList.get(inputID);
+        List<String> controlledJunctions = tl.getControlledJunctions(this, 0);
         return controlledJunctions;
     }
 //===== MAKE COPY =========================================
     public DataType.TrafficLightData makeTLCopy(String inputID) {
-        TrafficLightWrapper x = TrafficLightList.get(inputID);
-        return x.makeCopy();
+        TrafficLightWrapper tl = TrafficLightList.get(inputID);
+        return tl.makeCopy();
     }
 //===== SETTER ============================================
     // set phase definition of a traffic light to the origin
     public void setTLPhaseDefOrigin(String inputID) {
-        TrafficLightWrapper x = TrafficLightList.get(inputID);
-        x.setPhaseDefOrigin(this);
+        TrafficLightWrapper tl = TrafficLightList.get(inputID);
+        tl.setPhaseDefOrigin(this);
     }
     // set to the next phase
     public void setTLPhaseNext(String inputID) {
-        TrafficLightWrapper x = TrafficLightList.get(inputID);
-        x.setPhaseNext(this);
+        TrafficLightWrapper tl = TrafficLightList.get(inputID);
+        tl.setPhaseNext(this);
     }
     // set the duration for current phase
     public void setTLPhaseDuration(String inputID, double inputTime) {
-        TrafficLightWrapper x = TrafficLightList.get(inputID);
-        x.setPhaseDuration(this, inputTime);
+        TrafficLightWrapper tl = TrafficLightList.get(inputID);
+        tl.setPhaseDuration(this, inputTime);
     }
     // set all traffic light to next phase
     public void setTLPhaseNextAll() {
@@ -280,8 +285,8 @@ public class SimulationWrapper implements Observer {
     // get position x of the vehicle
     public double getVehiclePositionX(String inputID) {
         if (VehicleList.containsKey(inputID)) {
-            VehicleWrapper x = VehicleList.get(inputID);
-            double VehiclePosX = x.getPositionX(1);
+            VehicleWrapper vehicle = VehicleList.get(inputID);
+            double VehiclePosX = vehicle.getPositionX(0);
             return VehiclePosX;
         }
         else {return 0;}
@@ -289,8 +294,8 @@ public class SimulationWrapper implements Observer {
     // get position y of the vehicle
     public double getVehiclePositionY(String inputID) {
         if (VehicleList.containsKey(inputID)) {
-            VehicleWrapper x = VehicleList.get(inputID);
-            double VehiclePosY = x.getPositionY(1);
+            VehicleWrapper vehicle = VehicleList.get(inputID);
+            double VehiclePosY = vehicle.getPositionY(0);
             return VehiclePosY;
         }
         else {return 0;}
@@ -298,23 +303,23 @@ public class SimulationWrapper implements Observer {
     // get Vehicle speed
     public double getVehicleSpeed(String inputID) {
         if (VehicleList.containsKey(inputID)) {
-            VehicleWrapper x = VehicleList.get(inputID);
-            double vehicleSpeed = x.getSpeed(0);
+            VehicleWrapper vehicle = VehicleList.get(inputID);
+            double vehicleSpeed = vehicle.getSpeed(0);
             return vehicleSpeed;
         }
         else {return -1;}
     }
-    // get Vehicle's color NEED FIX
-    // public SumoColor getVehicleColor(String inputID) {
-    //     VehicleWrapper x = VehicleList.get(inputID);
-    //     SumoColor vehicleColor = x.getColor(0);
-    //     return vehicleColor;
-    // }
+    // get Vehicle's color
+    public Color getVehicleColor(String inputID) {
+        VehicleWrapper vehicle = VehicleList.get(inputID);
+        Color vehicleColor = vehicle.getColor(0);
+        return vehicleColor;
+    }
     // get Vehicle's angle
     public double getVehicleAngle(String inputID) {
         if (VehicleList.containsKey(inputID)) {
-            VehicleWrapper x = VehicleList.get(inputID);
-            double vehicleAngle = x.getAngle(0);
+            VehicleWrapper vehicle = VehicleList.get(inputID);
+            double vehicleAngle = vehicle.getAngle(0);
             return vehicleAngle;
         }
         return 0;
@@ -331,61 +336,59 @@ public class SimulationWrapper implements Observer {
     // get average speed of all vehicle
     public double getVehicleAverageSpeed(int po) {
         double result = 0;
-        for (VehicleWrapper x : VehicleList.values()) {result += x.speed;}
-        if (VehicleList.size() != 0) result /= VehicleList.size();
-        if (po == 1) {System.out.println("Average speed is " + result);}
+        for (VehicleWrapper vehicle : VehicleList.values()) {
+            result += vehicle.speed;
+        }
+
+        if (VehicleList.size() != 0) {result /= VehicleList.size();}
+        if (po == 1) {LOG.info("Average speed is " + result);}
         return result;
     }
 //===== MAKE COPY =========================================
     public DataType.VehicleData makeVehicleCopy(String inputID) {
-        VehicleWrapper x = VehicleList.get(inputID);
-        return x.makeCopy();
+        VehicleWrapper vehicle = VehicleList.get(inputID);
+        return vehicle.makeCopy();
     }
 //===== SETTER ============================================
-    // set Vehicle's speed
     public void setVehicleSpeed(String inputID, double inputSpeed) {
         if (VehicleList.containsKey(inputID)) {
-            VehicleWrapper x = VehicleList.get(inputID);
-            x.setSpeed(this, inputSpeed, 0);
+            VehicleWrapper vehicle = VehicleList.get(inputID);
+            vehicle.setSpeed(this, inputSpeed, 0);
         }
-        else {System.out.println("Vehicle not exist");}
+        else {LOG.info("Vehicle not exist, set speed failed");}
     }
-    // set Vehicle's color
     public void setVehicleColor(String inputID, double r, double g, double b, double a) {
         if (VehicleList.containsKey(inputID)) {  
-            VehicleWrapper x = VehicleList.get(inputID);
-            x.setColor(this, r, g, b, a);
+            VehicleWrapper vehicle = VehicleList.get(inputID);
+            vehicle.setColor(this, r, g, b, a);
         }
-        else {System.out.println("Vehicle not exist");}
+        else {LOG.info("Vehicle not exist, set color failed");}
     }
 //===== ADDER =============================================
-    // add a vehicle into the 1st route in RouteList (might not work)
-    public void addVehicleBasic(String inputID) {
-        try {
-            RouteWrapper.updateRouteIDs(this);
-            if (RouteList.size() == 0) {System.out.println("No available route");}
-            else {VehicleWrapper.addVehicle(this, inputID, "r_0");}
-        }
-        catch (Exception e) {System.out.println("hmm");}
-    }
     //add a vehicle into selected route
     public void addVehicleNormal(String inputID, String inputRouteID) {
         try {
             RouteWrapper.updateRouteIDs(this);
-            if (1==0) {System.out.println("Invalid injection");}
-            else {VehicleWrapper.addVehicle(this, inputID, inputRouteID);}
+            if (VehicleList.containsKey(inputID)) {throw new VehicleExistedException(inputID);}
+            else if (!RouteList.containsKey(inputRouteID)) {throw new RouteNotFoundException(inputRouteID);}
+            else VehicleWrapper.addVehicle(this, inputID, inputRouteID);
         }
-        catch (Exception e) {System.out.println("Error when adding vehicle normally");}
+        catch (Exception e) {
+            LOG.log(Level.WARNING, "Error when adding vehicle normally", e);
+        }
     }
-    //add vehicle with color
+    //add vehicle with color into selected route
     public void addVehicleWithColor(String inputID, String inputRouteID, Color inputColor) {
         try {
             RouteWrapper.updateRouteIDs(this);
-            if (1==0) {System.out.println("Invalid injection");}
+            if (VehicleList.containsKey(inputID)) {throw new VehicleExistedException(inputID);}
+            else if (!RouteList.containsKey(inputRouteID)) {throw new RouteNotFoundException(inputRouteID);}
             else {VehicleWrapper.addVehicle(this, inputID, inputRouteID);}
             ColorQueue.put(inputID, inputColor);
         }
-        catch (Exception e) {System.out.println("Error when adding vehicle normally");}
+        catch (Exception e) {
+            LOG.log(Level.WARNING, "Error when adding vehicle with color", e);
+        }
     }
 //===== ROUTE STUFF ========================================
 //===== GETTER =============================================
@@ -393,13 +396,13 @@ public class SimulationWrapper implements Observer {
     public int getRouteNum(int po) {
         RouteWrapper.updateRouteIDs(this);
         int routeNum = RouteList.size();
-        if (po == 1) {System.out.println(routeNum);}
+        if (po == 1) {LOG.info("" + routeNum);}
         return routeNum;
     }
     //get first edge id of the route
     public String getRouteFirstEdge(String inputID) {
-        RouteWrapper x = RouteList.get(inputID);
-        return x.getFirstEdgeID(0);
+        RouteWrapper route = RouteList.get(inputID);
+        return route.getFirstEdgeID(0);
     }
     //get route id list
     public List<String> getRouteIDsList() {
@@ -408,26 +411,26 @@ public class SimulationWrapper implements Observer {
     }
 //===== MAKE COPY ==========================================
     public DataType.RouteData makeRouteCopy(String inputID) {
-        RouteWrapper x = RouteList.get(inputID);
-        return x.makeCopy();
+        RouteWrapper route = RouteList.get(inputID);
+        return route.makeCopy();
     }
 //===== EDGE STUFF =========================================
 //===== GETTER =============================================
     public int getEdgeDensity(String inputID) {
-        EdgeWrapper x = EdgeList.get(inputID);
-        return x.density;
+        EdgeWrapper edge = EdgeList.get(inputID);
+        return edge.density;
     }
     public double getEdgeTravelTime(String inputID) {
-        EdgeWrapper x = EdgeList.get(inputID);
-        return x.travelTime;
+        EdgeWrapper edge = EdgeList.get(inputID);
+        return edge.travelTime;
     }
     public double getEdgeWaitingTime(String inputID) {
-        EdgeWrapper x = EdgeList.get(inputID);
-        return x.waitingTime;
+        EdgeWrapper edge = EdgeList.get(inputID);
+        return edge.waitingTime;
     }
     public boolean getEdgeCongested(String inputID) {
-        EdgeWrapper x = EdgeList.get(inputID);
-        return x.congested;
+        EdgeWrapper edge = EdgeList.get(inputID);
+        return edge.congested;
     }
     public List<String> getEdgeIDsList() {
         List<String> edgeIDs = new ArrayList<>(EdgeList.keySet());

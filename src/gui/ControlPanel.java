@@ -2,11 +2,22 @@ package gui;
 
 import javafx.fxml.FXML;
 
+import javafx.geometry.Insets;
+
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.BarChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.Node; 
+
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.Priority;
+
+import javafx.stage.Stage;
+import javafx.stage.FileChooser;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,25 +27,34 @@ import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent; 
 import javafx.event.Event; 
 
+import javafx.print.PrinterJob;
+import javafx.print.PageLayout;
+
+import javafx.geometry.Pos;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import wrapper.SimulationWrapper;
 import wrapper.DataType.VehicleData;
 import wrapper.DataType;
 
+import tracker.Statistic;
+
 public class ControlPanel {
-    // --- CÁC BIẾN FXML (Giữ nguyên) ---
+    private static final Logger LOG = Logger.getLogger(ControlPanel.class.getName());
+    private static final Object lock = new Object();
+
     @FXML private StackPane mapContainer;
-    @FXML private Button expBtn;
-    @FXML private MenuButton expType;
-    @FXML private MenuItem expTypeCSV;
-    @FXML private MenuItem expTypePDF;
+    @FXML private Button exportButton;
+    @FXML private ComboBox<String> exportType;
 
     @FXML private Label simTime;
     @FXML private Button simPause;
     @FXML private Button simPlay;
-    @FXML private Button simTest;//for testing
     @FXML private ComboBox<String> filterOnOff;
     @FXML private ComboBox<String> filterColor;
     @FXML private TextField filterSpeed;
@@ -56,7 +76,6 @@ public class ControlPanel {
     @FXML private TextField injectVehNum;
     @FXML private Button vehInject;
 
-    // --- BIẾN CỤC BỘ ---
     private MapCanvas mapCanvas;
     private SimulationWrapper sim;
     private final Graph stats = new Graph();
@@ -64,23 +83,21 @@ public class ControlPanel {
     private volatile boolean simRunning = false;
     private long idCounter = 0;
 
-    // --- HÀM SET MAP (Kết nối với App.java) ---
-    // Chỉ cần nhận MapCanvas để hiển thị
     public void initialize() {
         stats.SpeedChart(avgSpeed);
         stats.TravelTimeChart(travelTime);
         stats.DensityChart(density);
-    
-
-        //simulation
+        // simulation tab
         filterOnOff.setItems(FXCollections.observableArrayList("Off", "On"));
         filterOnOff.setValue("Off");
         filterColor.setItems(FXCollections.observableArrayList(DataType.colorOptions));
         filterColor.setValue("Default");
-        //add vehicle
+        // add vehicle tab
         vehColor.setItems(FXCollections.observableArrayList(DataType.colorOptions));
         vehColor.setValue("Default");
-        //traffic light
+        // export tab
+        exportType.setItems(FXCollections.observableArrayList("PDF", "CSV"));
+        exportType.setValue("CSV");
     }
     public void setMapCanvas(MapCanvas mapCanvas, SimulationWrapper inputSim) {
         this.mapCanvas = mapCanvas;
@@ -88,17 +105,20 @@ public class ControlPanel {
         this.stats.setSimulation(inputSim);
 
         if (mapContainer != null) {
-            // Thêm Map vào giao diện
             mapContainer.getChildren().add(mapCanvas.getCanvas());
-            // Căn chỉnh kích thước
             mapCanvas.getCanvas().widthProperty().bind(mapContainer.widthProperty());
             mapCanvas.getCanvas().heightProperty().bind(mapContainer.heightProperty());
         }
     }
+    public void updateUI(long nowNanos) {
+        stats.updateSpeedCharts(avgSpeed);
+        stats.updateTravelTimeChart(travelTime);
+        stats.updateDensityChart(density);
+        simTime.setText("" + sim.getTime(0));
+    }
 
     @FXML void simPlayAct(ActionEvent event) {System.out.println("start");}
-    @FXML void simPauseAct(ActionEvent event) {this.PauseSim();}
-    @FXML void simTestAct(ActionEvent event) {this.SimTest();}
+    @FXML void simPauseAct(ActionEvent event) {this.sim.Pause();}
 
     @FXML void switchFilterAct(ActionEvent event) {
         String chosenFilter = filterOnOff.getValue();
@@ -124,8 +144,19 @@ public class ControlPanel {
         this.mapCanvas.setSpeedFilter(chosenSpeed);
     }
 
-    @FXML void expBtnAct(ActionEvent event) { }
-    @FXML void expTypeAct(ActionEvent event) { }
+    @FXML void exportPressed(ActionEvent event) { 
+        if (!this.sim.isPaused()) this.sim.Pause();
+        String chosenType = exportType.getValue();
+        Node source = (Node) event.getSource();
+        Stage stage = (Stage) source.getScene().getWindow();
+        if (chosenType.equals("CSV")) {
+            this.exportCSVMenu(stage);
+        }
+        else {
+            this.exportPDFMenu(stage);
+        }
+    }
+    @FXML void exportTypeAct(ActionEvent event) { }
 
     @FXML void chosenTLAct(ActionEvent event) {
         String chosenTL = tlIDs.getValue();
@@ -137,7 +168,6 @@ public class ControlPanel {
         this.sim.setTLPhaseNext(chosenTL);
     }
     
-    // set tl phase event
     @FXML void tlSetTimeAct(ActionEvent event) {
         String chosenTL = tlIDs.getValue();
         String inputTime = tlPhaseTime.getText();
@@ -147,24 +177,24 @@ public class ControlPanel {
             this.sim.setTLPhaseDuration(chosenTL, chosenTime);
         }
     }
-    // tl next phase all event
+
     @FXML void tlNPhaseAllAct(ActionEvent event) {sim.setTLPhaseNextAll();}
-    // inhect vehicle event
+
     @FXML void chosenRouteAct(ActionEvent event) {
         String chosenRoute = injectVehRoute.getValue();
         String startEdge = null;
         if (chosenRoute != null) startEdge = sim.getRouteFirstEdge(chosenRoute);
         this.mapCanvas.setHightLightEdge(startEdge);
     }
-    //inject button clicked
+
     @FXML void vehInjectAct(ActionEvent event) {
         String chosenRoute = injectVehRoute.getValue();
         String inputColor = vehColor.getValue();
         Color chosenColor = Color.RED;
-        if (inputColor != null) chosenColor = DataType.convertColor(inputColor);
+        if (inputColor != null) {chosenColor = DataType.convertColor(inputColor);}
         String inputNum = injectVehNum.getText();
         int chosenNum = 1;
-        if (this.checkIntConvertable(inputNum)) chosenNum = Integer.parseInt(inputNum);
+        if (this.checkIntConvertable(inputNum)) {chosenNum = Integer.parseInt(inputNum);}
         this.VehicleInject(chosenNum, chosenRoute, chosenColor);
     }
     
@@ -177,47 +207,25 @@ public class ControlPanel {
             else if (tabName.equals("Traffic Light")) {this.changeRenderMode(2);}
         }
     }
-
-    public void updateUI(long nowNanos) {
-        stats.updateSpeedCharts(avgSpeed);
-        stats.updateTravelTimeChart(travelTime);
-        stats.updateDensityChart(density);
-        simTime.setText("" + sim.getTime(0));
-    }
-    // interaction method
-    // pause simulation
-    private void PauseSim() {
-        sim.Pause();
-    }
-    // inject vehicle
+// interaction methods==============================================
     private void VehicleInject(int num, String routeId, Color color) {
-        if (1 <= num && num <= 300) {
-            for (int i = 0; i < num; i++) {
-                this.sim.addVehicleWithColor(String.format("v_%d", this.idCounter), routeId, color);
-                this.idCounter++;
-            }
-        }   
-        // injectionThread = new Thread(() -> {
-        //         for (int i = 0; i < num; i++) {
-        //             this.sim.addVehicleWithColor(String.format("v_%d", this.idCounter), routeId, color);
-        //             this.idCounter++;
-        //         }
-        // });
-        // injectionThread.start();
-    }
-    // test (easy to break)
-    private void SimTest() {
-        Color colour = new Color(0.5,0.5,0.5,1);
-        sim.addVehicleWithColor("test", "r_1",colour);
-        sim.setVehicleColor("f_0.0",1,1,1,1);
+        if (1 <= num && num <= 3000) {
+            Thread injectionThread = new Thread(() -> {
+                synchronized (lock) {
+                    for (int i = 0; i < num; i++) {
+                        this.sim.addVehicleWithColor(String.format("v_%d", this.idCounter), routeId, color);
+                        this.idCounter++;
+                    }
+                }
+            });
+            injectionThread.setDaemon(true);
+            injectionThread.start();
+        }
     }
     // change mode
     private void changeRenderMode(int input) {
         if (this.mapCanvas != null) {
             this.mapCanvas.setRenderMode(input);
-        }
-        if (input == 0) {
-            System.out.println("Switch to normal mode");
         }
         if (input == 1) {
             this.mapCanvas.setUpdateRoute(true);
@@ -233,10 +241,80 @@ public class ControlPanel {
             mapCanvas.setHightLightJunctions(this.sim.getTLControlledJunctions(chosenTL));
         }
     }
+
     private boolean checkIntConvertable(String input) {
         try {
             Integer.parseInt(input);
             return true;
-        } catch (NumberFormatException e) {return false;}
+        } catch (NumberFormatException e) {
+            LOG.log(Level.WARNING, "User attempt to input non-integer");
+            return false;
+        }
+    }
+
+    private void exportCSVMenu(Stage stage) {
+        List<String> filterOptions = new ArrayList<>();
+        filterOptions.add("ALL - Export all data");
+        filterOptions.add("CONGESTED_ONLY - Export only congested edges");
+        
+        ChoiceDialog<String> filterDialog = new ChoiceDialog<>("ALL - Export all data", filterOptions);
+        filterDialog.setTitle("CSV Export Filter");
+        filterDialog.setHeaderText("Select export filter");
+        filterDialog.setContentText("Choose filter type:");
+        
+        java.util.Optional<String> filterResult = filterDialog.showAndWait();
+        if (!filterResult.isPresent()) return;
+        
+        String selectedOption = filterResult.get();
+        String filterType = "ALL";
+        if (selectedOption.startsWith("CONGESTED_ONLY")) {
+            filterType = "CONGESTED_ONLY";
+        }
+        
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export CSV File");
+        fileChooser.getExtensionFilters().add(
+            new javafx.stage.FileChooser.ExtensionFilter("CSV Files", "*.csv")
+        );
+        
+        fileChooser.setInitialFileName("trackedData.csv");
+        String destinationPath = Statistic.exportCSV(fileChooser.showSaveDialog(stage), filterType);
+        
+        if (destinationPath != null) {
+            String message = String.format("File saved to: %s:", destinationPath);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Export Successful");
+            alert.setHeaderText("CSV file exported");
+            alert.setContentText(message);
+            alert.showAndWait();
+        }
+    }
+
+    private void exportPDFMenu(Stage stage) {
+
+        VBox chartContainer = new VBox(20); 
+        chartContainer.setStyle("-fx-padding: 5, 5, 5, 5; -fx-background-color: white; -fx-alignment: center;");
+        chartContainer.setPrefWidth(480);
+        chartContainer.setPrefHeight(656);
+        chartContainer.setAlignment(Pos.CENTER);
+        chartContainer.getChildren().add(stats.makeSpeedChartCopy());
+        chartContainer.getChildren().add(stats.makeTravelTimeChartCopy());
+        chartContainer.getChildren().add(stats.makeDensityChartCopy());
+
+        if (Statistic.exportPDF(chartContainer, stage)) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Export Successful");
+            alert.setHeaderText("PDF export completed");
+            alert.setContentText("The charts have been exported to PDF. " +
+                "If you selected a PDF printer, the file should be saved.");
+            alert.showAndWait();
+        }
+        else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Export Error");
+            alert.setHeaderText("Failed to export PDF");
+            alert.setContentText("The print job failed. Please try again.");
+            alert.showAndWait();
+        }
     }
 }
