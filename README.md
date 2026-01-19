@@ -18,7 +18,7 @@ following core functionalities are following.
 |2.4.1 Tracking |- Store record of metrics, including average speed, vehicle density per edge, congestion hotspots, travel time distribution.<br/>- Display charts and summaries in real time.|
 |2.4.2 Exporting report |- Allow saving simulation statistics to CSV for external analysis.<br/>- Enable generating PDF summaries with charts, metrics, and timestamps with filtered congested edge|
 
-## 3. Instructiona
+## 3. Instruction
 ### Step 1: Installation 
 Download the whole git<br/>
 Download Java SDK 17 or newer<br/>
@@ -30,6 +30,7 @@ Download Sumo
 - First open the terminal, then navigate to the `simulationrealtime` directory and ``.\run.bat``.
 #### Option 3: Click to run
 - Find the run.bat file and double click to start the program.
+
 
 
 
