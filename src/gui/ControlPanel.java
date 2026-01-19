@@ -298,13 +298,20 @@ public class ControlPanel {
         VBox chartContainer = new VBox(20); 
         chartContainer.setStyle("-fx-padding: 5, 5, 5, 5; -fx-background-color: white; -fx-alignment: center;");
         chartContainer.setPrefWidth(480);
-        chartContainer.setPrefHeight(656);
+        chartContainer.setPrefHeight(700);
         chartContainer.setAlignment(Pos.CENTER);
         chartContainer.getChildren().add(stats.makeSpeedChartCopy());
         chartContainer.getChildren().add(stats.makeTravelTimeChartCopy());
         chartContainer.getChildren().add(stats.makeDensityChartCopy());
 
-        if (Statistic.exportPDF(chartContainer, stage)) {
+        VBox mapContainer = new VBox(20);
+        mapContainer.setStyle("-fx-padding: 5, 5, 5, 5; -fx-background-color: white; -fx-alignment: center;");
+        mapContainer.setPrefWidth(480);
+        mapContainer.setPrefHeight(700);
+        mapContainer.setAlignment(Pos.CENTER);
+        mapContainer.getChildren().add(mapCanvas.makeRenderMapCopy());
+
+        if (Statistic.exportPDFMultiPage(List.of(chartContainer, mapContainer), stage)) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Export Successful");
             alert.setHeaderText("PDF export completed");

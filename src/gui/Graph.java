@@ -69,7 +69,7 @@ public class Graph {
         if (SpeedChart == null || sim == null) return; //check null
 
         setupSpeedChart(); //ensure chart is set up
-        SpeedChart.getData().clear(); //clear existing data
+        // do not clear existing data to keep historical data points
 
         // Get average speed from simulationWrapper
         double averageSpeed = sim.getVehicleAverageSpeed(0);

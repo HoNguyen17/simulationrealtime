@@ -15,14 +15,21 @@ import java.util.Map;
 
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.image.Image; 
+import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.text.Text;
+
+
+import javafx.scene.image.WritableImage;
+import javafx.scene.image.ImageView;
+import javafx.scene.SnapshotParameters;
 
 public class MapCanvas {
     private final Canvas canvas; // the drawing surface
@@ -384,6 +391,21 @@ public class MapCanvas {
             }
         }   
     }
+
+    public ImageView makeRenderMapCopy() {
+        // Take a snapshot of the current canvas
+        WritableImage snapshot = canvas.snapshot(new SnapshotParameters(), null);
+        
+        // Create an ImageView with the snapshot
+        ImageView mapImage = new ImageView(snapshot);
+        
+        // Set preferred size to fit in PDF export (maintain aspect ratio)
+        mapImage.setPreserveRatio(true);
+        mapImage.setFitWidth(460);  // Slightly less than container width for padding
+        
+        return mapImage;
+    }
+
 
     private Networkpaser.Lane findLaneById(String laneId) {
         if (laneId == null || model == null) return null;

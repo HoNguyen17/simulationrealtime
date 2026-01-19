@@ -14,6 +14,8 @@ import javafx.scene.Scene;
 
 import javafx.stage.Stage;
 
+import java.util.List;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.FileReader;
@@ -116,8 +118,10 @@ public class Statistic {
         return null;
     }
 
-    public static boolean exportPDF(VBox chartContainer, Stage stage) {
-        Scene printScene = new Scene(chartContainer, 480, 656); //600 820
+    /**
+     * Export multiple pages as PDF
+     */
+    public static boolean exportPDFMultiPage(List<VBox> pages, Stage stage) {
         PrinterJob printerJob = PrinterJob.createPrinterJob();
 
         if (printerJob == null) return false;
@@ -127,7 +131,15 @@ public class Statistic {
             PageLayout pageLayout = printer.createPageLayout(Paper.A4, 
                 PageOrientation.PORTRAIT, Printer.MarginType.DEFAULT);
         
-            if (printerJob.printPage(pageLayout, chartContainer)) {
+            boolean success = true;
+            for (VBox page : pages) {
+                if (!printerJob.printPage(pageLayout, page)) {
+                    success = false;
+                    break;
+                }
+            }
+            
+            if (success) {
                 printerJob.endJob();
                 return true;
             }
