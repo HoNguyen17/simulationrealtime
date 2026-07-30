@@ -3,9 +3,9 @@
 [![Java Version](https://img.shields.io/badge/Java-17%2B-orange.svg)](https://www.oracle.com/java/)
 [![UI Framework](https://img.shields.io/badge/GUI-JavaFX_17-blue.svg)](https://openjfx.io/)
 [![Simulation Engine](https://img.shields.io/badge/Simulation-Eclipse_SUMO_/_TraCI-green.svg)](https://eclipse.dev/sumo/)
-[![Institution](https://img.shields.io/badge/Frankfurt_UAS-Wintersemester_2024%2F2025-red.svg)](https://www.frankfurt-university.de/)
+[![Institution](https://img.shields.io/badge/Frankfurt_UAS-Wintersemester_2025%2F2026-red.svg)](https://www.frankfurt-university.de/)
 
-A high-performance real-time urban traffic simulation visualization dashboard developed for the **Java Programming** course at **Frankfurt University of Applied Sciences** (Frankfurt UAS, Germany) in **Wintersemester 2024/2025**. 
+A high-performance real-time urban traffic simulation visualization dashboard developed for the **Java Programming** course at **Frankfurt University of Applied Sciences** (Frankfurt UAS, Germany) in **Wintersemester 2025/2026**. 
 
 The system parses Eclipse SUMO network topology files (`.net.xml`), connects dynamically to the SUMO simulation runtime using the **TraCI** protocol (`TraaS`), and provides interactive 2D map visualization, real-time vehicle and signal control, alongside live statistical analytics powered by a custom native graphing engine.
 
@@ -23,7 +23,7 @@ The system parses Eclipse SUMO network topology files (`.net.xml`), connects dyn
 
 * **Course**: Java Programming
 * **Institution**: Frankfurt University of Applied Sciences (Frankfurt UAS, Germany)
-* **Semester**: Wintersemester 2024/2025
+* **Semester**: Wintersemester 2025/2026
 
 ### 👥 Team Members & Contributions
 
@@ -129,5 +129,5 @@ java --module-path "../lib/javafx-sdk-17.0.17/lib;." --add-modules javafx.base,j
 
 ## 📜 License & Credits
 
-Developed as part of the **Java Programming** coursework at **Frankfurt University of Applied Sciences** (Wintersemester 2024/2025). 
+Developed as part of the **Java Programming** coursework at **Frankfurt University of Applied Sciences** (Wintersemester 2025/2026). 
 Special thanks to the open-source **Eclipse SUMO** team for providing the simulation engine.
